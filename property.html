@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en"> 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOA Property</title>
+    <link rel="stylesheet" href="property.css">
+</head>
+<body> 
+    <div class="property-container"> 
+        <div class="property-search"> 
+            <label for="pSearch">Search Property:</label> 
+            <input type="search" id="pSearch" name="pSearch">
+        </div>
+        <div class="property-filter">
+            <label for="pStatus">Status:</label>
+            <select name="pStatus" id="pStatus">
+                <option value="occupied">Occupied</option>
+                <option value="vacant">Vacant</option>
+            </select>
+            <label for="pLot">Lot:</label>
+            <select> 
+                <option value="All">All</option>
+            </select>
+        </div>
+        <div class="property-options">
+            <button command="show-modal" commandfor="my-dialog">Add Property</button>
+                <dialog id="my-dialog">
+                <h1>Add Property</h1>
+                <label for="inputLot">Lot:</label>
+                <input type="text" id="inputLot" name="inputLot"><br> 
+                <label for="inputAddress">Address:</label>
+                <input type="text" id="inputAddress" name="inputAddress"><br>
+                <label for="inputStatus">Status:</label> 
+                <select>
+                    <option value="Vacant">Vacant</option>
+                    <option value="Occupied">Occupied</option>
+                </select><br>
+                <label for="inputDate">Date:</label>
+                <input type="date" id="inputDate" name="inputDate"><br>
+                <button commandfor="my-dialog" command="close">Save</button>
+                </dialog>
+            <button>Import Excel</button>
+            <button>Export Excel</button>
+        </div>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Lot #</th>
+                <th>Address</th>
+                <th>Status</th>
+                <th># of Occupants</th>
+            </tr>
+            <tr> 
+                <td>1</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr> 
+                <td>2</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr> 
+                <td>3</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr> 
+            <tr> 
+                <td>4</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>    
+            <tr> 
+                <td>5</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>       
+        </table>
+    </div>
+</body>
+</html> 
+
+<!-- wip currently: natt -->
