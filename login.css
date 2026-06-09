@@ -81,7 +81,7 @@ body{
 }
 
 /* SIGN IN BUTTON */
-.dashboard-button{
+.signin-button{
     display:block;
     width:100%;
     padding:18px;
@@ -94,7 +94,7 @@ body{
     margin-bottom:20px;
 }
 
-.dashboard-button:hover{
+.signin-button:hover{
     opacity:0.9;
 }
 
