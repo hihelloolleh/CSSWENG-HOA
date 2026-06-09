@@ -2,7 +2,7 @@
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family: 'Poppins', sans-serif;
+    font-family:'Poppins',sans-serif;
 }
 
 body{
@@ -47,23 +47,20 @@ body{
     font-size:18px;
 }
 
-.email{
+.email,
+.password{
     margin-bottom:30px;
 }
 
-.email label{
-    display:block;
-    font-weight:600;
-    margin-bottom:10px;
-}
-
+.email label,
 .password label{
     display:block;
     font-weight:600;
     margin-bottom:10px;
 }
 
-.email input, .password input{
+.email input,
+.password input{
     width:100%;
     padding:16px;
     border:1px solid #ccc;
@@ -79,37 +76,38 @@ body{
 }
 
 .options a{
-    text-decoration:none;
     color:#526F50;
+    text-decoration:none;
 }
 
-button{
+/* SIGN IN BUTTON */
+.dashboard-button{
+    display:block;
     width:100%;
     padding:18px;
-    border:none;
-    border-radius:8px;
     background:#526F50;
     color:white;
+    text-align:center;
+    border-radius:8px;
     font-size:16px;
     font-weight:600;
-    cursor:pointer;
+    margin-bottom:20px;
 }
 
-button:hover{
+.dashboard-button:hover{
     opacity:0.9;
-}
-
-.right-panel form{
-    display:flex;
-    flex-direction:column;
-    gap:20px;
 }
 
 .login-help{
     text-align:center;
 }
 
-.login-help a { /*Contact the HOA Admin here.*/
-    color: #526F50; 
-    text-decoration: none;
+.login-help a{
+    color:#526F50;
+    text-decoration:none;
+    font-weight:500;
+}
+
+.login-help a:hover{
+    text-decoration:underline;
 }
