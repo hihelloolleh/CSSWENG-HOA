@@ -24,7 +24,22 @@
             </select>
         </div>
         <div class="property-options">
-            <button>Add Property</button>
+            <button command="show-modal" commandfor="my-dialog">Add Property</button>
+                <dialog id="my-dialog">
+                <h1>Add Property</h1>
+                <label for="inputLot">Lot:</label>
+                <input type="text" id="inputLot" name="inputLot"><br> 
+                <label for="inputAddress">Address:</label>
+                <input type="text" id="inputAddress" name="inputAddress"><br>
+                <label for="inputStatus">Status:</label> 
+                <select>
+                    <option value="Vacant">Vacant</option>
+                    <option value="Occupied">Occupied</option>
+                </select><br>
+                <label for="inputDate">Date:</label>
+                <input type="date" id="inputDate" name="inputDate"><br>
+                <button commandfor="my-dialog" command="close">Close</button>
+                </dialog>
             <button>Import Excel</button>
             <button>Export Excel</button>
         </div>
