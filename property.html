@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HOA Property</title>
     <link rel="stylesheet" href="property.css">
+    
+    <!-- crud imports-->
+    <script></script> 
 </head>
 <body> 
     <div class="property-container"> 
@@ -18,13 +21,13 @@
                 <option value="occupied">Occupied</option>
                 <option value="vacant">Vacant</option>
             </select>
-            <label for="pLot">Lot:</label>
+            <label for="pLot" id="lot">Lot:</label>
             <select> 
                 <option value="All">All</option>
             </select>
         </div>
         <div class="property-options">
-            <button command="show-modal" commandfor="my-dialog">Add Property</button>
+            <button command="show-modal" commandfor="my-dialog" id="button1">+ Add Property</button>
                 <dialog id="my-dialog">
                 <h1>Add Property</h1>
                 <label for="inputLot">Lot:</label>
@@ -40,8 +43,8 @@
                 <input type="date" id="inputDate" name="inputDate"><br>
                 <button commandfor="my-dialog" command="close">Save</button>
                 </dialog>
-            <button>Import Excel</button>
-            <button>Export Excel</button>
+            <button id="button2">⊞ Import Excel</button>
+            <button id="button3">⊞ Export Excel</button>
         </div>
         <table>
             <tr>
