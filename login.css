@@ -26,6 +26,9 @@ body{
 .left-panel{
     width:40%;
     background:#526F50;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
 }
 
 .right-panel{
@@ -80,7 +83,6 @@ body{
     text-decoration:none;
 }
 
-/* SIGN IN BUTTON */
 .signin-button{
     display:block;
     width:100%;
