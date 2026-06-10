@@ -9,88 +9,56 @@
     <!-- crud imports-->
     <script></script> 
 </head>
-<body> 
-    <div class="property-container"> 
-        <div class="property-search"> 
-            <label for="pSearch">Search Property:</label> 
-            <input type="search" id="pSearch" name="pSearch">
-        </div>
-        <div class="property-filter">
-            <label for="pStatus">Status:</label>
-            <select name="pStatus" id="pStatus">
-                <option value="occupied">Occupied</option>
-                <option value="vacant">Vacant</option>
-            </select>
-            <label for="pLot" id="lot">Lot:</label>
-            <select> 
-                <option value="All">All</option>
-            </select>
+<body>
+    <div class="property-container">
+        <div class="property-header">
+            <h1>Property Management</h1>
+            <p>Manage properties, owners, and residents in the community.</p>
         </div>
         <div class="property-options">
-            <button command="show-modal" commandfor="my-dialog" id="button1">+ Add Property</button>
-                <dialog id="my-dialog">
-                <h1>Add Property</h1>
-                <label for="inputLot">Lot:</label>
-                <input type="text" id="inputLot" name="inputLot"><br> 
-                <label for="inputAddress">Address:</label>
-                <input type="text" id="inputAddress" name="inputAddress"><br>
-                <label for="inputStatus">Status:</label> 
-                <select>
-                    <option value="Vacant">Vacant</option>
-                    <option value="Occupied">Occupied</option>
-                </select><br>
-                <label for="inputDate">Date:</label>
-                <input type="date" id="inputDate" name="inputDate"><br>
-                <button commandfor="my-dialog" command="close">Save</button>
-                </dialog>
-            <button id="button2">⊞ Import Excel</button>
-            <button id="button3">⊞ Export Excel</button>
+            <button>Add Property</button>
+            <button>Import Excel (CSV)</button>
+            <button>Export Excel (CSV)</button>
+            <input type="search"><button>Search</button>
+            <button>Filters</button>
         </div>
-        <table>
-            <tr>
-                <th>ID</th>
-                <th>Lot #</th>
-                <th>Address</th>
-                <th>Status</th>
-                <th># of Occupants</th>
-            </tr>
-            <tr> 
-                <td>1</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr> 
-                <td>2</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr> 
-                <td>3</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr> 
-            <tr> 
-                <td>4</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>    
-            <tr> 
-                <td>5</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>       
-        </table>
-    </div>
+        <div class="property-table">
+            <table>
+                <tr>
+                    <th><input type="checkbox"></th>
+                    <th>Property Address</th>
+                    <th>Lot/Unit</th>
+                    <th>Owner</th>
+                    <th>Residents</th>
+                    <th>Status</th>
+                </tr>
+                <tr>
+                    <td><input type="checkbox"></td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox"></td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox"></td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox"></td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox"></td>
+                </tr>
+            </table>
+        </div>
+        <div class="properties-page">
+            <h3>Showing page 1 out of ... properties</h3>
+            <button>&lt;&lt;</button>
+            <button>1</button>
+            <button>2</button>
+            <button>3</button>
+            <button>&gt;&gt;</button>
+        </div>
+    </div> 
+    
 </body>
 </html> 
 
