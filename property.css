@@ -13,56 +13,56 @@ body{
     align-items:center;
 }
 
+.property-sidebar{
+    width: 20%; 
+    height: 100%; 
+    background-color: #526F50;
+}
 .property-container{
-    background: white;
-    border-radius: 16px; 
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-    width: 65vw; 
-    height: 35vw; 
-    padding: 30px; 
+    background-color: white;
+    width: 100%; 
+    height: 100%; 
+    padding: 30px;
 }
 
-.property-search{
-    padding-bottom: 10px; 
-}
-
-.property-search label{
-    font-weight: 600;
-    font-size: 20px; 
-    padding-right: 5px; 
-}
-
-.property-search input{
-    height: 23px;
-}
-
-.property-filter{
-    padding-bottom: 20px; 
-    padding-top: 10px;
-    font-weight: 600;
-}
-
-.property-filter select{
-    padding: 5px; 
-}
-
-#lot{
-    padding-left: 20px;
+.property-header{
+    padding-bottom: 15px; 
 }
 
 .property-options{
+    padding-top: 20px;
     padding-bottom: 20px; 
 }
 
 .property-options button{
-    padding: 12px; 
-    border-radius: 6px;
-    border-color: lightgray;  
+    padding: 5px; 
 }
 
-table, th, td {
-  border: 1px solid black;
-  border-collapse: collapse;
-  padding: 15px;
-  text-align: center;
+.search{
+    padding-left: 35vw;  
 }
+
+.search input{
+    height: 28px; 
+} 
+
+table, th, td{
+    border: 2px solid lightgray; 
+    border-collapse: collapse;
+    padding: 20px;
+    text-align: center; 
+}
+
+.pageturn{
+    padding-top: 20px; 
+}
+
+.pageturn button{
+    padding: 5px; 
+}
+
+.pageturn p{
+    padding-bottom: 10px; 
+}
+
+ 
