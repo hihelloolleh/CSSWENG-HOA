@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOA Dashboard</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <!-- GOOGLE FONTS -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- ICONS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- sidebar (other people, please replace # with actual files) -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <img src="HOA LOGO.png" alt="HOA Logo">
+            <div class="sidebar-logo-text">
+                <span class="logo-title">Marcelo Green</span>
+                <span class="logo-sub">Village Phase 5</span>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-item active">
+                <i class="fa-solid fa-gauge-high"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-users"></i>
+                <span>Persons</span>
+            </a>
+            <a href="property.html" class="nav-item">
+                <i class="fa-solid fa-house"></i>
+                <span>Properties</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-people-roof"></i>
+                <span>Property Owners</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-id-badge"></i>
+                <span>Employees</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-car"></i>
+                <span>Vehicles</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-tag"></i>
+                <span>Car Stickers</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="login.html" class="nav-item logout">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Log Out</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- main -->
+    <div class="main-wrapper">
+
+        <!-- the top bar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <h1 class="page-title">Dashboard</h1>
+                <p class="page-subtitle">Welcome back, Admin</p>
+            </div>
+            <div class="topbar-right">
+                <div class="topbar-user">
+                    <div class="user-avatar">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="user-info">
+                        <span class="user-name">Village Admin</span>
+                        <span class="user-role">Administrator</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- content (doesn't really have anything except buttons yet) -->
+        <main class="content">
+
+            <!-- purely for aesthetic summary cards -->
+            <section class="summary-cards">
+                <div class="card stat-card">
+                    <div class="stat-icon green">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value">112</span>
+                        <span class="stat-label">Total Persons</span>
+                    </div>
+                </div>
+
+                <div class="card stat-card">
+                    <div class="stat-icon blue">
+                        <i class="fa-solid fa-house"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value">45</span>
+                        <span class="stat-label">Total Properties</span>
+                    </div>
+                </div>
+
+                <div class="card stat-card">
+                    <div class="stat-icon orange">
+                        <i class="fa-solid fa-id-badge"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value">12</span>
+                        <span class="stat-label">Employees</span>
+                    </div>
+                </div>
+
+                <div class="card stat-card">
+                    <div class="stat-icon purple">
+                        <i class="fa-solid fa-car"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value">45</span>
+                        <span class="stat-label">Registered Vehicles</span>
+                    </div>
+                </div>
+
+                <div class="card stat-card">
+                    <div class="stat-icon teal">
+                        <i class="fa-solid fa-tag"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value">38</span>
+                        <span class="stat-label">Active Car Stickers</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- property status cards row -->
+            <section class="dashboard-grid">
+
+                <!-- property status summary card -->
+                 <!-- STATUS BAR WILL NOT CHANGE SINCE I JUST PUT WIDTH INSTEAD OF A DYNAMIC FUNCTION -->
+                  <!-- IF TOO HARD TO IMPLEMENT ON LATER SPRINTS JUST DISREGARD -->
+                <div class="card property-status-card">
+                    <div class="card-header">
+                        <h2>Property Status</h2>
+                        <a href="property.html" class="view-all">View All</a>
+                    </div>
+                    <div class="status-list">
+                        <div class="status-row">
+                            <div class="status-dot occupied"></div>
+                            <span class="status-name">Occupied</span>
+                            <div class="status-bar-wrap">
+                                <div class="status-bar" style="width: 84%;"></div>
+                            </div>
+                            <span class="status-count">32</span>
+                        </div>
+                        <div class="status-row">
+                            <div class="status-dot vacant"></div>
+                            <span class="status-name">Vacant</span>
+                            <div class="status-bar-wrap">
+                                <div class="status-bar vacant" style="width: 11%;"></div>
+                            </div>
+                            <span class="status-count">8</span>
+                        </div>
+                        <div class="status-row">
+                            <div class="status-dot construction"></div>
+                            <span class="status-name">Under Construction</span>
+                            <div class="status-bar-wrap">
+                                <div class="status-bar construction" style="width: 5%;"></div>
+                            </div>
+                            <span class="status-count">5</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- car sticker status card -->
+                <div class="card sticker-status-card">
+                    <div class="card-header">
+                        <h2>Car Sticker Overview</h2>
+                        <a href="#" class="view-all">View All</a>
+                    </div>
+                    <div class="status-list">
+                        <div class="status-row">
+                            <div class="status-dot occupied"></div>
+                            <span class="status-name">Active</span>
+                            <div class="status-bar-wrap">
+                                <div class="status-bar" style="width: 92%;"></div>
+                            </div>
+                            <span class="status-count">38</span>
+                        </div>
+                        <div class="status-row">
+                            <div class="status-dot vacant"></div>
+                            <span class="status-name">Expired</span>
+                            <div class="status-bar-wrap">
+                                <div class="status-bar vacant" style="width: 8%;"></div>
+                            </div>
+                            <span class="status-count">7</span>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- row for recent cards -->
+            <section class="tables-row">
+
+                <!-- recent persons card -->
+                <div class="card table-card">
+                    <div class="card-header">
+                        <h2>Recent Persons</h2>
+                        <a href="#" class="view-all">View All</a>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Sex</th>
+                                <th>Contact</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>001</td>
+                                <td>Clark Kent</td>
+                                <td>Male</td>
+                                <td>0912 345 6789</td>
+                            </tr>
+                            <tr>
+                                <td>002</td>
+                                <td>Diana Prince</td>
+                                <td>Female</td>
+                                <td>0912 345 6789</td>
+                            </tr>
+                            <tr>
+                                <td>003</td>
+                                <td>Bruce Wayne</td>
+                                <td>Male</td>
+                                <td>0912 345 6789</td>
+                            </tr>
+                            <tr>
+                                <td>004</td>
+                                <td>Zatanna Zatara</td>
+                                <td>Female</td>
+                                <td>0912 345 6789</td>
+                            </tr>
+                            <tr>
+                                <td>005</td>
+                                <td>Kyle Rayner</td>
+                                <td>Male</td>
+                                <td>0912 345 6789</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- recent properties card -->
+                <div class="card table-card">
+                    <div class="card-header">
+                        <h2>Recent Properties</h2>
+                        <a href="property.html" class="view-all">View All</a>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Lot No.</th>
+                                <th>Address</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>101</td>
+                                <td>12 Sampaguita St.</td>
+                                <td><span class="badge occupied">Occupied</span></td>
+                            </tr>
+                            <tr>
+                                <td>102</td>
+                                <td>14 Sampaguita St.</td>
+                                <td><span class="badge vacant">Vacant</span></td>
+                            </tr>
+                            <tr>
+                                <td>103</td>
+                                <td>16 Sampaguita St.</td>
+                                <td><span class="badge occupied">Occupied</span></td>
+                            </tr>
+                            <tr>
+                                <td>104</td>
+                                <td>18 Sampaguita St.</td>
+                                <td><span class="badge construction">Under Construction</span></td>
+                            </tr>
+                            <tr>
+                                <td>105</td>
+                                <td>20 Sampaguita St.</td>
+                                <td><span class="badge occupied">Occupied</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </section>
+
+        </main>
+    </div>
+
+</body>
+</html>
