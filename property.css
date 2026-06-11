@@ -65,4 +65,73 @@ table, th, td{
     padding-bottom: 10px; 
 }
 
+.property-grid{
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 20px;
+    align-items: start;
  
+}
+
+.assign-grid{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.property-details,
+.assign-owner,
+.assign-residents{
+    width: 100%;
+    border: 1px solid lightgray;
+    padding: 20px;
+    border-radius: 4px; 
+}
+
+table{
+    width: 100%;
+}
+
+.tab{
+    overflow: hidden; 
+    border: 1px solid #ccc;
+    background-color: #f1f1f1; 
+}
+
+.tab button{
+    background-color: inherit; 
+    float: left; 
+    border: none; 
+    outline: none; 
+    cursor: pointer; 
+    padding: 14px 16px; 
+    transition: 0.3s; 
+}
+
+.tab button:hover{
+    background-color: #ddd; 
+}
+
+.tab button.active{
+    background-color: #ccc; 
+}
+
+.tabcontent{
+    display: none; 
+    padding: 6px 12px; 
+    border: 1px solid #ccc;
+    border-top: none; 
+}
+ 
+ul {
+  list-style-type: none;  
+  padding: 0;  
+  margin: 0; 
+}
+
+ul li {
+  border: 1px solid #ddd;  
+  margin-top: -1px;  
+  background-color: #f6f6f6;  
+  padding: 12px;  
+}
