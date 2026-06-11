@@ -27,56 +27,106 @@
                 <button>Filters</button>
             </span>
         </div>
-        <div class="property-table">
-            <table>
-                <tr>
-                    <th><input type="checkbox"></th>
-                    <th>Property Address</th>
-                    <th>Lot/Unit</th>
-                    <th>Owner</th>
-                    <th>Residents</th>
-                    <th>Status</th>
-                </tr>
-                <tr>
-                    <td><input type="checkbox"></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox"></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox"></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox"></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox"></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-            </table>
+        <div class="property-grid"> 
+            <div class="property-table">
+                <table>
+                    <tr>
+                        <th><input type="checkbox"></th>
+                        <th>Property Address</th>
+                        <th>Lot/Unit</th>
+                        <th>Owner</th>
+                        <th>Residents</th>
+                        <th>Status</th>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="assign-grid">
+                <div class="property-details">
+                    <h5>Property Details</h5>
+                    <h1>123 Marcelo Street</h1>
+                    <p>Lot 11</p>
+                    <div class="tab">
+                        <button class="tablinks" onclick="openTab(event, 'Overview')">Overview</button>
+                        <button class="tablinks" onclick="openTab(event, 'Owner')">Owner</button>
+                        <button class="tablinks" onclick="openTab(event,'Residents')">Residents</button>
+                    </div>
+                    <div id="Overview" class="tabcontent">
+                        <h3>Overview</h3>
+                        <p>Sample overview content.</p>
+                    </div>
+                    <div id="Owner" class="tabcontent">
+                        <h3>Owner</h3>
+                        <p>Sample owner content.</p>
+                    </div>
+                    <div id="Residents" class="tabcontent">
+                        <h3>Residents</h3>
+                        <p>Sample residents content.</p>
+                    </div>
+                </div>
+                <div class="assign-owner">
+                    <h4>Assign Owner</h4>
+                    <select>
+                        <option value="Adele">Adele</option>
+                        <option value="Agnes">Agnes</option>
+                        <option value="Billy">Billy</option>
+                        <option value="Bob">Bob</option>
+                        <option value="Calvin">Calvin</option>
+                    </select>
+                    <br> 
+                    <button>Save</button>
+                </div>
+                <div class="assign-residents">
+                    <h4>Assign Residents</h4>
+                    <select multiple>
+                        <option value="Adele">Adele</option>
+                        <option value="Agnes">Agnes</option>
+                        <option value="Billy">Billy</option>
+                        <option value="Bob">Bob</option>
+                        <option value="Calvin">Calvin</option>
+                    </select>
+                    <br>
+                    <button>Save</button>
+                </div>
+            </div>
         </div>
         <div class="pageturn">
             <p>Showing page 1 out of ... properties</p>
@@ -88,6 +138,23 @@
         </div>
     </div> 
     
+    <!-- for menu tab switching (overview, owner, residents tab) -->
+    <script>    
+        function openTab(evt, tabName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.className += " active";
+        }
+    </script>
+
 </body>
 </html> 
 
