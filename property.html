@@ -6,88 +6,228 @@
     <title>HOA Property</title>
     <link rel="stylesheet" href="property.css">
     
+    <!-- GOOGLE FONTS -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- ICONS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
     <!-- crud imports-->
     <script></script> 
 </head>
 <body>
-    <div class="property-sidebar"></div>
-    <div class="property-container">
-        <div class="property-header">
-            <h1>Property Management</h1>
-            <p>Manage properties, owners, and residents in the community.</p>
+     <aside class="sidebar">
+        <div class="sidebar-logo">
+            <img src="HOA LOGO.png" alt="HOA Logo">
+            <div class="sidebar-logo-text">
+                <span class="logo-title">Marcelo Green</span>
+                <span class="logo-sub">Village Phase 5</span>
+            </div>
         </div>
-        <hr>
-        <div class="property-options">
-            <button>Add Property</button>
-            <button>Import Excel (CSV)</button>
-            <button>Export Excel (CSV)</button>
-            <span class="search">
-                <input type="search">
-                <button>Search</button>
-                <button>Filters</button>
-            </span>
+
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-item">
+                <i class="fa-solid fa-gauge-high"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-users"></i>
+                <span>Persons</span>
+            </a>
+            <a href="property.html" class="nav-item active">
+                <i class="fa-solid fa-house"></i>
+                <span>Properties</span>
+            </a>
+            <a href="property-owners.html" class="nav-item">
+                <i class="fa-solid fa-people-roof"></i>
+                <span>Property Owners</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-id-badge"></i>
+                <span>Employees</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-car"></i>
+                <span>Vehicles</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-tag"></i>
+                <span>Car Stickers</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="login.html" class="nav-item logout">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Log Out</span>
+            </a>
         </div>
-        <div class="property-table">
-            <table>
-                <tr>
-                    <th><input type="checkbox"></th>
-                    <th>Property Address</th>
-                    <th>Lot/Unit</th>
-                    <th>Owner</th>
-                    <th>Residents</th>
-                    <th>Status</th>
-                </tr>
-                <tr>
-                    <td><input type="checkbox"></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox"></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox"></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox"></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox"></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-            </table>
-        </div>
-        <div class="pageturn">
-            <p>Showing page 1 out of ... properties</p>
-            <button>&lt;&lt;</button>
-            <button>1</button>
-            <button>2</button>
-            <button>3</button>
-            <button>&gt;&gt;</button>
-        </div>
-    </div> 
+    </aside>
+
+    <div class="property-header-container">
+
+        <header class="topbar">
+            <div class="topbar-left">
+                <h1 class="page-title">Dashboard</h1>
+                <p class="page-subtitle">Welcome back, Admin</p>
+            </div>
+            <div class="topbar-right">
+                <div class="topbar-user">
+                    <div class="user-avatar">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="user-info">
+                        <span class="user-name">Village Admin</span>
+                        <span class="user-role">Administrator</span>
+                    </div>
+                </div>
+            </div>
+        </header>
     
+        <div class="property-container">
+            <div class="property-header">
+                <h1>Property Management</h1>
+                <p>Manage properties, owners, and residents in the community.</p>
+            </div>
+            <hr>
+            <div class="property-options">
+                <button>Add Property</button>
+                <button>Import Excel (CSV)</button>
+                <button>Export Excel (CSV)</button>
+                <span class="search">
+                    <input type="search" placeholder="Enter property name here...">
+                    <button>Search</button>
+                    <button>Filters</button>
+                </span>
+            </div>
+            <div class="property-grid"> 
+                <div class="property-table">
+                    <table>
+                        <tr>
+                            <th><input type="checkbox"></th>
+                            <th>Property Address</th>
+                            <th>Lot/Unit</th>
+                            <th>Owner</th>
+                            <th>Residents</th>
+                            <th>Status</th>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="assign-grid">
+                    <div class="property-details">
+                        <h5>Property Details</h5>
+                        <h1>123 Marcelo Street</h1>
+                        <p>Lot 11</p>
+                        <div class="tab">
+                            <button class="tablinks" onclick="openTab(event, 'Overview')">Overview</button>
+                            <button class="tablinks" onclick="openTab(event, 'Owner')">Owner</button>
+                            <button class="tablinks" onclick="openTab(event,'Residents')">Residents</button>
+                        </div>
+                        <div id="Overview" class="tabcontent">
+                            <h3>Overview</h3>
+                            <p>Sample overview content.</p>
+                        </div>
+                        <div id="Owner" class="tabcontent">
+                            <h3>Owner</h3>
+                            <p>Sample owner content.</p>
+                        </div>
+                        <div id="Residents" class="tabcontent">
+                            <h3>Residents</h3>
+                            <p>Sample residents content.</p>
+                        </div>
+                    </div>
+                    <div class="assign-owner">
+                        <h4>Assign Owner</h4>
+                        <select class="owner-select">
+                            <option value="Adele">Adele</option>
+                            <option value="Agnes">Agnes</option>
+                            <option value="Billy">Billy</option>
+                            <option value="Bob">Bob</option>
+                            <option value="Calvin">Calvin</option>
+                        </select>
+                        <br><br>
+                        <button class="save-btn">Save</button>
+                    </div>
+                    <div class="assign-residents">
+                        <h4>Assign Residents</h4>
+                        <select multiple class="residents-multiple">
+                            <option value="Adele">Adele</option>
+                            <option value="Agnes">Agnes</option>
+                            <option value="Billy">Billy</option>
+                            <option value="Bob">Bob</option>
+                            <option value="Calvin">Calvin</option>
+                        </select>
+                        <br><br>
+                        <button class="save-btn">Save</button>
+                    </div>
+                </div>
+            </div>
+            <div class="pageturn">
+                <p>Showing page 1 out of ... properties</p>
+                <button>&lt;&lt;</button>
+                <button>1</button>
+                <button>2</button>
+                <button>3</button>
+                <button>&gt;&gt;</button>
+            </div>
+        </div> 
+    </div>
+    
+    <!-- for menu tab switching (overview, owner, residents tab) -->
+    <script>    
+        function openTab(evt, tabName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.className += " active";
+        }
+    </script>
+
 </body>
 </html> 
 
