@@ -7,8 +7,6 @@ const PORT = process.env.PORT || 3000;
 
 // ============================================================
 // VIEW ENGINE — EJS + SHARED LAYOUTS
-// Each view only contains its own content.
-// The layout file wraps it with <html>, <head>, sidebar, etc.
 // ============================================================
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
