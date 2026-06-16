@@ -46,5 +46,5 @@ app.use('/stickers',       stickerRoutes);
 // START SERVER
 // ============================================================
 app.listen(PORT, () => {
-    console.log(`HOA server running → http://localhost:${PORT}`);
+    console.log(`HOA server running -> http://localhost:${PORT}`);
 });
