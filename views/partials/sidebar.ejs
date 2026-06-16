@@ -1,0 +1,55 @@
+<%
+// activePage is passed by every controller.
+// It determines which nav item gets the "active" class.
+// Values: 'dashboard' | 'persons' | 'properties' | 'property-owners'
+//         | 'employees' | 'vehicles' | 'stickers'
+const page = typeof activePage !== 'undefined' ? activePage : '';
+%>
+
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <img src="/images/HOA LOGO.png" alt="HOA Logo">
+        <div class="sidebar-logo-text">
+            <span class="logo-title">Marcelo Green Village</span>
+            <span class="logo-sub">Phase 5</span>
+        </div>
+    </div>
+
+    <nav class="sidebar-nav">
+        <a href="/dashboard" class="nav-item <%= page === 'dashboard' ? 'active' : '' %>">
+            <i class="fa-solid fa-gauge-high"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="/persons" class="nav-item <%= page === 'persons' ? 'active' : '' %>">
+            <i class="fa-solid fa-users"></i>
+            <span>Persons</span>
+        </a>
+        <a href="/properties" class="nav-item <%= page === 'properties' ? 'active' : '' %>">
+            <i class="fa-solid fa-house"></i>
+            <span>Properties</span>
+        </a>
+        <a href="/property-owners" class="nav-item <%= page === 'property-owners' ? 'active' : '' %>">
+            <i class="fa-solid fa-people-roof"></i>
+            <span>Property Owners</span>
+        </a>
+        <a href="/employees" class="nav-item <%= page === 'employees' ? 'active' : '' %>">
+            <i class="fa-solid fa-id-badge"></i>
+            <span>Employees</span>
+        </a>
+        <a href="/vehicles" class="nav-item <%= page === 'vehicles' ? 'active' : '' %>">
+            <i class="fa-solid fa-car"></i>
+            <span>Vehicles</span>
+        </a>
+        <a href="/stickers" class="nav-item <%= page === 'stickers' ? 'active' : '' %>">
+            <i class="fa-solid fa-tag"></i>
+            <span>Car Stickers</span>
+        </a>
+    </nav>
+
+    <div class="sidebar-footer">
+        <a href="/login" class="nav-item logout">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span>Log Out</span>
+        </a>
+    </div>
+</aside>

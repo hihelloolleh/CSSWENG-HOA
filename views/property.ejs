@@ -1,0 +1,132 @@
+<!-- ============================================================
+     PROPERTY VIEW
+     Layout: views/layouts/main.ejs (has sidebar)
+     Controller: controllers/propertyController.js
+     Extra CSS: property.css (passed via pageCSS in controller)
+     SPRINT 2+: Loop through properties array from DB.
+     ============================================================ -->
+
+<div class="property-header-container">
+    <header class="topbar">
+        <div class="topbar-left">
+            <h1 class="page-title">Properties</h1>
+            <p class="page-subtitle">Welcome back, Admin</p>
+        </div>
+        <div class="topbar-right">
+            <div class="topbar-user">
+                <div class="user-avatar"><i class="fa-solid fa-user"></i></div>
+                <div class="user-info">
+                    <span class="user-name">Village Admin</span>
+                    <span class="user-role">Administrator</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="property-container">
+        <div class="property-header">
+            <h1>Property Management</h1>
+            <p>Manage properties, owners, and residents in the community.</p>
+        </div>
+        <hr>
+        <div class="property-options">
+            <!-- TODO (SPRINT 2+): WIRE THESE BUTTONS TO THEIR BACKEND ACTIONS -->
+            <button>Add Property</button>
+            <button>Import Excel (CSV)</button>
+            <button>Export Excel (CSV)</button>
+            <span class="search">
+                <input type="search" placeholder="Enter property name here...">
+                <button>Search</button>
+                <button>Filters</button>
+            </span>
+        </div>
+
+        <div class="property-grid">
+            <div class="property-table">
+                <table>
+                    <tr>
+                        <th><input type="checkbox"></th>
+                        <th>Property Address</th>
+                        <th>Lot/Unit</th>
+                        <th>Owner</th>
+                        <th>Residents</th>
+                        <th>Status</th>
+                    </tr>
+                    <!-- TODO (SPRINT 2+): LOOP THROUGH properties ARRAY FROM DB -->
+                    <!-- <% properties.forEach(p => { %> -->
+                    <!-- <tr> -->
+                    <!--   <td><input type="checkbox"></td> -->
+                    <!--   <td><%= p.street_address %></td> -->
+                    <!--   <td><%= p.lot_number %></td> -->
+                    <!--   <td>...</td> -->
+                    <!--   <td>...</td> -->
+                    <!--   <td><%= p.status %></td> -->
+                    <!-- </tr> -->
+                    <!-- <% }) %> -->
+                    <tr><td colspan="6" style="text-align:center; color:#888; padding: 24px;">No properties yet. Connect the database in Sprint 2.</td></tr>
+                </table>
+            </div>
+
+            <div class="assign-grid">
+                <div class="property-details">
+                    <h5>Property Details</h5>
+                    <h1>123 Marcelo Street</h1>
+                    <p>Lot 11</p>
+                    <div class="tab">
+                        <button class="tablinks" onclick="openTab(event, 'Overview')">Overview</button>
+                        <button class="tablinks" onclick="openTab(event, 'Owner')">Owner</button>
+                        <button class="tablinks" onclick="openTab(event, 'Residents')">Residents</button>
+                    </div>
+                    <div id="Overview" class="tabcontent"><h3>Overview</h3><p>Sample overview content.</p></div>
+                    <div id="Owner"    class="tabcontent"><h3>Owner</h3><p>Sample owner content.</p></div>
+                    <div id="Residents" class="tabcontent"><h3>Residents</h3><p>Sample residents content.</p></div>
+                </div>
+
+                <div class="assign-owner">
+                    <h4>Assign Owner</h4>
+                    <!-- TODO (SPRINT 2+): POPULATE FROM persons TABLE -->
+                    <select class="owner-select">
+                        <option value="">Select owner...</option>
+                    </select>
+                    <br><br>
+                    <button class="save-btn">Save</button>
+                </div>
+
+                <div class="assign-residents">
+                    <h4>Assign Residents</h4>
+                    <!-- TODO (SPRINT 2+): POPULATE FROM persons TABLE -->
+                    <select multiple class="residents-multiple">
+                        <option value="">Select residents...</option>
+                    </select>
+                    <br><br>
+                    <button class="save-btn">Save</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="pageturn">
+            <p>Showing page 1 out of ... properties</p>
+            <button>&lt;&lt;</button>
+            <button>1</button>
+            <button>2</button>
+            <button>3</button>
+            <button>&gt;&gt;</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openTab(evt, tabName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
+</script>

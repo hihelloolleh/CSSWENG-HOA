@@ -1,0 +1,50 @@
+const express        = require('express');
+const expressLayouts = require('express-ejs-layouts');
+const path           = require('path');
+
+const app  = express();
+const PORT = process.env.PORT || 3000;
+
+// ============================================================
+// VIEW ENGINE — EJS + SHARED LAYOUTS
+// Each view only contains its own content.
+// The layout file wraps it with <html>, <head>, sidebar, etc.
+// ============================================================
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+app.use(expressLayouts);
+app.set('layout', 'layouts/main');         // DEFAULT LAYOUT (has sidebar)
+
+// ============================================================
+// MIDDLEWARE
+// ============================================================
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));   // serves /public
+
+// ============================================================
+// ROUTES
+// ADD NEW ROUTE FILES HERE AS NEW PAGES ARE CREATED
+// ============================================================
+const indexRoutes         = require('./routes/index');
+const personRoutes        = require('./routes/personRoutes');
+const propertyRoutes      = require('./routes/propertyRoutes');
+const propertyOwnerRoutes = require('./routes/propertyOwnerRoutes');
+const employeeRoutes      = require('./routes/employeeRoutes');
+const vehicleRoutes       = require('./routes/vehicleRoutes');
+const stickerRoutes       = require('./routes/stickerRoutes');
+
+app.use('/',               indexRoutes);
+app.use('/persons',        personRoutes);
+app.use('/properties',     propertyRoutes);
+app.use('/property-owners',propertyOwnerRoutes);
+app.use('/employees',      employeeRoutes);
+app.use('/vehicles',       vehicleRoutes);
+app.use('/stickers',       stickerRoutes);
+
+// ============================================================
+// START SERVER
+// ============================================================
+app.listen(PORT, () => {
+    console.log(`HOA server running → http://localhost:${PORT}`);
+});
