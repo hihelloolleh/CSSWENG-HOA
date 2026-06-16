@@ -17,8 +17,8 @@
         <div class="sidebar-logo">
             <img src="HOA LOGO.png" alt="HOA Logo">
             <div class="sidebar-logo-text">
-                <span class="logo-title">Marcelo Green</span>
-                <span class="logo-sub">Village Phase 5</span>
+                <span class="logo-title">Marcelo Green Village</span>
+                <span class="logo-sub">Phase 5</span>
             </div>
         </div>
 
@@ -27,17 +27,13 @@
                 <i class="fa-solid fa-gauge-high"></i>
                 <span>Dashboard</span>
             </a>
-            <a href="persons.html" class="nav-item">
-                <i class="fa-solid fa-users"></i>
-                <span>Persons</span>
+            <a href="property-owners.html" class="nav-item">
+                <i class="fa-solid fa-people-roof"></i>
+                <span>Property Owners</span>
             </a>
             <a href="property.html" class="nav-item">
                 <i class="fa-solid fa-house"></i>
                 <span>Properties</span>
-            </a>
-            <a href="property-owners.html" class="nav-item">
-                <i class="fa-solid fa-people-roof"></i>
-                <span>Property Owners</span>
             </a>
             <a href="#" class="nav-item">
                 <i class="fa-solid fa-id-badge"></i>
@@ -68,7 +64,9 @@
         <header class="topbar">
             <div class="topbar-left">
                 <h1 class="page-title">Dashboard</h1>
-                <p class="page-subtitle">Welcome back, Admin</p>
+                <p class="page-subtitle">Welcome back, <strong>Admin</strong></p>
+                <!-- As of time and data-->
+                <p class="page-subtitle">June 16, 2026 08:00 PM PST</p>
             </div>
             <div class="topbar-right">
                 <div class="topbar-user">
@@ -94,7 +92,7 @@
                     </div>
                     <div class="stat-info">
                         <span class="stat-value">112</span>
-                        <span class="stat-label">Total Persons</span>
+                        <span class="stat-label">Total Residents</span>
                     </div>
                 </div>
 
@@ -124,7 +122,7 @@
                     </div>
                     <div class="stat-info">
                         <span class="stat-value">45</span>
-                        <span class="stat-label">Registered Vehicles</span>
+                        <span class="stat-label">Active Vehicles</span>
                     </div>
                 </div>
 
@@ -178,30 +176,54 @@
                     </div>
                 </div>
 
-                <!-- car sticker status card -->
-                <div class="card sticker-status-card">
+                <!-- delinquency report card -->
+                <div class="card sticker-status-card"> <!-- change class name -->
                     <div class="card-header">
-                        <h2>Car Sticker Overview</h2>
+                        <h2>Delinquency Report</h2>
                         <a href="#" class="view-all">View All</a>
                     </div>
-                    <div class="status-list">
-                        <div class="status-row">
-                            <div class="status-dot occupied"></div>
-                            <span class="status-name">Active</span>
-                            <div class="status-bar-wrap">
-                                <div class="status-bar" style="width: 92%;"></div>
-                            </div>
-                            <span class="status-count">38</span>
-                        </div>
-                        <div class="status-row">
-                            <div class="status-dot vacant"></div>
-                            <span class="status-name">Expired</span>
-                            <div class="status-bar-wrap">
-                                <div class="status-bar vacant" style="width: 8%;"></div>
-                            </div>
-                            <span class="status-count">7</span>
-                        </div>
-                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Sex</th>
+                                <th>Contact</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>001</td>
+                                <td>Robert Downey</td>
+                                <td>Male</td>
+                                <td>0912 345 6789</td>
+                            </tr>
+                            <tr>
+                                <td>002</td>
+                                <td>Catherine Windsor</td>
+                                <td>Female</td>
+                                <td>0912 345 6789</td>
+                            </tr>
+                            <tr>
+                                <td>003</td>
+                                <td>Bruce Banner</td>
+                                <td>Male</td>
+                                <td>0912 345 6789</td>
+                            </tr>
+                            <tr>
+                                <td>004</td>
+                                <td>Eva Stratt</td>
+                                <td>Female</td>
+                                <td>0912 345 6789</td>
+                            </tr>
+                            <tr>
+                                <td>005</td>
+                                <td>Ryland Grace</td>
+                                <td>Male</td>
+                                <td>0912 345 6789</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
 
             </section>
@@ -212,7 +234,7 @@
                 <!-- recent persons card -->
                 <div class="card table-card">
                     <div class="card-header">
-                        <h2>Recent Persons</h2>
+                        <h2>Board of Directors</h2>
                         <a href="#" class="view-all">View All</a>
                     </div>
                     <table class="data-table">
