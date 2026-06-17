@@ -34,11 +34,11 @@ body {
 
 .sidebar-logo img {
     width: 56px;
-    height: 56px;
+    height: auto;
     object-fit: contain;
     border-radius: 10px;
     background: #3a5239;
-    padding: 6px;
+    padding: 4px;
 }
 
 .sidebar-logo-text {
@@ -49,7 +49,7 @@ body {
 .logo-title {
     color: white;
     font-weight: 700;
-    font-size: 13px;
+    font-size: 11.5px;
     line-height: 1.2;
 }
 
