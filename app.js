@@ -1,6 +1,7 @@
 const express        = require('express');
 const expressLayouts = require('express-ejs-layouts');
 const path           = require('path');
+const {connectDB, createTables}= require('./config/db')
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -39,6 +40,13 @@ app.use('/property-owners',propertyOwnerRoutes);
 app.use('/employees',      employeeRoutes);
 app.use('/vehicles',       vehicleRoutes);
 app.use('/stickers',       stickerRoutes);
+
+// ============================================================
+// DATABSE SETUP AND CONNECTION
+// ============================================================
+
+connectDB();
+createTables();
 
 // ============================================================
 // START SERVER
