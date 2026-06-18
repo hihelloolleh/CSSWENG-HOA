@@ -3,6 +3,6 @@
 3. Create or use an existing .env file and place the following details:
     DB_HOST=localhost
     DB_USER=root(or whatever your username is in my SQL)
-    DB_PASSWORD=<your password in SQL>
+    DB_PASSWORD=<your password in MySQL workbench>
     DB_NAME=hoa_db
 4. Run app.js
