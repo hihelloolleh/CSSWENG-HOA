@@ -77,7 +77,7 @@
             </div>
 
             <div class="search-bar">
-                <input type="text" class="search-input" placeholder="Search by address, owner, or lot..." id="searchInput">
+                <input type="text" class="search-input" placeholder="Search by name, email, or property..." id="searchInput">
             </div>
 
                 <div class="property-table table-container">
@@ -88,15 +88,65 @@
                                 <th>Property Address</th>
                                 <th>Lot/Unit</th>
                                 <th>Owner</th>
-                                <th>Residents</th>
                                 <th>Status</th>
+                                <th>Property Details</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="tableBody"></tbody>
+                        <tbody id="tableBody">
+                            <tr>
+                                <td class="checkbox-col"><input type="checkbox"></td>
+                                <td>12 Sampaguita St.</td>
+                                <td>100</td>
+                                <td>Clark Kent</td>
+                                <td>Active</td>
+                                <td><button class="btn btn-secondary"><i class="fa-solid fa-house"></i>View Details </button></td>
+                                <td>
+                                    <button class="btn-icon""><i class="fa-solid fa-edit"></i></button>
+                                    <button class="btn-icon btn-icon-danger"><i class="fa-solid fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="checkbox-col"><input type="checkbox"></td>
+                                <td>14 Sampaguita St.</td>
+                                <td>101</td>
+                                <td>Bruce Wayne</td>
+                                <td>Active</td>
+                                <td><button class="btn btn-secondary"><i class="fa-solid fa-house"></i>View Details </button></td>
+                                <td>
+                                    <button class="btn-icon""><i class="fa-solid fa-edit"></i></button>
+                                    <button class="btn-icon btn-icon-danger"><i class="fa-solid fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="checkbox-col"><input type="checkbox"></td>
+                                <td>16 Sampaguita St.</td>
+                                <td>102</td>
+                                <td>Christina Koch</td>
+                                <td>Active</td>
+                                <td><button class="btn btn-secondary"><i class="fa-solid fa-house"></i>View Details </button></td>
+                                <td>
+                                    <button class="btn-icon""><i class="fa-solid fa-edit"></i></button>
+                                    <button class="btn-icon btn-icon-danger"><i class="fa-solid fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="checkbox-col"><input type="checkbox"></td>
+                                <td>18 Sampaguita St.</td>
+                                <td>103</td>
+                                <td>Reid Wiseman</td>
+                                <td>Active</td>
+                                <td><button class="btn btn-secondary"><i class="fa-solid fa-house"></i>View Details </button></td>
+                                <td>
+                                    <button class="btn-icon""><i class="fa-solid fa-edit"></i></button>
+                                    <button class="btn-icon btn-icon-danger"><i class="fa-solid fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
             </main> 
     </div>
+
 </body>
 </html> 
