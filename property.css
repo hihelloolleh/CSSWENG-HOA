@@ -329,3 +329,24 @@ body{
     background: #c82333;
 }
 
+.btn-icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 6px;
+    color: #526F50;
+    font-size: 14px;
+}
+
+.btn-icon:hover {
+    background: #e8e8e8;
+}
+
+.btn-icon-danger {
+    color: #dc3545;
+}
+
+.btn-icon-danger:hover {
+    background: #f8d7da;
+}
