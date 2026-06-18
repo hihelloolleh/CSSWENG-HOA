@@ -2,7 +2,7 @@
 2. Create schema in MySQL workbench using the command 'CREATE SCHEMA hoa_db'
 3. Create or use an existing .env file and place the following details:
     DB_HOST=localhost
-    DB_USER=root || whatever your username is in MySQL
+    DB_USER=root(or whatever your username is in my SQL)
     DB_PASSWORD=<your password in SQL>
     DB_NAME=hoa_db
 4. Run app.js
