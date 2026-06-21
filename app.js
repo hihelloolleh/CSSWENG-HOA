@@ -32,6 +32,7 @@ const propertyOwnerRoutes = require('./routes/propertyOwnerRoutes');
 const employeeRoutes      = require('./routes/employeeRoutes');
 const vehicleRoutes       = require('./routes/vehicleRoutes');
 const stickerRoutes       = require('./routes/stickerRoutes');
+const residentRoutes      = require('./routes/residentRoutes'); 
 
 app.use('/',               indexRoutes);
 app.use('/persons',        personRoutes);
@@ -40,6 +41,7 @@ app.use('/property-owners',propertyOwnerRoutes);
 app.use('/employees',      employeeRoutes);
 app.use('/vehicles',       vehicleRoutes);
 app.use('/stickers',       stickerRoutes);
+app.use('/residents',      residentRoutes); 
 
 // ============================================================
 // DATABSE SETUP AND CONNECTION
