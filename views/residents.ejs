@@ -5,15 +5,17 @@
      Extra CSS: property-owners.css (passed via pageCSS in controller)
      SPRINT 2+: Loop through owners array from DB.
      ============================================================ -->
-
+     
 <header class="topbar">
     <div class="topbar-left">
-        <h1 class="page-title">Property Owners</h1>
-        <p class="page-subtitle">Manage property owner information</p>
+        <h1 class="page-title">Residents</h1>
+        <p class="page-subtitle">View, add, edit, and manage resident information</p>
     </div>
     <div class="topbar-right">
         <div class="topbar-user">
-            <div class="user-avatar"><i class="fa-solid fa-user"></i></div>
+            <div class="user-avatar">
+                <i class="fa-solid fa-user"></i>
+            </div>
             <div class="user-info">
                 <span class="user-name">Village Admin</span>
                 <span class="user-role">Administrator</span>
@@ -22,233 +24,299 @@
     </div>
 </header>
 
-<main class="content">
-    <div class="page-header">
-        <h1>Property Owners</h1>
-        <p>View, add, edit, and manage all property owners</p>
-    </div>
+    <main class="content">
+        <div class="action-buttons">
+            <button class="btn btn-primary" onclick="openAddModal()">
+                <i class="fa-solid fa-plus"></i> Add Resident
+            </button>
+            <button class="btn btn-secondary" onclick="exportToCSV()">
+                <i class="fa-solid fa-download"></i> Export CSV
+            </button>
+            <button class="btn btn-danger" id="deleteBtn" style="display: none;" onclick="deleteSelected()">
+                <i class="fa-solid fa-trash"></i> Delete Selected
+            </button>
+        </div>
 
-    <div class="action-buttons">
-        <button class="btn btn-primary" onclick="openAddModal()">
-            <i class="fa-solid fa-plus"></i> Add Owner
-        </button>
-        <button class="btn btn-secondary" onclick="exportToCSV()">
-            <i class="fa-solid fa-download"></i> Export CSV
-        </button>
-        <button class="btn btn-danger" id="deleteBtn" style="display: none;" onclick="deleteSelected()">
-            <i class="fa-solid fa-trash"></i> Delete Selected
-        </button>
-    </div>
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="Search by name, email, or property..." id="searchInput" onkeyup="searchTable()">
+        </div>
 
-    <div class="search-bar">
-        <input type="text" class="search-input" placeholder="Search by name, email, or property..." id="searchInput" onkeyup="searchTable()">
-    </div>
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th class="checkbox-col"><input type="checkbox" id="selectAll" onclick="toggleSelectAll()"></th>
+                        <th>Resident Name</th>
+                        <th>Resident Type</th>
+                        <th>Date of Birth</th>
+                        <th>Property Address</th>
+                        <th>Lot Number</th>
+                        <th>Email</th>
+                        <th>Phone Number</th>
+                        <th>Landline Number</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+    </main>
+</div>
 
-    <div class="table-container">
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th class="checkbox-col"><input type="checkbox" id="selectAll" onclick="toggleSelectAll()"></th>
-                    <th>Owner Name</th>
-                    <th>Date of Birth</th>
-                    <th>Property Address</th>
-                    <th>Lot Number</th>
-                    <th>Email</th>
-                    <th>Phone Number</th>
-                    <th>Landline Number</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-             
-            <tbody id="tableBody"></tbody>
-        </table>
-    </div>
-</main>
-
-<!-- ADD / EDIT MODAL -->
-<div id="ownerModal" class="modal">
+<div id="residentModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h2 id="modalTitle">Add New Owner</h2>
+            <h2 id="modalTitle">Add Resident</h2>
             <button class="modal-close" onclick="closeModal()">&times;</button>
         </div>
         <div class="modal-body">
-            <form id="ownerForm">
-                <input type="hidden" id="ownerId">
-                <div class="form-group"><label>Owner Name *</label><input type="text" id="fullName" required placeholder="Enter full name"></div>
-                <div class="form-group"><label>Date of Birth *</label><input type="date" id="dob" required></div>
-                <div class="form-group"><label>Property Address *</label><input type="text" id="address" required placeholder="Enter property address"></div>
-                <div class="form-group"><label>Lot Number *</label><input type="text" id="lotNumber" required placeholder="Enter lot number"></div>
-                <div class="form-group"><label>Email Address *</label><input type="email" id="email" required placeholder="Enter email address"></div>
+            <form id="residentForm">
+                <input type="hidden" id="residentId">
+                <div class="form-group">
+                    <label>Resident Name *</label>
+                    <input type="text" id="fullName" required placeholder="Enter full name">
+                </div>
+                <div class="form-group">
+                    <label>Resident Type *</label>
+                    <input type="text" id="type" required placeholder="Enter resident type"> 
+                </div>
+                <div class="form-group">
+                    <label>Date of Birth *</label>
+                    <input type="date" id="dob" required>
+                </div>
+                <div class="form-group">
+                    <label>Property Address *</label>
+                    <input type="text" id="address" required placeholder="Enter property address">
+                </div>
+                <div class="form-group">
+                    <label>Lot Number *</label>
+                    <input type="text" id="lotNumber" required placeholder="Enter lot number">
+                </div>
+                <div class="form-group">
+                    <label>Email Address *</label>
+                    <input type="email" id="email" required placeholder="Enter email address">
+                </div>
                 <div class="form-row">
-                    <div class="form-group"><label>Phone Number *</label><input type="tel" id="phoneNumber" required placeholder="Enter mobile number"></div>
-                    <div class="form-group"><label>Landline Number</label><input type="tel" id="landline" placeholder="Enter landline (optional)"></div>
+                    <div class="form-group">
+                        <label>Phone Number *</label>
+                        <input type="tel" id="phoneNumber" required placeholder="Enter mobile number">
+                    </div>
+                    <div class="form-group">
+                        <label>Landline Number</label>
+                        <input type="tel" id="landline" placeholder="Enter landline (optional)">
+                    </div>
                 </div>
             </form>
         </div>
         <div class="modal-footer">
             <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
-            <!-- TODO (SPRINT 2+): REPLACE saveOwner() WITH A FORM POST TO /property-owners -->
-            <button class="btn btn-primary" onclick="saveOwner()">Save Owner</button>
+            <button class="btn btn-primary" onclick="saveResident()">Save Resident</button>
         </div>
     </div>
 </div>
 
 <script>
-    // ============================================================
-    // TEMPORARY CLIENT-SIDE DATA (LOCALSTORAGE)
-    // TODO (SPRINT 2+): REMOVE ALL OF THIS AND FETCH FROM /property-owners API
-    // ============================================================
-    let owners = [];
+    let residents = [];
     let currentSearch = "";
 
     function loadData() {
-        const stored = localStorage.getItem("propertyOwners");
+        const stored = localStorage.getItem("residents");
         if (stored) {
-            owners = JSON.parse(stored);
+            residents = JSON.parse(stored);
         } else {
-            owners = [
-                { id: 1, fullName: "Clark Kent",      dob: "1979-02-28", address: "12 Sampaguita St.", lotNumber: "101", email: "clark.kent@dailyplanet.com",         phoneNumber: "0912 345 6789", landline: "8123456" },
-                { id: 2, fullName: "Diana Prince",    dob: "1985-07-22", address: "14 Sampaguita St.", lotNumber: "102", email: "diana.prince@themyscira.gov",        phoneNumber: "0912 345 6789", landline: "8234567" },
-                { id: 3, fullName: "Bruce Wayne",     dob: "1975-05-19", address: "16 Sampaguita St.", lotNumber: "103", email: "bruce.wayne@wayneenterprises.com",  phoneNumber: "0912 345 6789", landline: "" },
-                { id: 4, fullName: "Zatanna Zatara",  dob: "1988-11-02", address: "18 Sampaguita St.", lotNumber: "104", email: "zatanna@shadowcrest.com",            phoneNumber: "0912 345 6789", landline: "8345678" },
-                { id: 5, fullName: "Kyle Rayner",     dob: "1983-05-15", address: "20 Sampaguita St.", lotNumber: "105", email: "kyle.rayner@glcorps.com",            phoneNumber: "0912 345 6789", landline: "8456789" }
+            residents = [
+                { id: 1, fullName: "Clark Kent", type: "Property Owner", dob: "1979-02-29", address: "12 Sampaguita St.", lotNumber: "101", email: "clark.kent@dailyplanet.com", phoneNumber: "0912 345 6789", landline: "8123456" },
+                { id: 2, fullName: "Diana Prince", type: "Resident", dob: "1985-07-22", address: "14 Sampaguita St.", lotNumber: "102", email: "diana.prince@themyscira.gov", phoneNumber: "0912 345 6789", landline: "8234567" },
+                { id: 3, fullName: "Bruce Wayne", type: "Property Owner", dob: "1975-05-19", address: "16 Sampaguita St.", lotNumber: "103", email: "bruce.wayne@wayneenterprises.com", phoneNumber: "0912 345 6789", landline: "" },
+                { id: 4, fullName: "Zatanna Zatara", type: "Resident", dob: "1988-11-02", address: "18 Sampaguita St.", lotNumber: "104", email: "zatanna@shadowcrest.com", phoneNumber: "0912 345 6789", landline: "8345678" },
+                { id: 5, fullName: "Kyle Rayner", type: "Resident", dob: "1983-05-15", address: "20 Sampaguita St.", lotNumber: "105", email: "kyle.rayner@glcorps.com", phoneNumber: "0912 345 6789", landline: "8456789" }
             ];
             saveData();
         }
     }
 
-    function saveData()   { localStorage.setItem("propertyOwners", JSON.stringify(owners)); }
+    function saveData() {
+        localStorage.setItem("residents", JSON.stringify(residents));
+    }
 
     function renderTable() {
-        let filtered = [...owners];
+        let filtered = [...residents];
         if (currentSearch) {
-            const q = currentSearch.toLowerCase();
-            filtered = filtered.filter(o =>
-                o.fullName.toLowerCase().includes(q) ||
-                o.email.toLowerCase().includes(q) ||
-                o.address.toLowerCase().includes(q) ||
-                o.lotNumber.includes(q)
-            );
+            const searchLower = currentSearch.toLowerCase();
+            filtered = filtered.filter(o => o.fullName.toLowerCase().includes(searchLower) || o.type.toLowerCase().includes(searchLower) || o.email.toLowerCase().includes(searchLower) || o.address.toLowerCase().includes(searchLower) || o.lotNumber.includes(searchLower));
         }
+        
         const tbody = document.getElementById("tableBody");
-        tbody.innerHTML = filtered.length === 0
-            ? `<tr><td colspan="9" class="empty-state">No property owners found</td></tr>`
-            : filtered.map(o => `
+        if (filtered.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="9" class="empty-state">No residents found</td></tr>`;
+        } else {
+            tbody.innerHTML = filtered.map(resident => `
                 <tr>
-                    <td class="checkbox-col"><input type="checkbox" class="owner-checkbox" value="${o.id}"></td>
-                    <td><strong>${escapeHtml(o.fullName)}</strong></td>
-                    <td>${formatDate(o.dob)}</td>
-                    <td>${escapeHtml(o.address)}</td>
-                    <td>${escapeHtml(o.lotNumber)}</td>
-                    <td>${escapeHtml(o.email)}</td>
-                    <td>${escapeHtml(o.phoneNumber)}</td>
-                    <td>${o.landline || '—'}</td>
+                    <td class="checkbox-col"><input type="checkbox" class="resident-checkbox" value="${resident.id}"></td>
+                    <td><strong>${escapeHtml(resident.fullName)}</strong></td>
+                    <td>${escapeHtml(resident.type)}</td>
+                    <td>${formatDate(resident.dob)}</td>
+                    <td>${escapeHtml(resident.address)}</td>
+                    <td>${escapeHtml(resident.lotNumber)}</td>
+                    <td>${escapeHtml(resident.email)}</td>
+                    <td>${escapeHtml(resident.phoneNumber)}</td>
+                    <td>${resident.landline || '—'}</td>
                     <td>
-                        <button class="btn-icon" onclick="editOwner(${o.id})"><i class="fa-solid fa-edit"></i></button>
-                        <button class="btn-icon btn-icon-danger" onclick="deleteOwner(${o.id})"><i class="fa-solid fa-trash"></i></button>
+                        <button class="btn-icon" onclick="editResident(${resident.id})"><i class="fa-solid fa-edit"></i></button>
+                        <button class="btn-icon btn-icon-danger" onclick="deleteResident(${resident.id})"><i class="fa-solid fa-trash"></i></button>
                     </td>
-                </tr>`).join('');
+                </tr>
+            `).join('');
+        }
+        
         updateDeleteButtonVisibility();
     }
 
-    function searchTable()       { currentSearch = document.getElementById("searchInput").value; renderTable(); }
-    function toggleSelectAll()   { const cb = document.querySelectorAll(".owner-checkbox"); cb.forEach(c => c.checked = document.getElementById("selectAll").checked); updateDeleteButtonVisibility(); }
-    function updateDeleteButtonVisibility() { document.getElementById("deleteBtn").style.display = document.querySelectorAll(".owner-checkbox:checked").length > 0 ? "inline-flex" : "none"; }
+    function searchTable() {
+        currentSearch = document.getElementById("searchInput").value;
+        renderTable();
+    }
+
+    function toggleSelectAll() {
+        const selectAll = document.getElementById("selectAll");
+        const checkboxes = document.querySelectorAll(".resident-checkbox");
+        checkboxes.forEach(cb => cb.checked = selectAll.checked);
+        updateDeleteButtonVisibility();
+    }
+
+    function updateDeleteButtonVisibility() {
+        const selected = document.querySelectorAll(".resident-checkbox:checked").length;
+        document.getElementById("deleteBtn").style.display = selected > 0 ? "inline-flex" : "none";
+    }
 
     function deleteSelected() {
-        const checked = document.querySelectorAll(".owner-checkbox:checked");
-        if (!checked.length) return;
-        if (confirm(`Delete ${checked.length} owner(s)?`)) {
-            checked.forEach(cb => { owners = owners.filter(o => o.id !== parseInt(cb.value)); });
-            owners.forEach((o, i) => { o.id = i + 1; });
-            saveData(); renderTable();
+        const checkboxes = document.querySelectorAll(".resident-checkbox:checked");
+        if (checkboxes.length === 0) return;
+        if (confirm(`Delete ${checkboxes.length} resident(s)?`)) {
+            checkboxes.forEach(cb => {
+                const id = parseInt(cb.value);
+                residents = residents.filter(o => o.id !== id);
+            });
+            residents.forEach((o, index) => { o.id = index + 1; });
+            saveData();
+            renderTable();
         }
     }
 
-    function deleteOwner(id) {
-        if (confirm("Delete this property owner?")) {
-            owners = owners.filter(o => o.id !== id);
-            owners.forEach((o, i) => { o.id = i + 1; });
-            saveData(); renderTable();
+    function deleteResident(id) {
+        if (confirm("Delete this resident?")) {
+            residents = residents.filter(o => o.id !== id);
+            residents.forEach((o, index) => { o.id = index + 1; });
+            saveData();
+            renderTable();
         }
     }
 
     function openAddModal() {
-        document.getElementById("modalTitle").innerText = "Add New Property Owner";
-        document.getElementById("ownerForm").reset();
-        document.getElementById("ownerId").value = "";
-        document.getElementById("ownerModal").classList.add("active");
+        document.getElementById("modalTitle").innerText = "Add New Resident";
+        document.getElementById("residentForm").reset();
+        document.getElementById("residentId").value = "";
+        document.getElementById("residentModal").classList.add("active");
     }
 
-    function editOwner(id) {
-        const o = owners.find(o => o.id === id);
-        if (!o) return;
-        document.getElementById("modalTitle").innerText = "Edit Property Owner";
-        document.getElementById("ownerId").value      = o.id;
-        document.getElementById("fullName").value     = o.fullName;
-        document.getElementById("dob").value          = o.dob;
-        document.getElementById("address").value      = o.address;
-        document.getElementById("lotNumber").value    = o.lotNumber;
-        document.getElementById("email").value        = o.email;
-        document.getElementById("phoneNumber").value  = o.phoneNumber;
-        document.getElementById("landline").value     = o.landline || "";
-        document.getElementById("ownerModal").classList.add("active");
+    function editResident(id) {
+        const resident = residents.find(o => o.id === id);
+        if (resident) {
+            document.getElementById("modalTitle").innerText = "Edit Resident";
+            document.getElementById("residentId").value = resident.id;
+            document.getElementById("fullName").value = resident.fullName;
+            document.getElementById("type").value = resident.type; 
+            document.getElementById("dob").value = resident.dob;
+            document.getElementById("address").value = resident.address;
+            document.getElementById("lotNumber").value = resident.lotNumber;
+            document.getElementById("email").value = resident.email;
+            document.getElementById("phoneNumber").value = resident.phoneNumber;
+            document.getElementById("landline").value = resident.landline || "";
+            document.getElementById("residentModal").classList.add("active");
+        }
     }
 
-    function saveOwner() {
-        const fullName    = document.getElementById("fullName").value.trim();
-        const dob         = document.getElementById("dob").value;
-        const address     = document.getElementById("address").value.trim();
-        const lotNumber   = document.getElementById("lotNumber").value.trim();
-        const email       = document.getElementById("email").value.trim();
+    function saveResident() {
+        const fullName = document.getElementById("fullName").value.trim();
+        const type = document.getElementById("type").value.trim(); 
+        const dob = document.getElementById("dob").value;
+        const address = document.getElementById("address").value.trim();
+        const lotNumber = document.getElementById("lotNumber").value.trim();
+        const email = document.getElementById("email").value.trim();
         const phoneNumber = document.getElementById("phoneNumber").value.trim();
-        const landline    = document.getElementById("landline").value.trim();
-
-        if (!fullName || !dob || !address || !lotNumber || !email || !phoneNumber) {
-            alert("Please fill in all required fields"); return;
+        const landline = document.getElementById("landline").value.trim();
+        
+        if (!fullName || !type || !dob || !address || !lotNumber || !email || !phoneNumber) {
+            alert("Please fill in all required fields");
+            return;
         }
-        const id = parseInt(document.getElementById("ownerId").value);
+        
+        const id = parseInt(document.getElementById("residentId").value);
+        
         if (id) {
-            const idx = owners.findIndex(o => o.id === id);
-            if (idx !== -1) owners[idx] = { ...owners[idx], fullName, dob, address, lotNumber, email, phoneNumber, landline };
+            const index = residents.findIndex(o => o.id === id);
+            if (index !== -1) {
+                residents[index] = { ...residents[index], fullName, type, dob, address, lotNumber, email, phoneNumber, landline };
+            }
         } else {
-            owners.push({ id: owners.length + 1, fullName, dob, address, lotNumber, email, phoneNumber, landline });
+            const newId = residents.length + 1;
+            residents.push({ id: newId, fullName, type, dob, address, lotNumber, email, phoneNumber, landline });
         }
-        saveData(); closeModal(); renderTable();
+        
+        saveData();
+        closeModal();
+        renderTable();
     }
 
-    function closeModal() { document.getElementById("ownerModal").classList.remove("active"); }
+    function closeModal() {
+        document.getElementById("residentModal").classList.remove("active");
+    }
 
-    function formatDate(d) {
-        if (!d) return "—";
-        return new Date(d).toLocaleDateString("en-PH", { year: 'numeric', month: 'long', day: 'numeric' });
+    function formatDate(dateString) {
+        if (!dateString) return "—";
+        const date = new Date(dateString);
+        return date.toLocaleDateString("en-PH", { year: 'numeric', month: 'long', day: 'numeric' });
     }
 
     function escapeHtml(str) {
         if (!str) return "";
-        return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
     }
 
     function exportToCSV() {
-        const headers = ["Owner Name","Date of Birth","Property Address","Lot Number","Email","Phone Number","Landline Number"];
-        const rows    = owners.map(o => [o.fullName, formatDate(o.dob), o.address, o.lotNumber, o.email, o.phoneNumber, o.landline || ""]);
-        const csv     = [headers, ...rows].map(r => r.map(c => `"${c}"`).join(",")).join("\n");
-        const link    = document.createElement("a");
-        link.href     = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8;" }));
-        link.setAttribute("download", "property_owners.csv");
-        document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        const headers = ["Resident Name", "Type", "Date of Birth", "Property Address", "Lot Number", "Email", "Phone Number", "Landline Number"];
+        const rows = residents.map(o => [o.fullName, o.type, formatDate(o.dob), o.address, o.lotNumber, o.email, o.phoneNumber, o.landline || ""]);
+        const csvContent = [headers, ...rows].map(row => row.map(cell => `"${cell}"`).join(",")).join("\n");
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.href = url;
+        link.setAttribute("download", "residents.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
     }
 
     document.addEventListener('change', function(e) {
-        if (e.target && e.target.classList.contains('owner-checkbox')) {
+        if (e.target && e.target.classList && e.target.classList.contains('resident-checkbox')) {
             updateDeleteButtonVisibility();
-            document.getElementById("selectAll").checked =
-                document.querySelectorAll(".owner-checkbox:checked").length === document.querySelectorAll(".owner-checkbox").length;
+            const selectAll = document.getElementById("selectAll");
+            const allChecked = document.querySelectorAll(".resident-checkbox:checked").length === document.querySelectorAll(".resident-checkbox").length;
+            selectAll.checked = allChecked;
         }
     });
 
-    window.onclick = e => { if (e.target === document.getElementById("ownerModal")) closeModal(); };
+    window.onclick = function(event) {
+        const modal = document.getElementById("residentModal");
+        if (event.target === modal) closeModal();
+    }
 
-    loadData(); renderTable();
+    loadData();
+    renderTable();
 </script>
