@@ -10,108 +10,6 @@ body {
     display: flex;
 }
 
-.sidebar {
-    width: 240px;
-    min-height: 100vh;
-    background: #526F50;
-    display: flex;
-    flex-direction: column;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 100;
-}
-
-.sidebar-logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 24px 20px 20px;
-    border-bottom: 1px solid rgba(255,255,255,0.15);
-}
-
-.sidebar-logo img {
-    width: 56px;
-    height: 56px;
-    object-fit: contain;
-    border-radius: 10px;
-    background: #3a5239;
-    padding: 6px;
-}
-
-.sidebar-logo-text {
-    display: flex;
-    flex-direction: column;
-}
-
-.logo-title {
-    color: white;
-    font-weight: 700;
-    font-size: 13px;
-    line-height: 1.2;
-}
-
-.logo-sub {
-    color: rgba(255,255,255,0.65);
-    font-size: 11px;
-}
-
-.sidebar-nav {
-    display: flex;
-    flex-direction: column;
-    padding: 16px 12px;
-    flex: 1;
-    gap: 4px;
-}
-
-.nav-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 14px;
-    border-radius: 10px;
-    color: rgba(255,255,255,0.75);
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 500;
-    transition: background 0.2s, color 0.2s;
-}
-
-.nav-item i {
-    width: 18px;
-    text-align: center;
-    font-size: 15px;
-}
-
-.nav-item:hover {
-    background: rgba(255,255,255,0.12);
-    color: white;
-}
-
-.nav-item.active {
-    background: white;
-    color: #526F50;
-    font-weight: 600;
-}
-
-.sidebar-footer {
-    padding: 12px;
-    border-top: 1px solid rgba(255,255,255,0.15);
-}
-
-.nav-item.logout:hover {
-    background: rgba(255,80,80,0.2);
-    color: #ffaaaa;
-}
-
-.main-wrapper {
-    margin-left: 240px;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-}
-
 .topbar {
     background: white;
     padding: 20px 32px;
@@ -193,7 +91,6 @@ body {
 .action-buttons {
     display: flex;
     gap: 12px;
-    margin-bottom: 24px;
     flex-wrap: wrap;
 }
 
@@ -240,7 +137,6 @@ body {
 .search-bar {
     display: flex;
     gap: 12px;
-    margin-bottom: 24px;
     flex-wrap: wrap;
 }
 
