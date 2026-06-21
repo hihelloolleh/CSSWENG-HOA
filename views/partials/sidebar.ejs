@@ -20,18 +20,15 @@ const page = typeof activePage !== 'undefined' ? activePage : '';
             <i class="fa-solid fa-gauge-high"></i>
             <span>Dashboard</span>
         </a>
-        <a href="/persons" class="nav-item <%= page === 'persons' ? 'active' : '' %>">
-            <i class="fa-solid fa-users"></i>
-            <span>Persons</span>
+        <a href="/property-owners" class="nav-item <%= page === 'property-owners' ? 'active' : '' %>">
+            <i class="fa-solid fa-people-roof"></i>
+            <span>Residents</span>
         </a>
         <a href="/properties" class="nav-item <%= page === 'properties' ? 'active' : '' %>">
             <i class="fa-solid fa-house"></i>
             <span>Properties</span>
         </a>
-        <a href="/property-owners" class="nav-item <%= page === 'property-owners' ? 'active' : '' %>">
-            <i class="fa-solid fa-people-roof"></i>
-            <span>Property Owners</span>
-        </a>
+        
         <a href="/employees" class="nav-item <%= page === 'employees' ? 'active' : '' %>">
             <i class="fa-solid fa-id-badge"></i>
             <span>Employees</span>
@@ -39,10 +36,6 @@ const page = typeof activePage !== 'undefined' ? activePage : '';
         <a href="/vehicles" class="nav-item <%= page === 'vehicles' ? 'active' : '' %>">
             <i class="fa-solid fa-car"></i>
             <span>Vehicles</span>
-        </a>
-        <a href="/stickers" class="nav-item <%= page === 'stickers' ? 'active' : '' %>">
-            <i class="fa-solid fa-tag"></i>
-            <span>Car Stickers</span>
         </a>
     </nav>
 
