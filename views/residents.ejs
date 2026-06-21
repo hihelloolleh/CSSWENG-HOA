@@ -1,7 +1,7 @@
 <!-- ============================================================
-     PROPERTY OWNERS VIEW
+     RESIDENTS VIEW
      Layout: views/layouts/main.ejs (has sidebar)
-     Controller: controllers/propertyOwnerController.js
+     Controller: controllers/residentController.js
      Extra CSS: property-owners.css (passed via pageCSS in controller)
      SPRINT 2+: Loop through owners array from DB.
      ============================================================ -->
@@ -59,10 +59,7 @@
                     <th>Actions</th>
                 </tr>
             </thead>
-            <!-- TODO (SPRINT 2+): REPLACE JS-RENDERED TBODY WITH SERVER-SIDE EJS LOOP -->
-            <!-- <% owners.forEach(o => { %> -->
-            <!-- <tr><td>...</td></tr> -->
-            <!-- <% }) %> -->
+             
             <tbody id="tableBody"></tbody>
         </table>
     </div>
