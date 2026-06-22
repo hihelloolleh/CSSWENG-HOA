@@ -1,12 +1,14 @@
-const express              = require('express');
-const router               = express.Router();
-const employeeController   = require('../controllers/employeeController');
+const express = require('express');
+const router = express.Router();
 
-// GET  /employees        → list all employees
-// POST /employees        → add an employee           (SPRINT 2+)
-// PUT  /employees/:id    → update an employee        (SPRINT 2+)
-// DELETE /employees/:id  → remove an employee        (SPRINT 2+)
+const employeeController = require('../controllers/employeeController');
 
 router.get('/', employeeController.getEmployees);
+
+router.post('/', employeeController.createEmployee);
+
+router.post('/update', employeeController.updateEmployee);
+
+router.delete('/:id', employeeController.deleteEmployee);
 
 module.exports = router;
