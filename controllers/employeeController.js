@@ -1,25 +1,71 @@
-// EMPLOYEE CONTROLLER
-// SPRINT 2+: connect all functions to the database via models.
+const employeeModel = require('../models/employeeModel');
 
-exports.getEmployees = (req, res) => {
-    // TODO (SPRINT 2+): QUERY Employee JOIN Person TABLE FROM DB
-    const employees = [];
+//READ (GET /employees)
 
-    res.render('employees', {
-        title:      'Employees',
-        activePage: 'employees',
-        employees,
-    });
+const getEmployees = async (req, res) => {
+    try {
+        const employees = await employeeModel.getAllEmployees();
+
+        return res.render('employees', {
+            title: 'Employees',
+            activePage: 'employees',
+            employees
+        });
+
+    } catch (err) {
+        console.error('Error fetching employees:', err);
+        return res.status(500).send('Failed to load employees');
+    }
 };
 
-exports.createEmployee = (req, res) => {
-    // TODO (SPRINT 2+): INSERT INTO Employee TABLE (requires existing person_id)
+//CREATE (POST /employees)
+const createEmployee = async (req, res) => {
+    try {
+        await employeeModel.createEmployee(req.body);
+        return res.redirect('/employees');
+
+    } catch (err) {
+
+        if (err.code === 'ER_DUP_ENTRY') {
+            return res.status(400).send('Email already exists');
+        }
+
+        console.error(err);
+        return res.status(500).send('Server error');
+    }
 };
 
-exports.updateEmployee = (req, res) => {
-    // TODO (SPRINT 2+): UPDATE Employee TABLE WHERE employee_id = req.params.id
+//UPDATE (POST /employees/update)
+
+const updateEmployee = async (req, res) => {
+    try {
+        await employeeModel.updateEmployee(req.body);
+        return res.redirect('/employees');
+
+    } catch (err) {
+        console.error('Error updating employee:', err);
+        return res.status(500).send('Failed to update employee');
+    }
 };
 
-exports.deleteEmployee = (req, res) => {
-    // TODO (SPRINT 2+): DELETE FROM Employee TABLE WHERE employee_id = req.params.id
+//DELETE (DELETE /employees/:id)
+
+const deleteEmployee = async (req, res) => {
+    try {
+        await employeeModel.deleteEmployee(req.params.id);
+        return res.json({ success: true });
+
+    } catch (err) {
+        console.error('Error deleting employee:', err);
+        return res.status(500).json({ success: false });
+    }
+};
+
+//EXPORTS
+
+module.exports = {
+    getEmployees,
+    createEmployee,
+    updateEmployee,
+    deleteEmployee
 };
