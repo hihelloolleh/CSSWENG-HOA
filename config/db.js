@@ -154,5 +154,6 @@ const createTables = async() => {
 
 module.exports = {
     connectDB,
-    createTables
+    createTables,
+    pool
 };
