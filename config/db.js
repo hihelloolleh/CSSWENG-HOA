@@ -29,6 +29,7 @@ const createTables = async() => {
                 last_name VARCHAR (255) NOT NULL, 
                 middle_name VARCHAR(255), 
                 suffix VARCHAR(50),
+                birth_date DATE,
                 email VARCHAR (255),
                 contact_num VARCHAR(100)
             );
