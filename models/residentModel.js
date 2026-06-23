@@ -79,10 +79,19 @@ const createResident = async(data) => {
             data.residency_end_date || null
             ]
         );
-        //tells mySQL that all queries were successfull and is safe to run in db
-        console.log("Person id = ", person.insertId);
-        console.log("Resident id = ", resident.insertId);
 
+        /*
+        await conn.query(`
+            INSERT INTO Resident_Property(resident_id, property_id, type)
+            VALUES(?, ?, ?)`,
+            [resident.insertId, 
+             data.property_id,
+             data.type
+            ]
+        ); */ 
+
+        
+        //tells mySQL that all queries were successfull and is safe to run in db
         await conn.commit();
         return resident.insertId;
    } catch(err) {
