@@ -325,3 +325,26 @@ body {
     justify-content: flex-end;
     gap: 12px;
 }
+
+.form-group input[type="radio"] + label {
+    display: inline-block;
+    width: auto;
+    margin-bottom: 0;
+    margin-left: 6px;
+    margin-right: 20px; 
+    font-weight: 400;
+    cursor: pointer;
+}
+
+
+.form-group input[type="radio"] {
+    width: auto;
+    cursor: pointer;
+}
+
+
+.radio-group {
+    display: flex;
+    align-items: center;
+    margin-top: 8px; 
+}
