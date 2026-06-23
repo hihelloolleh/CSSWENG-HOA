@@ -4,22 +4,36 @@
 const residentModel = require('../models/residentModel');
 
 const getResidents = async (req, res) => {
-    const residents = await residentModel.getAllResidents();
+    try {
+        const residents = await residentModel.getAllResidents();
 
-    res.render('residents', {
-        title:      'Residents',
-        activePage: 'residents',
-        pageCSS:    'residents.css',
-        residents,
-    });
+        res.render('residents', {
+            title:      'Residents',
+            activePage: 'residents',
+            pageCSS:    'residents.css',
+            residents,
+        });
+    } catch(err) {
+        console.log("Error fetching residents: ", err);
+        return res.status(500).send('Failed to load residents');
+    }
+    
 };
 
-exports.assignResident = (req, res) => {
-    // TODO (SPRINT 2+): INSERT INTO Resident TABLE
-};
+const addResident = async(req, res) => {
+    try {
+        await residentModel.createResident(req.body);
+         return res.redirect('/residents');
+        
+    } catch(err) {
+        console.log("Failed to add resident: ", err);
+        return res.status(500).send("Server Error");
+    }
+}
 
 exports.updateResident = (req, res) => {
     // TODO (SPRINT 2+): UPDATE Resident TABLE
+    
 };
 
 exports.removeResident = (req, res) => {
@@ -27,5 +41,6 @@ exports.removeResident = (req, res) => {
 };
 
 module.exports = {
-    getResidents
+    getResidents,
+    addResident
 };
