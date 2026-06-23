@@ -40,21 +40,60 @@ const getAllResidents = async() => {
 *   b. User may keep adding multiple properties (Property address and relationship)
 *   c. Dropdown box filled with the registered properties from property table
 * 
-* 3. Ask for the vehicle they own
+* 3. Ask for the vehicle/s they own
 *   a. Dropdown box filled with the registered vehicles (plate number) from vehicle table
-  
-    4. Check for duplicates
+* 
+* 4. Add board member input
+*   a. Ask if resident is also a board member
+*   b. If yes, it asks for other relevant info (position, start date, etc)
+*
+* 5. Check for duplicates
 * 
 */
+
 const createResident = async(data) => {
    const conn = await pool.getConnection(); //wire from app to db
 
    try{
-    
-   } catch(err) {
+        await conn.beginTransaction();
+        //insert to person
+        //insert to resident
 
+        //return arrays of objects, person stores the first object(result header )
+        const[person] = await conn.query(`
+            INSERT INTO Person (first_name, last_name, birth_date, email, contact_num)
+            VALUES(?, ?, ?, ?, ?)`,
+            [data.first_name, 
+             data.last_name,
+             data.birth_date || null,
+             data.email || null, 
+             data.contact_num || null
+            ]
+        );
+
+        const[resident] = await conn.query(`
+            INSERT INTO Resident (person_id, residency_start_date, residency_end_date)
+            VALUES(?, ?, ?)`,
+            [person.insertId, 
+            data.residency_start_date || null, 
+            data.residency_end_date || null
+            ]
+        );
+        //tells mySQL that all queries were successfull and is safe to run in db
+        console.log("Person id = ", person.insertId);
+        console.log("Resident id = ", resident.insertId);
+
+        await conn.commit();
+        return resident.insertId;
+   } catch(err) {
+        //undos previous queries if one fails
+        await conn.rollback();
+        throw err;
+   } finally {
+        conn.release()
    }
 };
+
 
 //TODO: updateResident()
 
@@ -62,23 +101,10 @@ const createResident = async(data) => {
 //TODO: deleteResident()
 
 
-//TODO: selectByID()
+//TODO: 
 
+module.exports = {
+    createResident,
+    getAllResidents
+}
 
-/**
- * TODO: 
- * When user chooses to view more information on resident, 
- * it opens a pop up window and displays a summary of info 
- * containing the following info:
- * 
- * 1. full name
- * 2. properties owned (lot numbers)
- * 3. vehicles owned (plate number)
- * 4. birthday
- * 5. email
- * 6. contact number
- * 7. board member status/position
- * 8. residency start date/end date
- * 
- * 
- */
