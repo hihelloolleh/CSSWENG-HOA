@@ -1,9 +1,10 @@
 // RESIDENT CONTROLLER
 // manages the Resident table  
 // SPRINT 2+: connect all functions to the database via models.
+const residentModel = require('../models/residentModel');
 
-exports.getResidents = (req, res) => {
-    const residents = [];
+const getResidents = async (req, res) => {
+    const residents = await residentModel.getAllResidents();
 
     res.render('residents', {
         title:      'Residents',
@@ -23,4 +24,8 @@ exports.updateResident = (req, res) => {
 
 exports.removeResident = (req, res) => {
     // TODO (SPRINT 2+): DELETE FROM Resident TABLE
+};
+
+module.exports = {
+    getResidents
 };
