@@ -5,26 +5,130 @@
      TODO (SPRINT 2+): BUILD THIS PAGE (table, register/edit/delete)
      ============================================================ -->
 
-<header class="topbar">
-    <div class="topbar-left">
-        <h1 class="page-title">Vehicles</h1>
-        <p class="page-subtitle">Manage registered vehicles</p>
+<div class="main-wrapper"> 
+    <div class="sidebar-open nav-item"> 
+        <i class="fa-solid fa-bars"></i>
+        <span>Open Sidebar</span>
     </div>
-    <div class="topbar-right">
-        <div class="topbar-user">
-            <div class="user-avatar"><i class="fa-solid fa-user"></i></div>
-            <div class="user-info">
-                <span class="user-name">Village Admin</span>
-                <span class="user-role">Administrator</span>
+    <header class="topbar">
+        <div class="topbar-left">
+            <h1 class="page-title">Vehicles</h1>
+            <p class="page-subtitle">Manage registered vehicles</p>
+        </div>
+        <div class="topbar-right">
+            <div class="topbar-user">
+                <div class="user-avatar"><i class="fa-solid fa-user"></i></div>
+                <div class="user-info">
+                    <span class="user-name">Village Admin</span>
+                    <span class="user-role">Administrator</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="content">
+        <div class="action-buttons">
+            <button class="btn btn-primary" onclick="document.getElementById('vehicleModal').classList.add('active')">
+                <i class="fa-solid fa-plus"></i> Add Vehicle
+            </button>
+            <button class="btn btn-secondary">
+                <i class="fa-solid fa-upload"></i> Upload Excel
+            </button>
+        </div>
+
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Plate Number</th>
+                        <th>Make & Model</th>
+                        <th>Color</th>
+                        <th>Sticker Year</th>
+                        <th>Homeowner</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (vehicles.length === 0) { %>
+                        <tr><td colspan="6" class="empty-state">No vehicles registered yet.</td></tr>
+                    <% } else { %>
+                        <% vehicles.forEach(function(vehicle) { %>
+                            <tr>
+                                <td><span class="plate-number"><%= vehicle.plate_number %></span></td>
+                                
+                                <td><%= vehicle.make %> <%= vehicle.model %></td>
+                                <td><%= vehicle.color %></td>
+                                
+                                <td>
+                                    <% if (!vehicle.sticker_year) { %>
+                                        <span class="sticker-badge sticker-none">None</span>
+                                    <% } else if (vehicle.sticker_year >= 2026) { %>
+                                        <span class="sticker-badge sticker-valid"><%= vehicle.sticker_year %></span>
+                                    <% } else { %>
+                                        <span class="sticker-badge sticker-expired"><%= vehicle.sticker_year %></span>
+                                    <% } %>
+                                </td>
+                                
+                                <td><%= vehicle.homeowner || 'Unassigned' %></td>
+                                <td>
+                                    <form action="/vehicles/delete/<%= vehicle.vehicle_id %>" method="POST" style="display:inline;">
+                                        <button type="submit" class="btn-icon btn-icon-danger" onclick="return confirm('Archive this vehicle?');">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <div id="vehicleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Vehicle</h2>
+                <button class="modal-close" onclick="document.getElementById('vehicleModal').classList.remove('active')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="vehicleForm" action="/vehicles/register" method="POST">
+                    <div class="form-group">
+                        <label>Plate Number *</label>
+                        <input type="text" name="plate_number" required placeholder="ABC 1234">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Make</label>
+                            <input type="text" name="make" placeholder="e.g., Toyota">
+                        </div>
+                        <div class="form-group">
+                            <label>Model</label>
+                            <input type="text" name="model" placeholder="e.g., Vios">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Color</label>
+                            <input type="text" name="color">
+                        </div>
+                        <div class="form-group">
+                            <label>Sticker Year</label>
+                            <input type="number" name="sticker_year" placeholder="2026">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Resident ID</label>
+                        <input type="number" name="resident_id" placeholder="Enter Resident ID">
+                    </div>
+                    
+                    <div class="modal-footer" style="margin-top: 20px;">
+                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('vehicleModal').classList.remove('active')">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Vehicle</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-</header>
-
-<main class="content">
-    <div class="card" style="padding: 48px; text-align: center; color: #888;">
-        <i class="fa-solid fa-car" style="font-size: 48px; margin-bottom: 16px; color: #ccc;"></i>
-        <h2>Vehicles Page</h2>
-        <p>This page is under construction. Build it in Sprint 2+.</p>
-    </div>
-</main>
+</div>
+<script src="/js/sidebar.js"></script>

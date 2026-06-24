@@ -2,11 +2,15 @@ const express            = require('express');
 const router             = express.Router();
 const vehicleController  = require('../controllers/vehicleController');
 
-// GET  /vehicles        → list all vehicles
-// POST /vehicles        → register a vehicle         (SPRINT 2+)
-// PUT  /vehicles/:id    → update vehicle info        (SPRINT 2+)
-// DELETE /vehicles/:id  → remove a vehicle           (SPRINT 2+)
-
+// list all vehicles
 router.get('/', vehicleController.getVehicles);
+
+// register a vehicle 
+router.post('/register', vehicleController.registerVehicle);
+
+// update vehicle info
+
+// remove a vehicle 
+router.post('/delete/:id', vehicleController.deleteVehicle);
 
 module.exports = router;
