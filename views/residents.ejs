@@ -5,24 +5,30 @@
      Extra CSS: property-owners.css (passed via pageCSS in controller)
      SPRINT 2+: Loop through owners array from DB.
      ============================================================ -->
-     
-<header class="topbar">
-    <div class="topbar-left">
-        <h1 class="page-title">Residents</h1>
-        <p class="page-subtitle">View, add, edit, and manage resident information</p>
+    
+<div class="main-wrapper">
+    <div class="sidebar-open nav-item"> 
+        <i class="fa-solid fa-bars"></i>
+        <span>Open Sidebar</span>
     </div>
-    <div class="topbar-right">
-        <div class="topbar-user">
-            <div class="user-avatar">
-                <i class="fa-solid fa-user"></i>
-            </div>
-            <div class="user-info">
-                <span class="user-name">Village Admin</span>
-                <span class="user-role">Administrator</span>
+    
+    <header class="topbar">
+        <div class="topbar-left">
+            <h1 class="page-title">Residents</h1>
+            <p class="page-subtitle">View, add, edit, and manage resident information</p>
+        </div>
+        <div class="topbar-right">
+            <div class="topbar-user">
+                <div class="user-avatar">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <div class="user-info">
+                    <span class="user-name">Village Admin</span>
+                    <span class="user-role">Administrator</span>
+                </div>
             </div>
         </div>
-    </div>
-</header>
+    </header>
 
     <main class="content">
         <div class="action-buttons">
@@ -61,60 +67,61 @@
             </table>
         </div>
     </main>
-</div>
+ 
 
-<div id="residentModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 id="modalTitle">Add Resident</h2>
-            <button class="modal-close" onclick="closeModal()">&times;</button>
-        </div>
-        <div class="modal-body">
-            <form id="residentForm">
-                <input type="hidden" id="residentId">
-                <div class="form-group">
-                    <label>Resident Name *</label>
-                    <input type="text" id="fullName" required placeholder="Enter full name">
-                </div>
-                <div class="form-group">
-                    <label>Resident Type *</label>
-                    <input type="text" id="type" required placeholder="Enter resident type"> 
-                </div>
-                <div class="form-group">
-                    <label>Date of Birth *</label>
-                    <input type="date" id="dob" required>
-                </div>
-                <div class="form-group">
-                    <label>Property Address *</label>
-                    <input type="text" id="address" required placeholder="Enter property address">
-                </div>
-                <div class="form-group">
-                    <label>Lot Number *</label>
-                    <input type="text" id="lotNumber" required placeholder="Enter lot number">
-                </div>
-                <div class="form-group">
-                    <label>Email Address *</label>
-                    <input type="email" id="email" required placeholder="Enter email address">
-                </div>
-                <div class="form-row">
+    <div id="residentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add Resident</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="residentForm">
+                    <input type="hidden" id="residentId">
                     <div class="form-group">
-                        <label>Phone Number *</label>
-                        <input type="tel" id="phoneNumber" required placeholder="Enter mobile number">
+                        <label>Resident Name *</label>
+                        <input type="text" id="fullName" required placeholder="Enter full name">
                     </div>
                     <div class="form-group">
-                        <label>Landline Number</label>
-                        <input type="tel" id="landline" placeholder="Enter landline (optional)">
+                        <label>Resident Type *</label>
+                        <input type="text" id="type" required placeholder="Enter resident type"> 
                     </div>
-                </div>
-            </form>
-        </div>
-        <div class="modal-footer">
-            <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
-            <button class="btn btn-primary" onclick="saveResident()">Save Resident</button>
+                    <div class="form-group">
+                        <label>Date of Birth *</label>
+                        <input type="date" id="dob" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Property Address *</label>
+                        <input type="text" id="address" required placeholder="Enter property address">
+                    </div>
+                    <div class="form-group">
+                        <label>Lot Number *</label>
+                        <input type="text" id="lotNumber" required placeholder="Enter lot number">
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address *</label>
+                        <input type="email" id="email" required placeholder="Enter email address">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Phone Number *</label>
+                            <input type="tel" id="phoneNumber" required placeholder="Enter mobile number">
+                        </div>
+                        <div class="form-group">
+                            <label>Landline Number</label>
+                            <input type="tel" id="landline" placeholder="Enter landline (optional)">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveResident()">Save Resident</button>
+            </div>
         </div>
     </div>
-</div>
-
+</div> 
+<script src="/js/sidebar.js"></script>
 <script>
     let residents = [];
     let currentSearch = "";
