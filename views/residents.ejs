@@ -57,13 +57,14 @@
                     <th>Date of Birth</th>
                     <th>Email</th>
                     <th>Phone Number</th>
+                    <th>Board Member Status</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 <% if (residents.length === 0) { %>
                     <tr>
-                        <td colspan="5" class="empty-state">
+                        <td colspan="6" class="empty-state">
                             No resident records found. Click "Add Resident" to create one.
                         </td>
                     </tr>
@@ -74,7 +75,22 @@
                             <td><%= resident.birth_date ? resident.birth_date.toString().substring(0, 10) : '—' %></td>
                             <td><%= resident.email || '—' %></td>
                             <td><%= resident.contact_num || '—' %></td>
+                            <td><%= resident.is_board_member === 1 ? 'Yes' : 'No' %></td>
                             <td>
+
+                                <button class="btn-icon"
+                                        data-id="<%= resident.resident_id %>"
+                                        data-name="<%= resident.first_name %> <%= resident.last_name %>"
+                                        data-dob="<%= resident.birth_date ? resident.birth_date.toString().substring(0, 10) : '' %>"
+                                        data-email="<%= resident.email || '' %>"
+                                        data-phone="<%= resident.contact_num || '' %>"
+                                        data-isboard="<%= resident.is_board_member %>"
+                                        data-role="<%= resident.position || '' %>"
+                                        data-boardstart="<%= resident.board_start_date ? resident.board_start_date.toString().substring(0, 10) : '' %>"
+                                        data-boardend="<%= resident.board_end_date ? resident.board_end_date.toString().substring(0, 10) : '' %>"
+                                        onclick="openViewModal(this)">
+                                    View info
+                                </button>
                                 <button class="btn-icon" 
                                         data-id="<%= resident.id %>"
                                         data-firstname="<%= resident.first_name %>"
@@ -82,7 +98,7 @@
                                         data-dob="<%= resident.birth_date ? resident.birth_date.toString().substring(0, 10) : '' %>"
                                         data-email="<%= resident.email || '' %>"
                                         data-phone="<%= resident.contact_num || '' %>"
-                                        onclick="openEditModal(this.dataset.id, this.dataset.firstname, this.dataset.lastname, this.dataset.type, this.dataset.dob, this.dataset.address, this.dataset.lot, this.dataset.email, this.dataset.phone, this.dataset.landline)">
+                                        onclick="openEditModal(this.dataset.id, this.dataset.firstname, this.dataset.lastname, this.dataset.dob, this.dataset.email, this.dataset.phone)">
                                     <i class="fa-solid fa-edit"></i>
                                 </button>
 
@@ -100,7 +116,7 @@
         </table>
     </div>
 </main>
-
+<!--------------------------------ADD RESIDENT MODAL------------------------------->
 <div id="residentModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -174,11 +190,12 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="board_role">Board Position *</label>
-                                  <select name="positions" id="positions">
+                                  <select name="position" id="position">
                                     <option value="President">President</option>
                                     <option value="Vice President">Vice President</option>
                                     <option value="Secretary">Secretary</option>
                                     <option value="Treasurer">Treasurer</option>
+                                    <option value="Board Member">Board Member</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -198,7 +215,7 @@
         </form>
     </div>
 </div>
-
+<!--------------------------------DELETE MODAL------------------------------->
 <div id="deleteModal" class="modal">
     <div class="modal-content" style="max-width: 450px;">
         <div class="modal-header">
@@ -217,7 +234,32 @@
         </div>
     </div>
 </div>
-
+<!--------------------------------VIEW MODAL--------------------------------->
+<div id="viewModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>View Summary</h2>
+            <button class="modal-close" onclick="closeModal('viewModal')">&times;</button>
+        </div>
+            
+        <div class="modal-body">
+            <h3>Personal Information</h3>
+            <hr>
+            <p><strong>Name:</strong> <span id="view-name">—</span></p>
+            <p><strong>Date of Birth:</strong> <span id="view-dob">—</span></p>
+            <p><strong>Email:</strong> <span id="view-email">—</span></p>
+            <p><strong>Phone:</strong> <span id="view-phone">—</span></p>
+            <div id="view-role-container" style="display: none;">
+                <h3>Board Member Information</h3>
+                <hr>
+                <p><strong>Board Member Role:</strong> <span id="view-role">—</span></p>
+                <p><strong>Term Start Date:</strong> <span id="view-boardstart">—</span></p>
+                <p><strong>Term End Date:</strong> <span id="view-boardend">—</span></p>
+            </div>
+        </div>
+    </div>
+</div>
+<!--------------------------------SCRIPT--------------------------------->
 <script>
     //Modal Actions
     function openAddModal() {
@@ -228,7 +270,7 @@
         document.getElementById('residentModal').classList.add('active');
     }
 
-    function openEditModal(id, firstName, lastName, type, dob, address, lotNumber, email, phoneNumber, landline) {
+    function openEditModal(id, firstName, lastName, dob, email, phoneNumber) {
         document.getElementById('modalTitle').textContent = 'Edit Resident';
         document.getElementById('submitBtn').textContent = 'Save Changes';
         document.getElementById('residentForm').action = '/residents/' + id + '/update';
@@ -240,6 +282,38 @@
         document.getElementById('phoneNumber').value = phoneNumber;
         
         document.getElementById('residentModal').classList.add('active');
+    }
+    function openViewModal(button) {
+   
+        const name = button.dataset.name; 
+        const dob = button.dataset.dob;             
+        const email = button.dataset.email;         
+        const phone = button.dataset.phone;        
+
+        const isBoard = button.dataset.isboard; 
+        const boardRole = button.dataset.role;
+        const boardStart = button.dataset.boardstart;
+        const boardEnd = button.dataset.boardend;
+       
+        document.getElementById('view-name').textContent = name || '—';
+        document.getElementById('view-dob').textContent = dob || '—';
+        document.getElementById('view-email').textContent = email || '—';
+        document.getElementById('view-phone').textContent = phone || '—'; 
+
+        const roleContainer = document.getElementById('view-role-container');
+    
+        if (isBoard === "1") {
+            document.getElementById('view-role').textContent = boardRole || '—';
+            document.getElementById('view-boardstart').textContent = boardStart || '—';
+            document.getElementById('view-boardend').textContent = boardEnd || 'Present'; 
+            
+            roleContainer.style.display = 'block'; 
+        } else {
+            roleContainer.style.display = 'none'; 
+        }
+
+       
+        document.getElementById('viewModal').classList.add('active');
     }
 
     function confirmDelete(id, residentName) {
@@ -266,7 +340,7 @@
             row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
         });
     }
-
+    //Displays additional questions if resident is a board member
     document.addEventListener("DOMContentLoaded", function () {
         const yesRadio = document.getElementById("yes");
         const noRadio = document.getElementById("no");

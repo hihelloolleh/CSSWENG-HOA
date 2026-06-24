@@ -13,14 +13,18 @@ const getAllResidents = async() => {
             r.person_id,
             r.residency_start_date,
             r.residency_end_date,
+            r.is_board_member,
             p.first_name,
             p.last_name,
             p.email,
             p.contact_num,
-            p.birth_date
+            p.birth_date,
+            b.position,
+            b.board_start_date,
+            b.board_end_date
         FROM Resident r
-        JOIN Person p
-        ON r.person_id = p.person_id
+        JOIN Person p ON r.person_id = p.person_id
+        LEFT JOIN Board_Member b ON r.resident_id = b.resident_id
     `);
 
     return rows;
@@ -67,30 +71,34 @@ const createResident = async(data) => {
              data.last_name,
              data.birth_date || null,
              data.email || null, 
-             data.contact_num || null
+             data.contact_num || null,
             ]
         );
 
         const[resident] = await conn.query(`
-            INSERT INTO Resident (person_id, residency_start_date, residency_end_date)
-            VALUES(?, ?, ?)`,
+            INSERT INTO Resident (person_id, residency_start_date, residency_end_date, is_board_member)
+            VALUES(?, ?, ?, ?)`,
             [person.insertId, 
-            data.residency_start_date || null, 
-            data.residency_end_date || null
+             data.residency_start_date || null, 
+             data.residency_end_date || null,
+             data.is_board_member
             ]
         );
 
-        /*
-        await conn.query(`
-            INSERT INTO Resident_Property(resident_id, property_id, type)
-            VALUES(?, ?, ?)`,
-            [resident.insertId, 
-             data.property_id,
-             data.type
-            ]
-        ); */ 
-
+        if(data.is_board_member === '1') {
+            await conn.query(`
+                INSERT INTO Board_Member(resident_id, position, board_start_date, board_end_date)
+                VALUES(?, ?, ?, ?)`,
+                [resident.insertId, 
+                 data.position,
+                 data.board_start_date || null, 
+                 data.board_end_date || null
+                ]
+            ); 
+        }
         
+
+        console.log(data);
         //tells mySQL that all queries were successfull and is safe to run in db
         await conn.commit();
         return resident.insertId;
