@@ -5,209 +5,184 @@
      SPRINT 2+: Replace hardcoded numbers with <%= stats.x %> etc.
      ============================================================ -->
 
-<header class="topbar">
-    <div class="topbar-left">
-        <h1 class="page-title">Dashboard</h1>
-        <p class="page-subtitle">Welcome back, <strong>Admin</strong></p>
-        <!-- TODO (SPRINT 2+): RENDER LIVE DATE/TIME FROM SERVER OR JS -->
-        <p class="page-subtitle">June 16, 2026 08:00 PM PST</p>
+ 
+
+<div class="main-wrapper"> 
+    <div class="sidebar-open nav-item"> 
+        <i class="fa-solid fa-bars"></i>
+        <span>Open Sidebar</span>
     </div>
-    <div class="topbar-right">
-        <div class="topbar-user">
-            <div class="user-avatar">
-                <i class="fa-solid fa-user"></i>
-            </div>
-            <div class="user-info">
-                <!-- TODO (SPRINT 2+): SHOW LOGGED-IN USER NAME AND ROLE -->
-                <span class="user-name">Village Admin</span>
-                <span class="user-role">Administrator</span>
-            </div>
+
+    <header class="topbar">
+        <div class="topbar-left"> 
+            <h1 class="page-title">Dashboard</h1>
+            <p class="page-subtitle">Welcome back, <strong>Admin</strong></p>
+            <!-- TODO (SPRINT 2+): RENDER LIVE DATE/TIME FROM SERVER OR JS -->
+            <p class="page-subtitle">June 16, 2026 08:00 PM PST</p>
         </div>
-    </div>
-</header>
-
-<main class="content">
-
-    <!-- SUMMARY STAT CARDS -->
-    <section class="summary-cards">
-        <div class="card stat-card">
-            <div class="stat-icon green">
-                <i class="fa-solid fa-users"></i>
-            </div>
-            <div class="stat-info">
-                <!-- TODO (SPRINT 2+): <%= stats.totalPersons %> -->
-                <span class="stat-value">112</span>
-                <span class="stat-label">Total Residents</span>
-            </div>
-        </div>
-
-        <div class="card stat-card">
-            <div class="stat-icon blue">
-                <i class="fa-solid fa-house"></i>
-            </div>
-            <div class="stat-info">
-                <!-- TODO (SPRINT 2+): <%= stats.totalProperties %> -->
-                <span class="stat-value">45</span>
-                <span class="stat-label">Total Properties</span>
-            </div>
-        </div>
-
-        <div class="card stat-card">
-            <div class="stat-icon orange">
-                <i class="fa-solid fa-id-badge"></i>
-            </div>
-            <div class="stat-info">
-                <!-- TODO (SPRINT 2+): <%= stats.totalEmployees %> -->
-                <span class="stat-value">12</span>
-                <span class="stat-label">Employees</span>
-            </div>
-        </div>
-
-        <div class="card stat-card">
-            <div class="stat-icon purple">
-                <i class="fa-solid fa-car"></i>
-            </div>
-            <div class="stat-info">
-                <!-- TODO (SPRINT 2+): <%= stats.totalVehicles %> -->
-                <span class="stat-value">45</span>
-                <span class="stat-label">Active Vehicles</span>
-            </div>
-        </div>
-
-        <div class="card stat-card">
-            <div class="stat-icon teal">
-                <i class="fa-solid fa-tag"></i>
-            </div>
-            <div class="stat-info">
-                <!-- TODO (SPRINT 2+): <%= stats.activeStickers %> -->
-                <span class="stat-value">38</span>
-                <span class="stat-label">Active Car Stickers</span>
-            </div>
-        </div>
-    </section>
-
-    <!-- PROPERTY STATUS + STICKER STATUS -->
-    <section class="dashboard-grid">
-
-        <div class="card property-status-card">
-            <div class="card-header">
-                <h2>Property Status</h2>
-                <a href="/properties" class="view-all">View All</a>
-            </div>
-            <!-- STATUS BAR WIDTHS ARE HARDCODED FOR NOW -->
-            <!-- TODO (SPRINT 2+): CALCULATE WIDTHS FROM propertyStatus.x / total * 100 -->
-            <div class="status-list">
-                <div class="status-row">
-                    <div class="status-dot occupied"></div>
-                    <span class="status-name">Occupied</span>
-                    <div class="status-bar-wrap">
-                        <div class="status-bar" style="width: 84%;"></div>
-                    </div>
-                    <!-- TODO (SPRINT 2+): <%= propertyStatus.occupied %> -->
-                    <span class="status-count">32</span>
+        <div class="topbar-right">
+            <div class="topbar-user">
+                <div class="user-avatar">
+                    <i class="fa-solid fa-user"></i>
                 </div>
-                <div class="status-row">
-                    <div class="status-dot vacant"></div>
-                    <span class="status-name">Vacant</span>
-                    <div class="status-bar-wrap">
-                        <div class="status-bar vacant" style="width: 11%;"></div>
-                    </div>
-                    <!-- TODO (SPRINT 2+): <%= propertyStatus.vacant %> -->
-                    <span class="status-count">8</span>
-                </div>
-                <div class="status-row">
-                    <div class="status-dot construction"></div>
-                    <span class="status-name">Under Construction</span>
-                    <div class="status-bar-wrap">
-                        <div class="status-bar construction" style="width: 5%;"></div>
-                    </div>
-                    <!-- TODO (SPRINT 2+): <%= propertyStatus.construction %> -->
-                    <span class="status-count">5</span>
+                <div class="user-info">
+                    <!-- TODO (SPRINT 2+): SHOW LOGGED-IN USER NAME AND ROLE -->
+                    <span class="user-name">Village Admin</span>
+                    <span class="user-role">Administrator</span>
                 </div>
             </div>
         </div>
+    </header>
 
-        <!-- DELINQUENCY REPORT CARD -->
-        <!-- TODO (SPRINT 2+): LOOP THROUGH delinquents ARRAY FROM DB -->
-        <div class="card delinquency-card">
-            <div class="card-header">
-                <h2>Delinquency Report</h2>
-                <a href="#" class="view-all">View All</a>
+    <main class="content">
+
+        <!-- SUMMARY STAT CARDS -->
+        <section class="summary-cards">
+            <div class="card stat-card">
+                <div class="stat-icon green">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+                <div class="stat-info">
+                    <!-- TODO (SPRINT 2+): <%= stats.totalPersons %> -->
+                    <span class="stat-value">112</span>
+                    <span class="stat-label">Total Residents</span>
+                </div>
             </div>
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Type</th>
-                        <th>Contact</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td>001</td><td>Robert Downey</td><td>Overdue Annual Fees</td><td>0912 345 6789</td></tr>
-                    <tr><td>002</td><td>Catherine Windsor</td><td>Parking Violation</td><td>0912 345 6789</td></tr>
-                    <tr><td>003</td><td>Bruce Banner</td><td>Property Foreclosure</td><td>0912 345 6789</td></tr>
-                    <tr><td>004</td><td>Eva Stratt</td><td>Car Sticker Violation</td><td>0912 345 6789</td></tr>
-                    <tr><td>005</td><td>Ryland Grace</td><td>Failure to Comply</td><td>0912 345 6789</td></tr>
-                </tbody>
-            </table>
-        </div>
 
-    </section>
-
-    <!-- RECENT RECORDS TABLES -->
-    <section class="tables-row">
-
-        <!-- BOARD OF DIRECTORS CARD -->
-        <!-- TODO (SPRINT 2+): LOOP THROUGH boardMembers ARRAY FROM DB (Employee table filtered by role) -->
-        <div class="card table-card">
-            <div class="card-header">
-                <h2>Board of Directors</h2>
-                <a href="#" class="view-all">View All</a>
+            <div class="card stat-card">
+                <div class="stat-icon blue">
+                    <i class="fa-solid fa-house"></i>
+                </div>
+                <div class="stat-info">
+                    <!-- TODO (SPRINT 2+): <%= stats.totalProperties %> -->
+                    <span class="stat-value">45</span>
+                    <span class="stat-label">Total Properties</span>
+                </div>
             </div>
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Position</th>
-                        <th>Contact</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td>001</td><td>Clark Kent</td><td>President</td><td>0912 345 6789</td></tr>
-                    <tr><td>002</td><td>Diana Prince</td><td>Vice President</td><td>0912 345 6789</td></tr>
-                    <tr><td>003</td><td>Bruce Wayne</td><td>Board Member</td><td>0912 345 6789</td></tr>
-                    <tr><td>004</td><td>Zatanna Zatara</td><td>Board Member</td><td>0912 345 6789</td></tr>
-                    <tr><td>005</td><td>Kyle Rayner</td><td>Board Member</td><td>0912 345 6789</td></tr>
-                </tbody>
-            </table>
-        </div>
 
-        <div class="card table-card">
-            <div class="card-header">
-                <h2>Recent Properties</h2>
-                <a href="/properties" class="view-all">View All</a>
+            <div class="card stat-card">
+                <div class="stat-icon orange">
+                    <i class="fa-solid fa-id-badge"></i>
+                </div>
+                <div class="stat-info">
+                    <!-- TODO (SPRINT 2+): <%= stats.totalEmployees %> -->
+                    <span class="stat-value">12</span>
+                    <span class="stat-label">Total Employees</span>
+                </div>
             </div>
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Lot No.</th>
-                        <th>Address</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- TODO (SPRINT 2+): LOOP THROUGH recentProperties FROM DB -->
-                    <tr><td>101</td><td>12 Sampaguita St.</td><td><span class="badge occupied">Occupied</span></td></tr>
-                    <tr><td>102</td><td>14 Sampaguita St.</td><td><span class="badge vacant">Vacant</span></td></tr>
-                    <tr><td>103</td><td>16 Sampaguita St.</td><td><span class="badge occupied">Occupied</span></td></tr>
-                    <tr><td>104</td><td>18 Sampaguita St.</td><td><span class="badge construction">Under Construction</span></td></tr>
-                    <tr><td>105</td><td>20 Sampaguita St.</td><td><span class="badge occupied">Occupied</span></td></tr>
-                </tbody>
-            </table>
-        </div>
 
-    </section>
+            <div class="card stat-card">
+                <div class="stat-icon purple">
+                    <i class="fa-solid fa-car"></i>
+                </div>
+                <div class="stat-info">
+                    <!-- TODO (SPRINT 2+): <%= stats.totalVehicles %> -->
+                    <span class="stat-value">45</span>
+                    <span class="stat-label">Active Vehicles</span>
+                </div>
+            </div>
+        </section>
 
-</main>
+        <!-- PROPERTY STATUS + STICKER STATUS -->
+        <section class="dashboard-grid">
+
+            <div class="card property-status-card">
+                <div class="card-header">
+                    <h2>Property Status</h2>
+                    <a href="/properties" class="view-all">View All</a>
+                </div>
+                <!-- STATUS BAR WIDTHS ARE HARDCODED FOR NOW -->
+                <!-- TODO (SPRINT 2+): CALCULATE WIDTHS FROM propertyStatus.x / total * 100 -->
+                <div class="status-list">
+                    <div class="status-row">
+                        <div class="status-dot occupied"></div>
+                        <span class="status-name">Occupied</span>
+                        <div class="status-bar-wrap">
+                            <div class="status-bar" style="width: 84%;"></div>
+                        </div>
+                        <!-- TODO (SPRINT 2+): <%= propertyStatus.occupied %> -->
+                        <span class="status-count">32</span>
+                    </div>
+                    <div class="status-row">
+                        <div class="status-dot vacant"></div>
+                        <span class="status-name">Empty Lots</span>
+                        <div class="status-bar-wrap">
+                            <div class="status-bar vacant" style="width: 11%;"></div>
+                        </div>
+                        <!-- TODO (SPRINT 2+): <%= propertyStatus.vacant %> -->
+                        <span class="status-count">8</span>
+                    </div>
+                    <div class="status-row">
+                        <div class="status-dot construction"></div>
+                        <span class="status-name">Under Construction</span>
+                        <div class="status-bar-wrap">
+                            <div class="status-bar construction" style="width: 5%;"></div>
+                        </div>
+                        <!-- TODO (SPRINT 2+): <%= propertyStatus.construction %> -->
+                        <span class="status-count">5</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DELINQUENCY REPORT CARD -->
+            <!-- TODO (SPRINT 2+): LOOP THROUGH delinquents ARRAY FROM DB -->
+            <div class="card delinquency-card">
+                <div class="card-header">
+                    <h2>Delinquency Report</h2>
+                    <a href="#" class="view-all">View All</a>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Length</th>
+                            <th>Address</th>
+                            <th>Contact</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Robert Downey</td><td>1 month</td><td>12 Sampaguita St.</td><td>0912 345 6789</td></tr>
+                        <tr><td>Catherine Windsor</td><td>3 months</td><td>14 Sampaguita St.</td><td>0912 345 6789</td></tr>
+                        <tr><td>Bruce Banner</td><td>6 months</td><td>16 Sampaguita St.</td><td>0912 345 6789</td></tr>
+                        <tr><td>Eva Stratt</td><td>10 months</td><td>18 Sampaguita St.</td><td>0912 345 6789</td></tr>
+                        <tr><td>Ryland Grace</td><td>18 months</td><td>19 Sampaguita St.</td><td>0912 345 6789</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </section>
+
+        <!-- RECENT RECORDS TABLES -->
+        <section class="tables-row">
+
+            <!-- BOARD OF DIRECTORS CARD -->
+            <!-- TODO (SPRINT 2+): LOOP THROUGH boardMembers ARRAY FROM DB (Employee table filtered by role) -->
+            <div class="card table-card">
+                <div class="card-header">
+                    <h2>Board of Directors</h2>
+                    <a href="#" class="view-all">View All</a>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Position</th>
+                            <th>Contact</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>001</td><td>Clark Kent</td><td>President</td><td>0912 345 6789</td></tr>
+                        <tr><td>002</td><td>Diana Prince</td><td>Vice President</td><td>0912 345 6789</td></tr>
+                        <tr><td>003</td><td>Bruce Wayne</td><td>Board Member</td><td>0912 345 6789</td></tr>
+                        <tr><td>004</td><td>Zatanna Zatara</td><td>Board Member</td><td>0912 345 6789</td></tr>
+                        <tr><td>005</td><td>Kyle Rayner</td><td>Board Member</td><td>0912 345 6789</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<script src="/js/sidebar.js"></script>
