@@ -6,115 +6,122 @@
      SPRINT 2+: Loop through properties array from DB.
      ============================================================ -->
 
-<header class="topbar">
-            <div class="topbar-left">
-                <h1 class="page-title">Properties</h1>
-                <p class="page-subtitle">View, edit, and manage properties.</p>
-            </div>
-            <div class="topbar-right">
-                <div class="topbar-user">
-                    <div class="user-avatar">
-                        <i class="fa-solid fa-user"></i>
-                    </div>
-                    <div class="user-info">
-                        <span class="user-name">Village Admin</span>
-                        <span class="user-role">Administrator</span>
-                    </div>
-                </div>
-            </div>
-        </header>
+<div class="main-wrapper"> 
+    <div class="sidebar-open nav-item"> 
+        <i class="fa-solid fa-bars"></i>
+        <span>Open Sidebar</span>
+    </div>
     
-        <main class="content">
-            <div class="action-buttons">
-                <!-- TODO (SPRINT 2+): WIRE THESE BUTTONS TO THEIR BACKEND ACTIONS -->
-                <button class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add Property
-                </button>
-                <button class="btn btn-secondary"><i class="fa-solid fa-upload"></i>Import CSV</button>
-                <button class="btn btn-secondary"><i class="fa-solid fa-download"></i>Export CSV</button> 
-            </div>
-
-            <div class="search-bar">
-                <input type="text" class="search-input" placeholder="Search by name, email, or property..." id="searchInput">
-            </div>
-
-                <div class="property-table table-container">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th class="checkbox-col"><input type="checkbox" id="selectAll"></th>
-                                <th>Property Address</th>
-                                <th>Lot/Unit</th>
-                                <th>Owner</th>
-                                <th>Status</th>
-                                <th>Property Details</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBody">
-                            <!-- TODO (SPRINT 2+): LOOP THROUGH properties ARRAY FROM DB -->
-                            <!-- <% properties.forEach(p => { %> -->
-                            <!-- <tr> -->
-                            <!--   <td><input type="checkbox"></td> -->
-                            <!--   <td><%= p.street_address %></td> -->
-                            <!--   <td><%= p.lot_number %></td> -->
-                            <!--   <td>...</td> -->
-                            <!--   <td>...</td> -->
-                            <!--   <td><%= p.status %></td> -->
-                            <!-- </tr> -->
-                            <!-- <% }) %> -->
-                            <tr>
-                                <td class="checkbox-col"><input type="checkbox"></td>
-                                <td>12 Sampaguita St.</td>
-                                <td>100</td>
-                                <td>Clark Kent</td>
-                                <td>Active</td>
-                                <td><button class="btn btn-secondary"><i class="fa-solid fa-house"></i>View Details </button></td>
-                                <td>
-                                    <button class="btn-icon""><i class="fa-solid fa-edit"></i></button>
-                                    <button class="btn-icon btn-icon-danger"><i class="fa-solid fa-trash"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="checkbox-col"><input type="checkbox"></td>
-                                <td>14 Sampaguita St.</td>
-                                <td>101</td>
-                                <td>Bruce Wayne</td>
-                                <td>Active</td>
-                                <td><button class="btn btn-secondary"><i class="fa-solid fa-house"></i>View Details </button></td>
-                                <td>
-                                    <button class="btn-icon""><i class="fa-solid fa-edit"></i></button>
-                                    <button class="btn-icon btn-icon-danger"><i class="fa-solid fa-trash"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="checkbox-col"><input type="checkbox"></td>
-                                <td>16 Sampaguita St.</td>
-                                <td>102</td>
-                                <td>Christina Koch</td>
-                                <td>Active</td>
-                                <td><button class="btn btn-secondary"><i class="fa-solid fa-house"></i>View Details </button></td>
-                                <td>
-                                    <button class="btn-icon""><i class="fa-solid fa-edit"></i></button>
-                                    <button class="btn-icon btn-icon-danger"><i class="fa-solid fa-trash"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="checkbox-col"><input type="checkbox"></td>
-                                <td>18 Sampaguita St.</td>
-                                <td>103</td>
-                                <td>Reid Wiseman</td>
-                                <td>Active</td>
-                                <td><button class="btn btn-secondary"><i class="fa-solid fa-house"></i>View Details </button></td>
-                                <td>
-                                    <button class="btn-icon""><i class="fa-solid fa-edit"></i></button>
-                                    <button class="btn-icon btn-icon-danger"><i class="fa-solid fa-trash"></i></button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+    <header class="topbar">
+        <div class="topbar-left">
+            <h1 class="page-title">Properties</h1>
+            <p class="page-subtitle">View, edit, and manage properties.</p>
+        </div>
+        <div class="topbar-right">
+            <div class="topbar-user">
+                <div class="user-avatar">
+                    <i class="fa-solid fa-user"></i>
                 </div>
-            </main> 
+                <div class="user-info">
+                    <span class="user-name">Village Admin</span>
+                    <span class="user-role">Administrator</span>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <main class="content">
+        <div class="action-buttons">
+            <!-- TODO (SPRINT 2+): WIRE THESE BUTTONS TO THEIR BACKEND ACTIONS -->
+            <button class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add Property
+            </button>
+            <button class="btn btn-secondary"><i class="fa-solid fa-upload"></i>Import CSV</button>
+            <button class="btn btn-secondary"><i class="fa-solid fa-download"></i>Export CSV</button> 
+        </div>
 
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="Search by name, email, or property..." id="searchInput">
+        </div>
+
+        <div class="property-table table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th class="checkbox-col"><input type="checkbox" id="selectAll"></th>
+                        <th>Property Address</th>
+                        <th>Lot/Unit</th>
+                        <th>Owner</th>
+                        <th>Status</th>
+                        <th>Property Details</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- TODO (SPRINT 2+): LOOP THROUGH properties ARRAY FROM DB -->
+                    <!-- <% properties.forEach(p => { %> -->
+                    <!-- <tr> -->
+                    <!--   <td><input type="checkbox"></td> -->
+                    <!--   <td><%= p.street_address %></td> -->
+                    <!--   <td><%= p.lot_number %></td> -->
+                    <!--   <td>...</td> -->
+                    <!--   <td>...</td> -->
+                    <!--   <td><%= p.status %></td> -->
+                    <!-- </tr> -->
+                    <!-- <% }) %> -->
+                    <tr>
+                        <td class="checkbox-col"><input type="checkbox"></td>
+                        <td>12 Sampaguita St.</td>
+                        <td>100</td>
+                        <td>Clark Kent</td>
+                        <td>Active</td>
+                        <td><button class="btn btn-secondary"><i class="fa-solid fa-house"></i>View Details </button></td>
+                        <td>
+                            <button class="btn-icon""><i class="fa-solid fa-edit"></i></button>
+                            <button class="btn-icon btn-icon-danger"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="checkbox-col"><input type="checkbox"></td>
+                        <td>14 Sampaguita St.</td>
+                        <td>101</td>
+                        <td>Bruce Wayne</td>
+                        <td>Active</td>
+                        <td><button class="btn btn-secondary"><i class="fa-solid fa-house"></i>View Details </button></td>
+                        <td>
+                            <button class="btn-icon""><i class="fa-solid fa-edit"></i></button>
+                            <button class="btn-icon btn-icon-danger"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="checkbox-col"><input type="checkbox"></td>
+                        <td>16 Sampaguita St.</td>
+                        <td>102</td>
+                        <td>Christina Koch</td>
+                        <td>Active</td>
+                        <td><button class="btn btn-secondary"><i class="fa-solid fa-house"></i>View Details </button></td>
+                        <td>
+                            <button class="btn-icon""><i class="fa-solid fa-edit"></i></button>
+                            <button class="btn-icon btn-icon-danger"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="checkbox-col"><input type="checkbox"></td>
+                        <td>18 Sampaguita St.</td>
+                        <td>103</td>
+                        <td>Reid Wiseman</td>
+                        <td>Active</td>
+                        <td><button class="btn btn-secondary"><i class="fa-solid fa-house"></i>View Details </button></td>
+                        <td>
+                            <button class="btn-icon""><i class="fa-solid fa-edit"></i></button>
+                            <button class="btn-icon btn-icon-danger"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main> 
+</div>
+<script src="/js/sidebar.js"></script>
 <script>
     function openTab(evt, tabName) {
         var i, tabcontent, tablinks;
