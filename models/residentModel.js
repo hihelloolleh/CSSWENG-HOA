@@ -97,7 +97,6 @@ const createResident = async(data) => {
             ); 
         }
         
-
         console.log(data);
         //tells mySQL that all queries were successfull and is safe to run in db
         await conn.commit();
@@ -113,15 +112,60 @@ const createResident = async(data) => {
 
 
 //TODO: updateResident()
+const editResident = async(data) => {
+    const conn = pool.getConnection();
 
+    try {
+        await conn.beginTransaction();
+
+
+    } catch(err) {
+        await conn.rollback();
+        throw err;
+    } finally {
+        await conn.release();
+    }
+};
 
 //TODO: deleteResident()
+const deleteResident = async(residentId) => {
+    const conn = await pool.getConnection();
 
+    try {
+        await conn.beginTransaction();
+        
+        const[rows] = await conn.query(`
+            SELECT person_id
+            FROM Resident
+            WHERE resident_id = ?`,
+            [residentId]
+        );
+
+        if(rows.length === 0) {
+            throw new Error('Resident not found');
+        }
+
+        await conn.query(`
+            DELETE FROM Person
+            WHERE person_id = ?`,
+            [rows[0].person_id]
+        )
+
+        await conn.commit();
+
+    } catch(err) {
+        await conn.rollback();
+        throw err;
+    } finally {
+        await conn.release();
+    }
+};
 
 //TODO: 
 
 module.exports = {
     createResident,
-    getAllResidents
+    getAllResidents, 
+    deleteResident
 }
 

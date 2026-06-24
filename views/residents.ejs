@@ -107,9 +107,9 @@
                                         onclick="openEditModal(this.dataset.id, this.dataset.firstname, this.dataset.lastname, this.dataset.dob, this.dataset.email, this.dataset.phone)">
                                     <i class="fa-solid fa-edit"></i>
                                 </button>
-
+ 
                                 <button class="btn-icon btn-icon-danger" 
-                                        data-id="<%= resident.id %>"
+                                        data-id="<%= resident.resident_id %>"
                                         data-name="<%= resident.first_name %> <%= resident.last_name %>"
                                         onclick="confirmDelete(this.dataset.id, this.dataset.name)">
                                     <i class="fa-solid fa-trash"></i>

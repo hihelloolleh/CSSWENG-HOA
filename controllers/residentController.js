@@ -36,11 +36,18 @@ exports.updateResident = (req, res) => {
     
 };
 
-exports.removeResident = (req, res) => {
-    // TODO (SPRINT 2+): DELETE FROM Resident TABLE
+const deleteResident = async (req, res) => {
+    try {
+        await residentModel.deleteResident(req.params.id)
+        return res.redirect('/residents');
+    } catch(err) {
+        console.log("Failed to delete resident: ", err);
+        return res.redirect('/residents?error=Failed+to+delete+resident');
+    }
 };
 
 module.exports = {
     getResidents,
-    addResident
+    addResident,
+    deleteResident
 };
