@@ -150,19 +150,19 @@
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="dob">Date of Birth *</label>
+                            <label for="dob">Date of Birth </label>
                             <input type="date" id="dob" name="birth_date" required>
                         </div>
                     </div>
             
                     <div class="form-group">
-                        <label for="email">Email Address *</label>
+                        <label for="email">Email Address </label>
                         <input type="email" id="email" name="email" required placeholder="Enter email address">
                     </div>
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="phoneNumber">Phone Number *</label>
+                            <label for="phoneNumber">Phone Number </label>
                             <input type="tel" id="phoneNumber" name="contact_num" required placeholder="Enter mobile number">
                         </div>
                     </div>
@@ -171,12 +171,35 @@
                 <div class="form-section" style="margin-top: 20px;">
                     <h3>Property / Residential Information</h3>
                     <hr>
+
+                    <div class="form-group checkbox-inline">
+                        <label for="ongoing-residency">Is currently residing?</label>
+                        <input type="checkbox" id="ongoing-residency" name="ongoing-residency">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="residency-start-date">Start Date </label>
+                            <input type="date" id="residency-start-date" name="residency-start-date">
+                        </div>
+
+                        <div class="form-group" id="residency-end-container">
+                            <label for="residency-end-date">End Date </label>
+                            <input type="date" id="residency-end-date" name="residency-end-date">
+                        </div>
+                    </div>
+
+                </div>
                     
                 <!-- Vehicle Information -->
+                 <div class="form-section" style="margin-top: 20px;">
                     <h3>Vehicle Informationn</h3>
                     <hr>
-
+                 </div>
+                    
                 <!-- Board Member Status -->
+
+                <div class="form-section" style="margin-top: 20px;">
                     <h3>Board Member Status</h3>
                     <hr>
                     <div class="form-row">
@@ -335,6 +358,22 @@
         document.getElementById('deleteModal').classList.add('active');
     }
 
+    //disables end date if there is no end date (for example, resident is still currently residing or board member is still active)
+    function toggleField(checkboxId, targetId) {
+        const box = document.getElementById(checkboxId);
+        const target = document.getElementById(targetId);
+        if (!box || !target) return;
+
+        const toggle = () => {
+            target.style.display = box.checked ? 'none' : 'block';
+            const input = target.querySelector('input') || target;
+            box.checked ? input.removeAttribute('required') : input.setAttribute('required', '');
+        };
+        box.addEventListener('change', toggle);
+
+        toggle(); 
+}
+
     function closeModal(id) {
         document.getElementById(id).classList.remove('active');
     }
@@ -353,22 +392,27 @@
             row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
         });
     }
-    //Displays additional questions if resident is a board member
+
+    //Hides end date if resident is an active resident
+    document.addEventListener("DOMContentLoaded", function () {
+        toggleField('ongoing-residency', 'residency-end-container');
+    });
+
+    //Displays additional questions if resident is a board member(position, term dates)
     document.addEventListener("DOMContentLoaded", function () {
         const yesRadio = document.getElementById("yes");
         const noRadio = document.getElementById("no");
         const conditionalSection = document.getElementById("conditional-questions");
 
+        if (!yesRadio || !noRadio || !conditionalSection) return;
+
         function toggleQuestions() {
-            if (yesRadio.checked) {
-                conditionalSection.style.display = "block";
-            } else {
-                conditionalSection.style.display = "none";
-            }
+            conditionalSection.style.display = yesRadio.checked ? "block" : "none";
         }
 
         yesRadio.addEventListener("change", toggleQuestions);
         noRadio.addEventListener("change", toggleQuestions);
+        toggleQuestions();
     });
 
     setTimeout(() => {
