@@ -1,7 +1,12 @@
 const db = require('../config/db');
 const pool = db.pool;
 
-//selectPersonById()
+/**
+ * Fetches a person record given its id
+ * 
+ * @param {*} person_id 
+ * @returns the person record
+ */
 const selectPersonById = async(person_id) => {
     
    const [rows] = await pool.query(`
@@ -20,7 +25,12 @@ const selectPersonById = async(person_id) => {
     return rows[0];
 };
 
-//getAllPerson()
+/**
+ * Fetches all records in the Person table
+ * 
+ * @returns all person records
+ * 
+ */
 const getAllPersons = async() => {
 
     const [rows] = await pool.query(`
@@ -37,17 +47,23 @@ const getAllPersons = async() => {
     return rows;
 };
 
-//createPerson()
+/**
+ * Adds a new person record to the Person table
+ * 
+ * @param {*} data - person data
+ * @returns - the newly generated person id
+ */
 const addPerson = async(data) => {
 
     const [result] = await pool.query(`
         INSERT INTO Person (first_name, last_name, birth_date, email, contact_num)
         VALUES(?, ?, ?, ?, ?)`,
-        [data.first_name, 
-         data.last_name,
-         data.birth_date || null,
-         data.email || null, 
-         data.contact_num
+        [
+            data.first_name, 
+            data.last_name,
+            data.birth_date || null,
+            data.email || null, 
+            data.contact_num
         ]
     );
 
@@ -55,7 +71,13 @@ const addPerson = async(data) => {
             
 };
 
-//deletePerson()
+/**
+ * Deletes an existing person record from the Person table 
+ * given its id
+ * 
+ * @param {*} person_id - the ID of the person to delete
+ * @returns - the number of rows deleted
+ */
 const deletePerson = async(person_id) => {
 
     const [result] = await db.query(`
@@ -67,7 +89,13 @@ const deletePerson = async(person_id) => {
     return result.affectedRows;
 };
 
-//updatePerson()
+/**
+ * Updates an existing person record from the Person table
+ * given its id
+ * 
+ * @param {*} data - person data
+ * @returns - the number of rows updated
+ */
 const updatePerson = async(data) => {
 
     const [result] = await conn.query(
@@ -77,11 +105,12 @@ const updatePerson = async(data) => {
                 email = ?,
                 contact_num = ?
             WHERE person_id = ?`,
-            [data.first_name,
-             data.last_name,
-             data.email || null,
-             data.contact_num || null,
-             rows[0].person_id
+            [
+                data.first_name,
+                data.last_name,
+                data.email || null,
+                data.contact_num || null,
+                rows[0].person_id
             ]
         );
 
