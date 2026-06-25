@@ -1,5 +1,3 @@
-const db = require('../config/db');
-const pool = db.pool;
 
 /**
  * Fetches a person record given its id
@@ -7,9 +5,9 @@ const pool = db.pool;
  * @param {*} person_id 
  * @returns the person record
  */
-const selectPersonById = async(person_id) => {
+const selectPersonById = async(person_id, conn) => {
     
-   const [rows] = await pool.query(`
+   const [rows] = await conn.query(`
         SELECT 
             person_id,
             first_name,
@@ -31,9 +29,9 @@ const selectPersonById = async(person_id) => {
  * @returns all person records
  * 
  */
-const getAllPersons = async() => {
+const getAllPersons = async(conn) => {
 
-    const [rows] = await pool.query(`
+    const [rows] = await conn.query(`
         SELECT 
             person_id,
             first_name,
@@ -53,9 +51,9 @@ const getAllPersons = async() => {
  * @param {*} data - person data
  * @returns - the newly generated person id
  */
-const addPerson = async(data) => {
+const addPerson = async(data, conn) => {
 
-    const [result] = await pool.query(`
+    const [result] = await conn.query(`
         INSERT INTO Person (first_name, last_name, birth_date, email, contact_num)
         VALUES(?, ?, ?, ?, ?)`,
         [
@@ -96,7 +94,7 @@ const deletePerson = async(person_id) => {
  * @param {*} data - person data
  * @returns - the number of rows updated
  */
-const updatePerson = async(data) => {
+const updatePerson = async(data, conn) => {
 
     const [result] = await conn.query(
             `UPDATE Person
