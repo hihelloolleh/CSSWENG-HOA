@@ -113,17 +113,88 @@ const createResident = async(data) => {
 
 //TODO: updateResident()
 const editResident = async(data) => {
-    const conn = pool.getConnection();
+    const conn = await pool.getConnection();
 
     try {
         await conn.beginTransaction();
 
+        //check if the resident that is being edited exists
+        console.log(data.resident_id);
+        const [rows] = await conn.query(
+            `SELECT person_id
+             FROM Resident
+             WHERE resident_id = ?`,
+            [data.resident_id]
+        );
+
+        if(rows.length === 0) {
+             throw new Error('Resident not found');
+        }
+
+        await conn.query(
+            `UPDATE Person
+             SET first_name = ?,
+                 last_name = ?,
+                 email = ?,
+                 contact_num = ?
+             WHERE person_id = ?`,
+            [
+                data.first_name,
+                data.last_name,
+                data.email || null,
+                data.contact_num || null,
+                rows[0].person_id
+            ]
+        );
+
+        await conn.query(
+            `
+                UPDATE Resident
+                SET residency_start_date = ?,
+                    residency_end_date = ?,
+                    is_board_member = ?
+                WHERE resident_id = ?`, 
+            [
+                data.residency_start_date || null, 
+                data.residency_end_date || null, 
+                data.is_board_member,
+                data.resident_id
+            ]
+        );
+
+       if(data.is_board_member === '1') {
+            await conn.query(
+            `
+                UPDATE Board_Member
+                SET position = ?,
+                    board_start_date = ?,
+                    board_end_date = ?
+                WHERE resident_id = ?`, 
+            [
+                data.position, 
+                data.board_start_date || null, 
+                data.board_end_date || null,
+                data.resident_id
+            ]
+        );
+       }
+
+       if(data.is_board_member === '0') {
+            await conn.query(
+                `DELETE FROM Board_Member
+                WHERE resident_id = ?`,
+                [data.resident_id]
+            );
+        }
+
+
+        await conn.commit();
 
     } catch(err) {
         await conn.rollback();
         throw err;
     } finally {
-        await conn.release();
+        conn.release();
     }
 };
 
@@ -166,6 +237,7 @@ const deleteResident = async(residentId) => {
 module.exports = {
     createResident,
     getAllResidents, 
-    deleteResident
+    deleteResident,
+    editResident
 }
 

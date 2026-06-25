@@ -12,6 +12,8 @@ const getResidents = async (req, res) => {
             activePage: 'residents',
             pageCSS:    'residents.css',
             residents,
+            error:      req.query.error   || null,
+            success:    req.query.success || null,
         });
     } catch(err) {
         console.log("Error fetching residents: ", err);
@@ -31,8 +33,19 @@ const addResident = async(req, res) => {
     }
 }
 
-exports.updateResident = (req, res) => {
-    // TODO (SPRINT 2+): UPDATE Resident TABLE
+const editResident = async(req, res) => {
+    try {
+        const data = {
+            ...req.body,
+            residentId: req.params.id
+        };
+        
+        await residentModel.editResident(data);
+        res.redirect('/residents?success=Resident+updated+successfully.');
+    } catch(err) {
+        console.error('Edit Resident error: ', err);
+        res.redirect('/residents?error=Failed+to+update+resident.');
+    }
     
 };
 
@@ -49,5 +62,6 @@ const deleteResident = async (req, res) => {
 module.exports = {
     getResidents,
     addResident,
-    deleteResident
+    deleteResident, 
+    editResident
 };

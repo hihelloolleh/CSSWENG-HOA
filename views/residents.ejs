@@ -138,6 +138,7 @@
             <button class="modal-close" onclick="closeModal('residentModal')">&times;</button>
         </div>
         <form id="residentForm" method="POST" action="/residents">
+            <input type="hidden" id="resident_id" name="resident_id">
             <div class="modal-body">
 
                 <!-- Personal Information -->
@@ -170,7 +171,7 @@
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="phoneNumber">Phone Number </label>
+                            <label for="phoneNumber">Phone Number *</label>
                             <input type="tel" id="phoneNumber" name="contact_num" required placeholder="Enter mobile number">
                         </div>
                     </div>
@@ -182,7 +183,7 @@
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="residency-start-date">Residency Start Date </label>
+                            <label for="residency-start-date">Residency Start Date *</label>
                             <input type="date" id="residency-start-date" name="residency_start_date">
                         </div>
 
@@ -312,10 +313,13 @@
     }
 
     function openEditModal(button) {
+        const id = button.dataset.id;
+
         document.getElementById('modalTitle').textContent = 'Edit Resident';
         document.getElementById('submitBtn').textContent = 'Save Changes';
         document.getElementById('residentForm').action = '/residents/' + id + '/update';
 
+        document.getElementById('resident_id').value = id;
         const firstName = button.dataset.firstname;
         const lastName = button.dataset.lastname; 
         const dob = button.dataset.dob;             
@@ -338,7 +342,16 @@
 
         document.getElementById('residency-start-date').value = residentStartDate;
         document.getElementById('residency-end-date').value = residentEndDate;
-        document.getElementByClass('radio-group').value = isBoard;
+        document.getElementById('board-start-date').value = boardStart;
+        document.getElementById('board-end-date').value = boardEnd;
+       
+        if(isBoard === '1') {
+            document.getElementById('yes').checked = true;
+            document.getElementById('position').value = boardRole;
+            
+        } else if(isBoard === '0') {
+             document.getElementById('no').checked = true; 
+        }
         
         document.getElementById('residentModal').classList.add('active');
     }
