@@ -172,8 +172,8 @@
                     <h3>Property / Residential Information</h3>
                     <hr>
 
-                    <div class="form-group checkbox-inline">
-                        <label for="ongoing-residency">Is currently residing?</label>
+                    <div class="checkbox-inline">
+                        <label for="ongoing-residency">Is currently residing? *</label>
                         <input type="checkbox" id="ongoing-residency" name="ongoing-residency">
                     </div>
 
@@ -184,21 +184,17 @@
                         </div>
 
                         <div class="form-group" id="residency-end-container">
-                            <label for="residency-end-date">End Date </label>
+                            <label for="residency-end-date">End Date * </label>
                             <input type="date" id="residency-end-date" name="residency-end-date">
                         </div>
                     </div>
-
                 </div>
                     
-                <!-- Vehicle Information -->
-                 <div class="form-section" style="margin-top: 20px;">
-                    <h3>Vehicle Informationn</h3>
+                <div class="form-section" style="margin-top: 20px;">
+                    <h3>Vehicle Information</h3>
                     <hr>
                  </div>
                     
-                <!-- Board Member Status -->
-
                 <div class="form-section" style="margin-top: 20px;">
                     <h3>Board Member Status</h3>
                     <hr>
@@ -216,26 +212,35 @@
                     </div>
 
                     <div id="conditional-questions" style="display: none;">
+                        <div class="form-group">
+                            <label for="position">Board Position *</label>
+                            <select name="position" id="position">
+                                <option value="President">President</option>
+                                <option value="Vice President">Vice President</option>
+                                <option value="Secretary">Secretary</option>
+                                <option value="Treasurer">Treasurer</option>
+                                <option value="Board Member">Board Member</option>
+                            </select>
+                        </div>
+
+                        <div class="checkbox-inline">
+                            <label for="ongoing-board-member">Is currently a board member? *</label>
+                            <input type="checkbox" id="ongoing-board-member" name="ongoing-board-member">
+                        </div>
+
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="board_role">Board Position *</label>
-                                  <select name="position" id="position">
-                                    <option value="President">President</option>
-                                    <option value="Vice President">Vice President</option>
-                                    <option value="Secretary">Secretary</option>
-                                    <option value="Treasurer">Treasurer</option>
-                                    <option value="Board Member">Board Member</option>
-                                </select>
+                                <label for="board-start-date">Start Date </label>
+                                <input type="date" id="board-start-date" name="board-start-date">
                             </div>
-                            <div class="form-group">
-                                <label for="board_years">Start Date </label>
-                                <input type="date" id="board_start_date" name="board_start_date">
+
+                            <div class="form-group" id="board-end-container">
+                                <label for="board-end-date">End Date </label>
+                                <input type="date" id="board-end-date" name="board-end-date">
                             </div>
                         </div>
                     </div>
                 </div>
-                
-            </div>
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" onclick="closeModal('residentModal')">Cancel</button>
@@ -413,6 +418,9 @@
         yesRadio.addEventListener("change", toggleQuestions);
         noRadio.addEventListener("change", toggleQuestions);
         toggleQuestions();
+
+        //toggles the functiont that hides the end date if board member is active
+        toggleField('ongoing-board-member', 'board-end-container');
     });
 
     setTimeout(() => {
