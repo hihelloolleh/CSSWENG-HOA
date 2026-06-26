@@ -43,13 +43,13 @@
         </div>
     <% } %>
 
-    <div class="action-buttons" style="margin-bottom: 20px;">
+    <div class="action-buttons">
         <button class="btn btn-primary" onclick="openAddModal()">
             <i class="fa-solid fa-plus"></i> Add Resident
         </button>
     </div>
 
-    <div class="search-bar" style="margin-bottom: 20px;">
+    <div class="search-bar">
         <input type="text" class="search-input" id="searchInput" 
                placeholder="Search by name, email, or property..." 
                oninput="filterTable()">
@@ -149,24 +149,24 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="firstName">First Name *</label>
-                            <input type="text" id="firstName" name="first_name" required placeholder="Enter first name">
+                            <input type="text" id="firstName" name="first_name" required placeholder="Enter first name" >
                         </div>
                         <div class="form-group">
                             <label for="lastName">Last Name *</label>
-                            <input type="text" id="lastName" name="last_name" required placeholder="Enter last name">
+                            <input type="text" id="lastName" name="last_name" required placeholder="Enter last name" >
                         </div>
                     </div>
                     
                     <div class="form-row">
                         <div class="form-group">
                             <label for="dob">Date of Birth </label>
-                            <input type="date" id="dob" name="birth_date" required>
+                            <input type="date" id="dob" name="birth_date">
                         </div>
                     </div>
             
                     <div class="form-group">
                         <label for="email">Email Address </label>
-                        <input type="email" id="email" name="email" required placeholder="Enter email address">
+                        <input type="email" id="email" name="email" placeholder="Enter email address">
                     </div>
                     
                     <div class="form-row">
@@ -184,7 +184,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="residency-start-date">Residency Start Date *</label>
-                            <input type="date" id="residency-start-date" name="residency_start_date">
+                            <input type="date" id="residency-start-date" name="residency_start_date" required>
                         </div>
 
                         <div class="form-group" id="residency-end-container">
@@ -206,10 +206,10 @@
                         <div class="form-group">
                             <label>Is Board Member? *</label>
                             <div class="radio-group">
-                                <input type="radio" id="yes" name="is_board_member" value="1">
+                                <input type="radio" id="yes" name="is_board_member" value="1" required>
                                 <label for="yes">Yes</label>
                                 
-                                <input type="radio" id="no" name="is_board_member" value="0">
+                                <input type="radio" id="no" name="is_board_member" value="0" required>
                                 <label for="no">No</label>
                             </div>
                         </div>
@@ -302,6 +302,7 @@
     </div>
 </div>
 <!--------------------------------SCRIPT--------------------------------->
+<script src="/js/sidebar.js"></script> <!-- sidebar functionality -->
 <script>
     //Modal Actions
     function openAddModal() {
