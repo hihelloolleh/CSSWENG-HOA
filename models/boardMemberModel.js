@@ -20,6 +20,17 @@ const getAllBoardMembers = async() => {
     return rows;
 }
 
+const getBoardMemberByResidentId = async(resident_id, conn) => {
+    const [rows] = await conn.query(`
+        SELECT board_id
+        FROM Board_Member
+        WHERE resident_id = ?`,
+        [resident_id]
+    );
+
+    return rows[0];
+}
+
 /**
  * Adds a board member record to Board Member table given
  * an existing resident
@@ -69,7 +80,7 @@ const deleteBoardMember = async(board_id, conn) => {
  * @param {*} data 
  * @returns - The number of rows updated
  */
-const updateBoardMember = async(data, conn) => {
+const updateBoardMember = async(data, board_id, conn) => {
 
     const [result] = await pool.query(`
        UPDATE Board_Member
@@ -79,9 +90,9 @@ const updateBoardMember = async(data, conn) => {
         WHERE board_id = ?`,
         [
             data.position,
-            board_start_date || null,
-            board_end_date || null,
-            data.board_id
+            data.board_start_date || null,
+            data.board_end_date || null,
+            board_id //does not exist?
         ]
     )
 
@@ -92,5 +103,6 @@ module.exports = {
     getAllBoardMembers,
     addBoardMember,
     deleteBoardMember, 
-    updateBoardMember
+    updateBoardMember,
+    getBoardMemberByResidentId
 };

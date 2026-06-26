@@ -21,6 +21,19 @@ const selectResidentById = async(resident_id, conn) => {
     return rows[0];
 };
 
+const selectPersonByResidentId = async(resident_id, conn) => {
+
+    const[rows] = await conn.query(`
+        SELECT person_id
+        FROM Resident
+        WHERE resident_id = ?`,
+        [resident_id]
+    );
+
+    return rows[0];
+}
+
+
 /**
  * Fetches all records in the Resident table
  * 
@@ -102,7 +115,7 @@ const updateResident = async(data, conn) => {
         UPDATE Resident
         SET residency_start_date = ?,
             residency_end_date = ?,
-            is_board_member = ?,
+            is_board_member = ?
         WHERE resident_id = ?`,
         [
             data.residency_start_date,
@@ -117,6 +130,7 @@ const updateResident = async(data, conn) => {
 
 module.exports = {
     selectResidentById,
+    selectPersonByResidentId,
     getAllResidents,
     addResident,
     deleteResident,

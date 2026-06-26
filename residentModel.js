@@ -112,7 +112,7 @@ const createResident = async(data) => {
 
 
 //TODO: updateResident()
-const editResident = async(data) => {
+const updateResident = async(data) => {
     const conn = await pool.getConnection();
 
     try {
@@ -238,6 +238,6 @@ module.exports = {
     createResident,
     getAllResidents, 
     deleteResident,
-    editResident
+    updateResident
 }
 

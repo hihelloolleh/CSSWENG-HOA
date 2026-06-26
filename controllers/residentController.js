@@ -35,14 +35,14 @@ const addResident = async(req, res) => {
     }
 }
 
-const editResident = async(req, res) => {
+const updateResident = async(req, res) => {
     try {
         const data = {
             ...req.body,
             residentId: req.params.id
         };
         
-        await residentModel.editResident(data);
+        await residentService.updateResident(data);
         res.redirect('/residents?success=Resident+updated+successfully.');
     } catch(err) {
         console.error('Edit Resident error: ', err);
@@ -65,5 +65,5 @@ module.exports = {
     getResidents,
     addResident,
     deleteResident, 
-    editResident
+    updateResident
 };

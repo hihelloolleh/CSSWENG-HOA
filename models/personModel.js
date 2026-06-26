@@ -113,7 +113,7 @@ const deletePerson = async(person_id) => {
  * @param {*} data - person data
  * @returns - the number of rows updated
  */
-const updatePerson = async(data, conn) => {
+const updatePerson = async(data, person_id, conn) => {
 
     const [result] = await conn.query(
             `UPDATE Person
@@ -127,7 +127,7 @@ const updatePerson = async(data, conn) => {
                 data.last_name,
                 data.email || null,
                 data.contact_num || null,
-                rows[0].person_id
+                person_id
             ]
         );
 
