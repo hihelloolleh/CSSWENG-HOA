@@ -9,6 +9,7 @@ const getEmployees = async (req, res) => {
         return res.render('employees', {
             title: 'Employees',
             activePage: 'employees',
+            pageCSS: 'employees.css',
             employees
         });
 
