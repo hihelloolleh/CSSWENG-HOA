@@ -89,10 +89,11 @@ const createTables = async() => {
                 vehicle_id INT AUTO_INCREMENT PRIMARY KEY, 
                 type ENUM("Car", "Motorcycle", "E-Bike", "Others"),
                 plate_number VARCHAR(10),
-                color VARCHAR(255),
-                make VARCHAR(255),
-                model VARCHAR(255),
-                sticker_year YEAR
+                color VARCHAR(255) NOT NULL,
+                make VARCHAR(255) NOT NULL,
+                model VARCHAR(255) NOT NULL,
+                sticker_year YEAR,
+                is_active BOOLEAN DEFAULT TRUE
             );
         
         `;

@@ -9,6 +9,7 @@ router.get('/', vehicleController.getVehicles);
 router.post('/register', vehicleController.registerVehicle);
 
 // update vehicle info
+router.post('/update/:id', vehicleController.updateVehicle);
 
 // remove a vehicle 
 router.post('/delete/:id', vehicleController.deleteVehicle);
