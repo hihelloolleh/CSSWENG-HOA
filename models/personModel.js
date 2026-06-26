@@ -22,6 +22,25 @@ const selectPersonById = async(person_id, conn) => {
 
     return rows[0];
 };
+/**
+ * Fetches a person record given the first and last name
+ * 
+ * @param {*} first_name - first name of person
+ * @param {*} last_name - last name of person
+ * @param {*} conn 
+ * @returns person record with the given name
+ */
+const selectPersonByName = async(first_name, last_name, conn) => {
+
+    const[rows] = await conn.query(`
+        SELECT person_id
+        FROM Person
+        WHERE first_name = ? AND last_name = ?`,
+        [first_name, last_name]
+    );
+
+    return rows[0];
+}
 
 /**
  * Fetches all records in the Person table
@@ -121,5 +140,6 @@ module.exports = {
     getAllPersons,
     addPerson,
     deletePerson,
-    updatePerson
+    updatePerson,
+    selectPersonByName
 };

@@ -30,7 +30,8 @@ const addResident = async(req, res) => {
         
     } catch(err) {
         console.log("Failed to add resident: ", err);
-       res.redirect('/residents?error=Failed+to+add+resident.');
+       res.redirect(`/residents?error=${encodeURIComponent(err.message)}`);
+       //if error is duplicate resident, 
     }
 }
 
