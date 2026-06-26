@@ -5,5 +5,5 @@
 
 
 ##### If getting an error trying to load residents page: 
-- Drop old hoa_schema and create a new one
+- Drop old hoa_db schema and create a new one (same name)
 - Run app.js again 
