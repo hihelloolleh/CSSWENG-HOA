@@ -1,21 +1,21 @@
 <!-- ============================================================
-     PROPERTY VIEW
+     PROPERTY VIEW — Full CRUD
      Layout: views/layouts/main.ejs (has sidebar)
      Controller: controllers/propertyController.js
+     Model: models/propertyModel.js
      Extra CSS: property.css (passed via pageCSS in controller)
-     SPRINT 2+: Loop through properties array from DB.
      ============================================================ -->
 
-<div class="main-wrapper"> 
-    <div class="sidebar-open nav-item"> 
+<div class="main-wrapper">
+    <div class="sidebar-open nav-item">
         <i class="fa-solid fa-bars"></i>
         <span>Open Sidebar</span>
     </div>
-    
+
     <header class="topbar">
         <div class="topbar-left">
             <h1 class="page-title">Properties</h1>
-            <p class="page-subtitle">View, edit, and manage properties.</p>
+            <p class="page-subtitle">View, add, edit, and manage all properties</p>
         </div>
         <div class="topbar-right">
             <div class="topbar-user">
@@ -29,111 +29,197 @@
             </div>
         </div>
     </header>
-    
+
     <main class="content">
+
+        <% if (typeof success !== 'undefined' && success) { %>
+            <div class="alert alert-success">
+                <i class="fa-solid fa-circle-check"></i> <%= success %>
+            </div>
+        <% } %>
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="alert alert-error">
+                <i class="fa-solid fa-circle-exclamation"></i> <%= error %>
+            </div>
+        <% } %>
+
+        <!-- ACTION BUTTONS -->
         <div class="action-buttons">
-            <!-- TODO (SPRINT 2+): WIRE THESE BUTTONS TO THEIR BACKEND ACTIONS -->
-            <button class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add Property
+            <button class="btn btn-primary" onclick="openAddModal()">
+                <i class="fa-solid fa-plus"></i> Add Property
             </button>
-            <button class="btn btn-secondary"><i class="fa-solid fa-upload"></i>Import CSV</button>
-            <button class="btn btn-secondary"><i class="fa-solid fa-download"></i>Export CSV</button> 
         </div>
 
+        <!-- SEARCH -->
         <div class="search-bar">
-            <input type="text" class="search-input" placeholder="Search by name, email, or property..." id="searchInput">
+            <input type="text" class="search-input" id="searchInput"
+                   placeholder="Search by street name, type, or owner..."
+                   oninput="filterTable()">
         </div>
 
-        <div class="property-table table-container">
-            <table class="data-table">
+        <!-- DATA TABLE -->
+        <div class="table-container">
+            <table class="data-table" id="propertyTable">
                 <thead>
                     <tr>
-                        <th class="checkbox-col"><input type="checkbox" id="selectAll"></th>
-                        <th>Property Address</th>
-                        <th>Lot/Unit</th>
-                        <th>Owner</th>
-                        <th>Status</th>
-                        <th>Property Details</th>
+                        <th>Street Name</th>
+                        <th>Property Type</th>
+                        <th>Homeowner</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody id="tableBody">
-                    <!-- TODO (SPRINT 2+): LOOP THROUGH properties ARRAY FROM DB -->
-                    <!-- <% properties.forEach(p => { %> -->
-                    <!-- <tr> -->
-                    <!--   <td><input type="checkbox"></td> -->
-                    <!--   <td><%= p.street_address %></td> -->
-                    <!--   <td><%= p.lot_number %></td> -->
-                    <!--   <td>...</td> -->
-                    <!--   <td>...</td> -->
-                    <!--   <td><%= p.status %></td> -->
-                    <!-- </tr> -->
-                    <!-- <% }) %> -->
-                    <tr>
-                        <td class="checkbox-col"><input type="checkbox"></td>
-                        <td>12 Sampaguita St.</td>
-                        <td>100</td>
-                        <td>Clark Kent</td>
-                        <td>Active</td>
-                        <td><button class="btn btn-secondary"><i class="fa-solid fa-house"></i>View Details </button></td>
-                        <td>
-                            <button class="btn-icon""><i class="fa-solid fa-edit"></i></button>
-                            <button class="btn-icon btn-icon-danger"><i class="fa-solid fa-trash"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="checkbox-col"><input type="checkbox"></td>
-                        <td>14 Sampaguita St.</td>
-                        <td>101</td>
-                        <td>Bruce Wayne</td>
-                        <td>Active</td>
-                        <td><button class="btn btn-secondary"><i class="fa-solid fa-house"></i>View Details </button></td>
-                        <td>
-                            <button class="btn-icon""><i class="fa-solid fa-edit"></i></button>
-                            <button class="btn-icon btn-icon-danger"><i class="fa-solid fa-trash"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="checkbox-col"><input type="checkbox"></td>
-                        <td>16 Sampaguita St.</td>
-                        <td>102</td>
-                        <td>Christina Koch</td>
-                        <td>Active</td>
-                        <td><button class="btn btn-secondary"><i class="fa-solid fa-house"></i>View Details </button></td>
-                        <td>
-                            <button class="btn-icon""><i class="fa-solid fa-edit"></i></button>
-                            <button class="btn-icon btn-icon-danger"><i class="fa-solid fa-trash"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="checkbox-col"><input type="checkbox"></td>
-                        <td>18 Sampaguita St.</td>
-                        <td>103</td>
-                        <td>Reid Wiseman</td>
-                        <td>Active</td>
-                        <td><button class="btn btn-secondary"><i class="fa-solid fa-house"></i>View Details </button></td>
-                        <td>
-                            <button class="btn-icon""><i class="fa-solid fa-edit"></i></button>
-                            <button class="btn-icon btn-icon-danger"><i class="fa-solid fa-trash"></i></button>
-                        </td>
-                    </tr>
+                <tbody>
+                    <% if (properties.length === 0) { %>
+                        <tr>
+                            <td colspan="4" class="empty-state">
+                                No property records found. Click "Add Property" to create one.
+                            </td>
+                        </tr>
+                    <% } else { %>
+                        <% properties.forEach(p => { %>
+                            <tr>
+                                <td><strong><%= p.street_name %></strong></td>
+                                <td><%= p.property_type %></td>
+                                <td><%= p.owner_name || '—' %></td>
+                                <td>
+                                    <button class="btn-icon"
+                                            data-id="<%= p.property_id %>"
+                                            data-street="<%= p.street_name %>"
+                                            data-type="<%= p.property_type %>"
+                                            data-ownerid="<%= p.owner_resident_id || '' %>"
+                                            onclick="openEditModal(this)">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </button>
+                                    <button class="btn-icon btn-icon-danger"
+                                            data-id="<%= p.property_id %>"
+                                            data-street="<%= p.street_name %>"
+                                            onclick="confirmDelete(this.dataset.id, this.dataset.street)">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    <% } %>
                 </tbody>
             </table>
         </div>
-    </main> 
+    </main>
 </div>
+
+<!-------------------------------- ADD / EDIT MODAL --------------------------------->
+<div id="propertyModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitle">Add Property</h2>
+            <button class="modal-close" onclick="closeModal('propertyModal')">&times;</button>
+        </div>
+        <form id="propertyForm" method="POST" action="/properties">
+            <input type="hidden" id="property_id" name="property_id">
+            <div class="modal-body">
+
+                <div class="form-group">
+                    <label for="street_name">Street Name / Address *</label>
+                    <input type="text" id="street_name" name="street_name"
+                           required placeholder="e.g. 12 Sampaguita St.">
+                </div>
+
+                <div class="form-group">
+                    <label for="property_type">Property Type *</label>
+                    <select id="property_type" name="property_type" required>
+                        <option value="">-- Select type --</option>
+                        <option value="House">House</option>
+                        <option value="Others">Others</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="owner_resident_id">Homeowner (optional)</label>
+                    <select id="owner_resident_id" name="owner_resident_id">
+                        <option value="">-- No homeowner assigned --</option>
+                        <% residents.forEach(r => { %>
+                            <option value="<%= r.resident_id %>"><%= r.full_name %></option>
+                        <% }) %>
+                    </select>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('propertyModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="submitBtn">Add Property</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-------------------------------- DELETE MODAL --------------------------------->
+<div id="deleteModal" class="modal">
+    <div class="modal-content" style="max-width: 450px;">
+        <div class="modal-header">
+            <h2>Delete Property</h2>
+            <button class="modal-close" onclick="closeModal('deleteModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p>Are you sure you want to delete <strong id="deletePropertyName"></strong>?</p>
+            <p style="color: #dc3545; font-size: 13px; margin-top: 8px; font-weight: 500;">This operation cannot be undone.</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('deleteModal')">Cancel</button>
+            <form id="deleteForm" method="POST">
+                <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script src="/js/sidebar.js"></script>
 <script>
-    function openTab(evt, tabName) {
-        var i, tabcontent, tablinks;
-        tabcontent = document.getElementsByClassName("tabcontent");
-        for (i = 0; i < tabcontent.length; i++) {
-            tabcontent[i].style.display = "none";
-        }
-        tablinks = document.getElementsByClassName("tablinks");
-        for (i = 0; i < tablinks.length; i++) {
-            tablinks[i].className = tablinks[i].className.replace(" active", "");
-        }
-        document.getElementById(tabName).style.display = "block";
-        evt.currentTarget.className += " active";
+    function openAddModal() {
+        document.getElementById('modalTitle').textContent  = 'Add Property';
+        document.getElementById('submitBtn').textContent   = 'Add Property';
+        document.getElementById('propertyForm').action     = '/properties';
+        document.getElementById('propertyForm').reset();
+        document.getElementById('property_id').value       = '';
+        document.getElementById('propertyModal').classList.add('active');
     }
+
+    function openEditModal(btn) {
+        document.getElementById('modalTitle').textContent       = 'Edit Property';
+        document.getElementById('submitBtn').textContent        = 'Save Changes';
+        document.getElementById('propertyForm').action          = '/properties/' + btn.dataset.id + '/update';
+        document.getElementById('property_id').value            = btn.dataset.id;
+        document.getElementById('street_name').value            = btn.dataset.street;
+        document.getElementById('property_type').value          = btn.dataset.type;
+        document.getElementById('owner_resident_id').value      = btn.dataset.ownerid || '';
+        document.getElementById('propertyModal').classList.add('active');
+    }
+
+    function confirmDelete(id, streetName) {
+        document.getElementById('deletePropertyName').textContent = streetName;
+        document.getElementById('deleteForm').action = '/properties/' + id + '/delete';
+        document.getElementById('deleteModal').classList.add('active');
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).classList.remove('active');
+    }
+
+    // Close on backdrop click
+    window.onclick = function(event) {
+        const propertyModal = document.getElementById('propertyModal');
+        const deleteModal   = document.getElementById('deleteModal');
+        if (event.target === propertyModal) closeModal('propertyModal');
+        if (event.target === deleteModal)   closeModal('deleteModal');
+    };
+
+    function filterTable() {
+        const q = document.getElementById('searchInput').value.toLowerCase();
+        document.querySelectorAll('#propertyTable tbody tr').forEach(row => {
+            if (row.cells.length === 1 && row.cells[0].classList.contains('empty-state')) return;
+            row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+        });
+    }
+
+    setTimeout(() => {
+        document.querySelectorAll('.alert').forEach(a => a.style.display = 'none');
+    }, 4000);
 </script>

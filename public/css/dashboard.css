@@ -220,6 +220,14 @@ body {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 16px;
+    margin-bottom: -1vw;
+}
+
+.row2 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 0.1vw;
 }
 
 .stat-card {
@@ -243,6 +251,8 @@ body {
 .stat-icon.green  { background: #e8f5e9; color: #526F50; }
 .stat-icon.blue   { background: #e3f2fd; color: #1976d2; }
 .stat-icon.orange { background: #fff3e0; color: #e65100; }
+.stat-icon.red    { background: #ffe0e0; color: #e60000; }
+.stat-icon.yellow { background: #fdffe0; color: #d8a304; }
 .stat-icon.purple { background: #f3e5f5; color: #7b1fa2; }
 .stat-icon.teal   { background: #e0f7fa; color: #00695c; }
 
