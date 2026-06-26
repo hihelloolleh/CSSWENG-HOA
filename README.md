@@ -3,6 +3,7 @@
 - Push any css changes to public/css
 - Refer to db_conn_instructions for connecting to db server
 
-If getting an error trying to load residents page: 
+
+##### If getting an error trying to load residents page: 
 - Drop old hoa_schema and create a new one
 - Run app.js again 
