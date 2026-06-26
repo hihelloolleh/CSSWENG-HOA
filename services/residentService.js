@@ -14,8 +14,16 @@ const addResident = async(data) => {
         //create the person record
         const person_id = await personModel.addPerson(data, conn);
 
+        if(!person_id) {
+            throw new Error("Failed to create Person record");
+        }
+
         //create the resident record
         const resident_id = await residentModel.addResident(data, person_id, conn);
+
+        if(!resident_id) {
+            throw new Error("Failed to create Resident record");
+        }
 
         //If resident is a board member
         if(data.is_board_member === '1') {
