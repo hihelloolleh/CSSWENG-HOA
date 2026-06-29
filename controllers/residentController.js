@@ -2,6 +2,7 @@
 // manages the Resident table  
 // SPRINT 2+: connect all functions to the database via models.
 const residentModel = require('../models/residentModel');
+const residentService = require('../services/residentService');
 
 const getResidents = async (req, res) => {
     try {
@@ -24,23 +25,24 @@ const getResidents = async (req, res) => {
 
 const addResident = async(req, res) => {
     try {
-        await residentModel.createResident(req.body);
-         return res.redirect('/residents');
+        await residentService.addResident(req.body);
+        res.redirect('/residents?success=Resident+added+successfully.');
         
     } catch(err) {
         console.log("Failed to add resident: ", err);
-        return res.status(500).send("Server Error");
+       res.redirect(`/residents?error=${encodeURIComponent(err.message)}`);
+       //if error is duplicate resident, 
     }
 }
 
-const editResident = async(req, res) => {
+const updateResident = async(req, res) => {
     try {
         const data = {
             ...req.body,
             residentId: req.params.id
         };
         
-        await residentModel.editResident(data);
+        await residentService.updateResident(data);
         res.redirect('/residents?success=Resident+updated+successfully.');
     } catch(err) {
         console.error('Edit Resident error: ', err);
@@ -63,5 +65,5 @@ module.exports = {
     getResidents,
     addResident,
     deleteResident, 
-    editResident
+    updateResident
 };
