@@ -11,7 +11,9 @@ const selectPersonById = async(person_id, conn) => {
         SELECT 
             person_id,
             first_name,
+            middle_name,
             last_name,
+            suffix,
             birth_date,
             email,
             contact_num

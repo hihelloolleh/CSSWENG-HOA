@@ -13,7 +13,6 @@ const selectResidentById = async(resident_id, conn) => {
                 resident_id,
                 residency_start_date,
                 residency_end_date,
-                is_board_member,
                 person_id
             FROM Resident WHERE resident_id = ?`,
             [resident_id]
@@ -50,16 +49,10 @@ const getAllResidents = async() => {
             Person.email,
             Person.contact_num,
             Resident.residency_start_date,
-            Resident.residency_end_date,
-            Resident.is_board_member,
-            Board_Member.position,
-            Board_Member.board_start_date,
-            Board_Member.board_end_date
+            Resident.residency_end_date
         FROM Resident
         JOIN Person
-            ON Resident.person_id = Person.person_id
-        LEFT JOIN Board_Member
-            ON Resident.resident_id = Board_Member.resident_id`
+            ON Resident.person_id = Person.person_id`
     );
 
     return rows;
@@ -73,13 +66,12 @@ const getAllResidents = async() => {
  */
 const addResident = async(data, person_id, conn) => {
     const [result] = await conn.query(`
-        INSERT INTO Resident (person_id, residency_start_date, residency_end_date, is_board_member)
-        VALUES(?, ?, ?, ?)`,
+        INSERT INTO Resident (person_id, residency_start_date, residency_end_date)
+        VALUES(?, ?, ?)`,
         [
             person_id,
             data.residency_start_date,
             data.residency_end_date || null,
-            data.is_board_member 
         ]
     );
 
@@ -114,13 +106,11 @@ const updateResident = async(data, conn) => {
     const [result] = await conn.query(`
         UPDATE Resident
         SET residency_start_date = ?,
-            residency_end_date = ?,
-            is_board_member = ?
+            residency_end_date = ?
         WHERE resident_id = ?`,
         [
             data.residency_start_date,
             data.residency_end_date || null,
-            data.is_board_member,
             data.resident_id
         ]
     );
