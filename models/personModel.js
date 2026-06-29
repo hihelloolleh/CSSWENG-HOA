@@ -122,13 +122,15 @@ const updatePerson = async(data, person_id, conn) => {
             SET first_name = ?,
                 last_name = ?,
                 email = ?,
-                contact_num = ?
+                contact_num = ?,
+                birth_date = ?
             WHERE person_id = ?`,
             [
                 data.first_name,
                 data.last_name,
                 data.email || null,
                 data.contact_num || null,
+                data.birth_date || null,
                 person_id
             ]
         );
