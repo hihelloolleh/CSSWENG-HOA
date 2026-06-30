@@ -30,18 +30,29 @@ exports.registerVehicle = async (req, res) => {
     const model = req.body.model ? req.body.model.trim() : '';
     const color = req.body.color ? req.body.color.trim() : '';
     const sticker_year = req.body.sticker_year || null;
-    const resident_id = req.body.resident_id;
     
+    // multiple residents
+    let resident_ids = req.body.resident_ids;
+
+    if (resident_ids){
+        resident_ids = Array.isArray(resident_ids) ? resident_ids : [resident_ids];
+    }
+    else{
+        resident_ids = [];
+    }
+    
+
     if (!plate_number){
         return res.status(400).send("Plate number is required.");
     }
 
-    if (!type || !plate_number || !make || !model || !color || !resident_id) {
-        return res.status(400).send("Type, Plate number, Make, Model, Color, and Resident are required.");
+    if (!type || !plate_number || !make || !model || !color || resident_ids.length === 0) {
+        return res.status(400).send("Type, Plate number, Make, Model, Color, and Residents are required.");
     }
 
     try{
         const existing = await VehicleModel.findByPlate(plate_number);
+        
         if (existing.length > 0){
             return res.status(400).send("Plate number is already registered in the system.");
         }
@@ -50,8 +61,8 @@ exports.registerVehicle = async (req, res) => {
             type, plate_number, make, model, color, sticker_year
         });
         
-        if (resident_id){
-            await VehicleModel.linkToResident(resident_id, newVehicleId);
+        if (resident_ids){
+            await VehicleModel.updateVehicleResidents(newVehicleId, resident_ids);
         }
 
         res.redirect('/vehicles');
@@ -72,7 +83,15 @@ exports.updateVehicle = async (req, res) => {
     const model = req.body.model ? req.body.model.trim() : '';
     const color = req.body.color ? req.body.color.trim() : '';
     const sticker_year = req.body.sticker_year || null;
-    const resident_id = req.body.resident_id || null;
+    
+    let resident_ids = req.body.resident_ids;
+
+    if (resident_ids){
+        resident_ids = Array.isArray(resident_ids) ? resident_ids : [resident_ids];
+    }
+    else{
+        resident_ids = [];
+    }
     
     if (!type || !plate_number || !make || !model || !color) {
         return res.status(400).send("Type, Plate Number, Make, Model, and Color are required.");
@@ -87,7 +106,7 @@ exports.updateVehicle = async (req, res) => {
 
         await VehicleModel.updateVehicleData(vehicleId, type, plate_number, make, model, color, sticker_year);
         
-        await VehicleModel.updateVehicleResident(vehicleId, resident_id);
+        await VehicleModel.updateVehicleResidents(vehicleId, resident_ids);
 
         res.redirect('/vehicles');
     }
@@ -101,7 +120,7 @@ exports.deleteVehicle = async (req, res) => {
     try{
         const vehicleId = req.params.id;
         
-        await VehicleModel.softDeleteVehicle(vehicleId);
+        await VehicleModel.deleteVehicle(vehicleId);
 
         res.redirect('/vehicles');
     }

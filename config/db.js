@@ -92,8 +92,7 @@ const createTables = async() => {
                 color VARCHAR(255) NOT NULL,
                 make VARCHAR(255) NOT NULL,
                 model VARCHAR(255) NOT NULL,
-                sticker_year YEAR,
-                is_active BOOLEAN DEFAULT TRUE
+                sticker_year YEAR
             );
         
         `;

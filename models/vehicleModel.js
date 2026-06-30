@@ -4,13 +4,13 @@ const VehicleModel = {
     getAllVehicles: async () =>{
         const query = `
             SELECT v.type, v.vehicle_id, v.plate_number, v.make, v.model, v.color, v.sticker_year, 
-            CONCAT(p.first_name, ' ', p.last_name) AS homeowner,
-            rv.resident_id
+            GROUP_CONCAT(CONCAT(p.first_name, ' ', p.last_name) SEPARATOR ', ') AS homeowners,
+            GROUP_CONCAT(rv.resident_id SEPARATOR ',') AS resident_ids 
             FROM Vehicle v
             LEFT JOIN Resident_Vehicle rv ON v.vehicle_id = rv.vehicle_id
             LEFT JOIN Resident r ON rv.resident_id = r.resident_id
             LEFT JOIN Person p ON r.person_id = p.person_id
-            WHERE v.is_active = TRUE
+            GROUP BY v.vehicle_id
         `;
 
         const [rows] = await pool.execute(query);
@@ -63,19 +63,19 @@ const VehicleModel = {
         );
     },
 
-    updateVehicleResident: async (vehicleId, residentId) => {
+    updateVehicleResidents: async (vehicleId, residentIds) => {
         await pool.execute('DELETE FROM Resident_Vehicle WHERE vehicle_id = ?', [vehicleId]);
         
-        if (residentId) {
-            await pool.execute(
-                'INSERT INTO Resident_Vehicle (resident_id, vehicle_id) VALUES (?, ?)', 
-                [residentId, vehicleId]
-            );
+        if (residentIds && residentIds.length > 0) {
+            const insertQuery = 'INSERT INTO Resident_Vehicle (resident_id, vehicle_id) VALUES (?, ?)';
+            for (const resId of residentIds) {
+                await pool.execute(insertQuery, [resId, vehicleId]);
+            }
         }
     },
 
-    softDeleteVehicle: async (vehicleId) => {
-        await pool.execute('UPDATE Vehicle SET is_active = FALSE WHERE vehicle_id = ?', [vehicleId]);
+    deleteVehicle: async (vehicleId) => {
+        await pool.execute('DELETE FROM Vehicle WHERE vehicle_id = ?', [vehicleId]);
     },
 };
 

@@ -36,6 +36,14 @@
             </button>
         </div>
 
+        <div class="search-section" style="margin: 20px 0;">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search by plate, owner, type, or color..." style="width: 100%; max-width: 400px; padding: 10px; margin-bottom: 10px;">
+            
+            <div class="counter-text" style="font-weight: 600; color: #555;">
+                Total Vehicles: <span id="vehicleCount"><%= vehicles.length %></span>
+            </div>
+        </div>
+
         <div class="table-container">
             <table class="data-table">
                 <thead>
@@ -45,7 +53,7 @@
                         <th>Make & Model</th>
                         <th>Color</th>
                         <th>Sticker Year</th>
-                        <th>Homeowner</th>
+                        <th>Owner/s</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -70,14 +78,14 @@
                                     <% } %>
                                 </td>
                                 
-                                <td><%= vehicle.homeowner || 'Unassigned' %></td>
+                                <td><%= vehicle.homeowners || 'Unassigned' %></td>
                                 <td style="display: flex; gap: 10px;">
-                                    <button type="button" class="btn-icon" onclick="openEditModal('<%= vehicle.vehicle_id %>', '<%= vehicle.type %>', '<%= vehicle.plate_number %>', '<%= vehicle.make %>', '<%= vehicle.model %>', '<%= vehicle.color %>', '<%= vehicle.sticker_year %>', '<%= vehicle.resident_id || '' %>')">
+                                    <button type="button" class="btn-icon" onclick="openEditModal('<%= vehicle.vehicle_id %>', '<%= vehicle.type %>', '<%= vehicle.plate_number %>', '<%= vehicle.make %>', '<%= vehicle.model %>', '<%= vehicle.color %>', '<%= vehicle.sticker_year %>', '<%= vehicle.resident_ids || "" %>')">
                                         <i class="fa-solid fa-edit"></i>
                                     </button>
 
-                                    <form action="/vehicles/delete/<%= vehicle.vehicle_id %>" method="POST" style="display:inline;">
-                                        <button type="submit" class="btn-icon btn-icon-danger" onclick="return confirm('Archive this vehicle?');">
+                                    <form action="/vehicles/delete/<%= vehicle.vehicle_id %>" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you wish to PERMANENTLY remove this vehicle? (This action CANNOT be undone)');">
+                                        <button type="submit" class="btn-icon btn-icon-danger">
                                             <i class="fa-solid fa-trash"></i>
                                         </button>
                                     </form>
@@ -133,16 +141,25 @@
                             <input type="number" name="sticker_year" placeholder="2026" required>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label>Vehicle Owner</label>
-                        <select name="resident_id" class="form-control" style="width: 100%; padding: 8px;" required>
-                            <option value="">Select Owner</option>
+                    <div class="form-group" style="margin-top: 15px;">
+                        <label>Owners (Check all residents that own this vehicle)</label>
+                        
+                        <div class="checkbox-list-container" style="max-height: 150px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; border-radius: 4px;">
                             <% if (locals.residents) { %>
                                 <% residents.forEach(resident => { %>
-                                    <option value="<%= resident.resident_id %>"><%= resident.full_name %></option>
+                                    <div style="margin-bottom: 5px;">
+                                        <input type="checkbox" 
+                                            id="edit_res_<%= resident.resident_id %>" 
+                                            name="resident_ids" 
+                                            value="<%= resident.resident_id %>"
+                                            class="resident-checkbox">
+                                        <label for="edit_res_<%= resident.resident_id %>" style="display: inline; font-weight: normal; margin-left: 5px;">
+                                            <%= resident.full_name %>
+                                        </label>
+                                    </div>
                                 <% }); %>
-                         <% } %>
-                        </select>
+                            <% } %>
+                        </div>
                     </div>
                     
                     <div class="modal-footer" style="margin-top: 20px;">
@@ -178,16 +195,25 @@
                     </select>
                 </div>
                 <div class="form-group" style="margin-top: 15px;">
-                    <label>Owner</label>
-                    <select id="edit_resident_id" name="resident_id" class="form-control" style="width: 100%; padding: 8px;">
-                        <option value="">Unassigned</option>
-                        <% if (locals.residents) { %>
-                            <% residents.forEach(resident => { %>
-                                <option value="<%= resident.resident_id %>"><%= resident.full_name %></option>
-                            <% }); %>
-                        <% } %>
-                    </select>
-                </div>
+                        <label>Owners (Check all residents that own this vehicle)</label>
+                        
+                        <div class="checkbox-list-container" style="max-height: 150px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; border-radius: 4px;">
+                            <% if (locals.residents) { %>
+                                <% residents.forEach(resident => { %>
+                                    <div style="margin-bottom: 5px;">
+                                        <input type="checkbox" 
+                                            id="edit_res_<%= resident.resident_id %>" 
+                                            name="resident_ids" 
+                                            value="<%= resident.resident_id %>"
+                                            class="resident-checkbox">
+                                        <label for="edit_res_<%= resident.resident_id %>" style="display: inline; font-weight: normal; margin-left: 5px;">
+                                            <%= resident.full_name %>
+                                        </label>
+                                    </div>
+                                <% }); %>
+                            <% } %>
+                        </div>
+                    </div>
                 <div class="form-row">
                     <div class="form-group">
                         <label>Make</label>
@@ -219,8 +245,9 @@
     </div>
 </div>
 
+
 <script>
-    function openEditModal(id, type, plate_number, make, model, color, sticker_year, resident_id) {
+    function openEditModal(id, type, plate_number, make, model, color, sticker_year, resident_ids_string) {
         
         document.getElementById('editVehicleForm').action = '/vehicles/update/' + id;
         
@@ -230,10 +257,54 @@
         document.getElementById('edit_model').value = model || '';
         document.getElementById('edit_color').value = color || '';
         document.getElementById('edit_sticker_year').value = sticker_year || '';
-        document.getElementById('edit_resident_id').value = resident_id || '';
+        
+        const editForm = document.getElementById('editVehicleForm');
+        
+        editForm.querySelectorAll('.resident-checkbox').forEach(cb => cb.checked = false);
+        
+        if (resident_ids_string) {
+            const selectedIds = resident_ids_string.split(',');
+            
+            editForm.querySelectorAll('.resident-checkbox').forEach(cb => {
+                if (selectedIds.includes(cb.value)) {
+                    cb.checked = true;
+                }
+            });
+        }
         
         document.getElementById('editVehicleModal').classList.add('active');
     }
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.getElementById('searchInput');
+        const vehicleCountDisplay = document.getElementById('vehicleCount');
+        const tableBody = document.querySelector('.data-table tbody');
+        
+        const rows = tableBody.querySelectorAll('tr:not(:has(.empty-state))'); 
+
+        if (searchInput && rows.length > 0){
+            searchInput.addEventListener('input', function(){
+                const searchTerm = this.value.toLowerCase().trim();
+                let visibleCount = 0;
+
+                rows.forEach(row =>{
+                    const rowText = row.textContent.toLowerCase();
+                    
+                    if (rowText.includes(searchTerm)){
+                        row.style.display = '';
+                        visibleCount++;
+                    }
+                    else{
+                        row.style.display = 'none';
+                    }
+                });
+
+                vehicleCountDisplay.textContent = visibleCount;
+            });
+        }
+    });
 </script>
 
 <script src="/js/sidebar.js"></script>
