@@ -28,8 +28,8 @@ const VehicleModel = {
         return rows;
     },
 
-    findByPlate: async (plate_number) =>{
-        const [rows] = await pool.execute(
+    findByPlate: async (plate_number, conn = pool) =>{
+        const [rows] = await conn.execute(
             'SELECT vehicle_id FROM vehicle WHERE plate_number = ?',
             [plate_number]
         );
@@ -37,21 +37,22 @@ const VehicleModel = {
         return rows;
     },
 
-    createVehicle: async (vehicleData) =>{
+    createVehicle: async (vehicleData, conn = pool) =>{
         const { type, plate_number, make, model, color, sticker_year } = vehicleData;
-        const [result] = await pool.execute(
-            'INSERT INTO vehicle (type, plate_number, make, model, color, sticker_year) VALUES (?, ?, ?, ?, ?, ?)',
+
+        const [result] = await conn.execute(
+            'INSERT INTO Vehicle (type, plate_number, make, model, color, sticker_year) VALUES (?, ?, ?, ?, ?, ?)',
             [type, plate_number, make, model, color, sticker_year]
         );
 
         return result.insertId;
     },
 
-    updateVehicleData: async (vehicleId, type, plate_number, make, model, color, sticker_year) => {
-        await pool.execute(
-            `UPDATE Vehicle 
-             SET type = ?, plate_number = ?, make = ?, model = ?, color = ?, sticker_year = ? 
-             WHERE vehicle_id = ?`,
+    updateVehicleData: async (vehicleId, vehicleData, conn = pool) =>{
+        const { type, plate_number, make, model, color, sticker_year } = vehicleData;
+
+        await conn.execute(
+            `UPDATE Vehicle SET type = ?, plate_number = ?, make = ?, model = ?, color = ?, sticker_year = ? WHERE vehicle_id = ?`,
             [type, plate_number, make, model, color, sticker_year, vehicleId]
         );
     },
@@ -63,13 +64,13 @@ const VehicleModel = {
         );
     },
 
-    updateVehicleResidents: async (vehicleId, residentIds) => {
-        await pool.execute('DELETE FROM Resident_Vehicle WHERE vehicle_id = ?', [vehicleId]);
+    updateVehicleResidents: async (vehicleId, residentIds, conn = pool) => {
+        await conn.execute('DELETE FROM Resident_Vehicle WHERE vehicle_id = ?', [vehicleId]);
         
         if (residentIds && residentIds.length > 0) {
             const insertQuery = 'INSERT INTO Resident_Vehicle (resident_id, vehicle_id) VALUES (?, ?)';
             for (const resId of residentIds) {
-                await pool.execute(insertQuery, [resId, vehicleId]);
+                await conn.execute(insertQuery, [resId, vehicleId]);
             }
         }
     },

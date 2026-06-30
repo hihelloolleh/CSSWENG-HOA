@@ -1,11 +1,10 @@
-const VehicleModel = require('../models/vehicleModel');
+const vehicleService = require('../services/vehicleService');
+const VehicleModel = require('../models/vehicleModel'); // Keep this if get/delete still use it directly
 
-exports.getVehicles = async (req, res) => {
+exports.getVehicles = async (req, res) =>{
     try{
         const vehicles = await VehicleModel.getAllVehicles();
         const residents = await VehicleModel.getAllResidents();
-
-        console.log("Fetched Residents from DB:", residents);
 
         res.render('vehicles', {
             title: 'Vehicles',
@@ -15,14 +14,13 @@ exports.getVehicles = async (req, res) => {
             residents: residents
         });
     }
-    catch (error){
+    catch(error){
         console.error("Cannot fetch vehicles:", error);
         res.status(500).send("Server Error loading vehicles.");
     }
 };
 
-exports.registerVehicle = async (req, res) => {
-
+exports.registerVehicle = async (req, res) =>{
     // cleaning
     const plate_number = req.body.plate_number ? req.body.plate_number.trim().toUpperCase() : '';
     const type = req.body.type ? req.body.type.trim() : '';
@@ -31,18 +29,17 @@ exports.registerVehicle = async (req, res) => {
     const color = req.body.color ? req.body.color.trim() : '';
     const sticker_year = req.body.sticker_year || null;
     
-    // multiple residents
     let resident_ids = req.body.resident_ids;
 
-    if (resident_ids){
+    if(resident_ids){
         resident_ids = Array.isArray(resident_ids) ? resident_ids : [resident_ids];
     }
     else{
         resident_ids = [];
     }
     
-
-    if (!plate_number){
+    // initial validation 
+    if (!plate_number) {
         return res.status(400).send("Plate number is required.");
     }
 
@@ -50,30 +47,21 @@ exports.registerVehicle = async (req, res) => {
         return res.status(400).send("Type, Plate number, Make, Model, Color, and Residents are required.");
     }
 
+    // redirect to services for the uhhhhhh services stuff
     try{
-        const existing = await VehicleModel.findByPlate(plate_number);
+        const vehicleData = { type, plate_number, make, model, color, sticker_year };
         
-        if (existing.length > 0){
-            return res.status(400).send("Plate number is already registered in the system.");
-        }
-
-        const newVehicleId = await VehicleModel.createVehicle({
-            type, plate_number, make, model, color, sticker_year
-        });
-        
-        if (resident_ids){
-            await VehicleModel.updateVehicleResidents(newVehicleId, resident_ids);
-        }
+        await vehicleService.registerVehicle(vehicleData, resident_ids);
 
         res.redirect('/vehicles');
     }
-    catch (error){
-        console.error("Cannot save vehicle:", error);
-        res.status(500).send("Error saving vehicle.");
+    catch(error){
+        console.error("Cannot save vehicle:", error.message);
+        res.status(400).send(error.message); 
     }
 };
 
-exports.updateVehicle = async (req, res) => {
+exports.updateVehicle = async (req, res) =>{
     const vehicleId = req.params.id;
     
     // cleaning
@@ -86,42 +74,37 @@ exports.updateVehicle = async (req, res) => {
     
     let resident_ids = req.body.resident_ids;
 
-    if (resident_ids){
+    if(resident_ids){
         resident_ids = Array.isArray(resident_ids) ? resident_ids : [resident_ids];
     }
     else{
         resident_ids = [];
     }
     
-    if (!type || !plate_number || !make || !model || !color) {
+    // initial validation
+    if(!type || !plate_number || !make || !model || !color){
         return res.status(400).send("Type, Plate Number, Make, Model, and Color are required.");
     }
 
+    // los servicios
     try{
-        const existing = await VehicleModel.findByPlate(plate_number);
-
-        if (existing.length > 0 && existing[0].vehicle_id != vehicleId) {
-            return res.status(400).send("That plate number is already registered to another vehicle.");
-        }
-
-        await VehicleModel.updateVehicleData(vehicleId, type, plate_number, make, model, color, sticker_year);
+        const vehicleData = { type, plate_number, make, model, color, sticker_year };
         
-        await VehicleModel.updateVehicleResidents(vehicleId, resident_ids);
+        await vehicleService.updateVehicle(vehicleId, vehicleData, resident_ids);
 
         res.redirect('/vehicles');
     }
-    catch (error) {
-        console.error("Cannot update vehicle details:", error);
-        res.status(500).send("Error updating vehicle.");
+    catch(error){
+        console.error("Cannot update vehicle details:", error.message);
+        res.status(400).send(error.message);
     }
 };
 
-exports.deleteVehicle = async (req, res) => {
+exports.deleteVehicle = async (req, res) =>{
     try{
         const vehicleId = req.params.id;
         
         await VehicleModel.deleteVehicle(vehicleId);
-
         res.redirect('/vehicles');
     }
     catch (error){
