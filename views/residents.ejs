@@ -63,14 +63,13 @@
                     <th>Date of Birth</th>
                     <th>Email</th>
                     <th>Phone Number</th>
-                    <th>Board Member Status</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 <% if (residents.length === 0) { %>
                     <tr>
-                        <td colspan="6" class="empty-state">
+                        <td colspan="5" class="empty-state">
                             No resident records found. Click "Add Resident" to create one.
                         </td>
                     </tr>
@@ -81,7 +80,6 @@
                             <td><%= resident.birth_date ? resident.birth_date.toString().substring(0, 10) : '—' %></td>
                             <td><%= resident.email || '—' %></td>
                             <td><%= resident.contact_num || '—' %></td>
-                            <td><%= resident.is_board_member === 1 ? 'Yes' : 'No' %></td>
                             <td>
 
                                 <button class="btn-icon"
@@ -92,10 +90,6 @@
                                         data-phone="<%= resident.contact_num || '' %>"
                                         data-residentstart="<%= resident.residency_start_date ? resident.residency_start_date.toString().substring(0,10) : '' %>"
                                         data-residentend="<%= resident.residency_end_date ? resident.residency_end_date.toString().substring(0,10) : '' %>"
-                                        data-isboard="<%= resident.is_board_member %>"
-                                        data-role="<%= resident.position || '' %>"
-                                        data-boardstart="<%= resident.board_start_date ? resident.board_start_date.toString().substring(0, 10) : '' %>"
-                                        data-boardend="<%= resident.board_end_date ? resident.board_end_date.toString().substring(0, 10) : '' %>"
                                         onclick="openViewModal(this)">
                                     View info
                                 </button>
@@ -108,10 +102,6 @@
                                         data-phone="<%= resident.contact_num || '' %>"
                                         data-residentstart="<%= resident.residency_start_date ? resident.residency_start_date.toString().substring(0,10) : '' %>"
                                         data-residentend="<%= resident.residency_end_date ? resident.residency_end_date.toString().substring(0,10) : '' %>"
-                                        data-isboard="<%= resident.is_board_member %>"
-                                        data-role="<%= resident.position || '' %>"
-                                        data-boardstart="<%= resident.board_start_date ? resident.board_start_date.toString().substring(0, 10) : '' %>"
-                                        data-boardend="<%= resident.board_end_date ? resident.board_end_date.toString().substring(0, 10) : '' %>"
                                         onclick="openEditModal(this)">
                                     <i class="fa-solid fa-edit"></i>
                                 </button>
@@ -193,54 +183,8 @@
                         </div>
                     </div>
                 </div>
-                    
-                <div class="form-section" style="margin-top: 20px;">
-                    <h3>Vehicle Information</h3>
-                    <hr>
-                 </div>
-                    
-                <div class="form-section" style="margin-top: 20px;">
-                    <h3>Board Member Status</h3>
-                    <hr>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Is Board Member? *</label>
-                            <div class="radio-group">
-                                <input type="radio" id="yes" name="is_board_member" value="1" required>
-                                <label for="yes">Yes</label>
-                                
-                                <input type="radio" id="no" name="is_board_member" value="0" required>
-                                <label for="no">No</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="conditional-questions" style="display: none;">
-                        <div class="form-group">
-                            <label for="position">Board Position *</label>
-                            <select name="position" id="position">
-                                <option value="President">President</option>
-                                <option value="Vice President">Vice President</option>
-                                <option value="Secretary">Secretary</option>
-                                <option value="Treasurer">Treasurer</option>
-                                <option value="Board Member">Board Member</option>
-                            </select>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="board-start-date">Term Start Date </label>
-                                <input type="date" id="board-start-date" name="board_start_date">
-                            </div>
-
-                            <div class="form-group" id="board-end-container">
-                                <label for="board-end-date">Term End Date </label>
-                                <input type="date" id="board-end-date" name="board_end_date">
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
+               
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" onclick="closeModal('residentModal')">Cancel</button>
                 <button type="submit" class="btn btn-primary" id="submitBtn">Save Resident</button>
@@ -288,16 +232,6 @@
             <p><strong>Residency Start Date:</strong> <span id="view-residency-start">—</span></p>
             <p><strong>Residency End Date:</strong> <span id="view-residency-end">—</span></p>
             
-            <h3>Vehicle Information</h3>
-            <hr>
-
-            <div id="view-role-container" style="display: none;">
-                <h3>Board Member Information</h3>
-                <hr>
-                <p><strong>Position:</strong> <span id="view-role">—</span></p>
-                <p><strong>Term Start Date:</strong> <span id="view-boardstart">—</span></p>
-                <p><strong>Term End Date:</strong> <span id="view-boardend">—</span></p>
-            </div>
         </div>
     </div>
 </div>
@@ -329,10 +263,6 @@
         const residentStartDate = button.dataset.residentstart;
         const residentEndDate = button.dataset.residentend;    
 
-        const isBoard = button.dataset.isboard; 
-        const boardRole = button.dataset.role;
-        const boardStart = button.dataset.boardstart;
-        const boardEnd = button.dataset.boardend;
 
         
         document.getElementById('firstName').value = firstName;
@@ -343,16 +273,7 @@
 
         document.getElementById('residency-start-date').value = residentStartDate;
         document.getElementById('residency-end-date').value = residentEndDate;
-        document.getElementById('board-start-date').value = boardStart;
-        document.getElementById('board-end-date').value = boardEnd;
        
-        if(isBoard === '1') {
-            document.getElementById('yes').checked = true;
-            document.getElementById('position').value = boardRole;
-            
-        } else if(isBoard === '0') {
-             document.getElementById('no').checked = true; 
-        }
         
         document.getElementById('residentModal').classList.add('active');
     }
@@ -364,11 +285,6 @@
         const phone = button.dataset.phone;    
         const residentStartDate = button.dataset.residentstart;
         const residentEndDate = button.dataset.residentend;    
-
-        const isBoard = button.dataset.isboard; 
-        const boardRole = button.dataset.role;
-        const boardStart = button.dataset.boardstart;
-        const boardEnd = button.dataset.boardend;
        
         document.getElementById('view-name').textContent = name || '—';
         document.getElementById('view-dob').textContent = dob || '—';
@@ -377,19 +293,6 @@
         document.getElementById('view-residency-start').textContent = residentStartDate || '—';
         document.getElementById('view-residency-end').textContent = residentEndDate || 'Present';
 
-        const roleContainer = document.getElementById('view-role-container');
-    
-        if (isBoard === "1") {
-            document.getElementById('view-role').textContent = boardRole || '—';
-            document.getElementById('view-boardstart').textContent = boardStart || '—';
-            document.getElementById('view-boardend').textContent = boardEnd || 'Present'; 
-            
-            roleContainer.style.display = 'block'; 
-        } else {
-            roleContainer.style.display = 'none'; 
-        }
-
-       
         document.getElementById('viewModal').classList.add('active');
     }
 
@@ -421,27 +324,6 @@
         });
     }
 
-    //Displays additional questions if resident is a board member(position, term dates)
-    document.addEventListener("DOMContentLoaded", function () {
-        const yesRadio = document.getElementById("yes");
-        const noRadio = document.getElementById("no");
-        const conditionalSection = document.getElementById("conditional-questions");
-
-        if (!yesRadio || !noRadio || !conditionalSection) return;
-
-        function toggleQuestions() {
-            if (yesRadio && yesRadio.checked) {
-                conditionalSection.style.display = 'block';
-            } else {
-                conditionalSection.style.display = 'none';
-            }
-        }
-
-        yesRadio.addEventListener("change", toggleQuestions);
-        noRadio.addEventListener("change", toggleQuestions);
-        toggleQuestions();
-
-    });
 
     setTimeout(() => {
         document.querySelectorAll('.alert').forEach(a => a.style.display = 'none');
