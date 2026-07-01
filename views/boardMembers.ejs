@@ -1,0 +1,35 @@
+<!-- ============================================================
+     BOARD MEMBER VIEW — Full CRUD
+     Layout: views/layouts/main.ejs (has sidebar)
+     Controller: controllers/board-memberController.js
+     Model: models/board-memberModel.js
+     Extra CSS: board-member.css (passed via pageCSS in controller)
+     ============================================================ -->
+
+<div class="main-wrapper">
+    <div class="sidebar-open nav-item">
+        <i class="fa-solid fa-bars"></i>
+        <span>Open Sidebar</span>
+    </div>
+
+    <header class="topbar">
+        <div class="topbar-left">
+            <h1 class="page-title">Board Members</h1>
+            <p class="page-subtitle">View, add, edit, and manage all board members</p>
+        </div>
+        <div class="topbar-right">
+            <div class="topbar-user">
+                <div class="user-avatar">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <div class="user-info">
+                    <span class="user-name">Village Admin</span>
+                    <span class="user-role">Administrator</span>
+                </div>
+            </div>
+        </div>
+    </header>
+    <main class="content"></main>     
+</div>
+<script src="/js/sidebar.js"></script>
+ 
