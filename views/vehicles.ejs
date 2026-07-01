@@ -117,49 +117,53 @@
                             <option value="Others">Others</option>
                         </select>
                     </div>
+
                     <div class="form-group">
                         <label>Plate Number</label>
                         <input type="text" name="plate_number" required placeholder="ABC 1234">
                     </div>
+
                     <div class="form-row">
                         <div class="form-group">
                             <label>Make</label>
                             <input type="text" name="make" placeholder="e.g., Toyota" required>
                         </div>
+
                         <div class="form-group">
                             <label>Model</label>
                             <input type="text" name="model" placeholder="e.g., Vios" required>
                         </div>
                     </div>
+
                     <div class="form-row">
                         <div class="form-group">
                             <label>Color</label>
                             <input type="text" name="color" required>
                         </div>
+
                         <div class="form-group">
                             <label>Sticker Year</label>
                             <input type="number" name="sticker_year" placeholder="2026" required>
                         </div>
                     </div>
+
                     <div class="form-group" style="margin-top: 15px;">
-                        <label>Owners (Check all residents that own this vehicle)</label>
-                        
-                        <div class="checkbox-list-container" style="max-height: 150px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; border-radius: 4px;">
-                            <% if (locals.residents) { %>
-                                <% residents.forEach(resident => { %>
-                                    <div style="margin-bottom: 5px;">
-                                        <input type="checkbox" 
-                                            id="edit_res_<%= resident.resident_id %>" 
-                                            name="resident_ids" 
-                                            value="<%= resident.resident_id %>"
-                                            class="resident-checkbox">
-                                        <label for="edit_res_<%= resident.resident_id %>" style="display: inline; font-weight: normal; margin-left: 5px;">
-                                            <%= resident.full_name %>
-                                        </label>
-                                    </div>
-                                <% }); %>
-                            <% } %>
+                        <label>Owners</label>
+                        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                            <select id="add_resident_select" class="form-control" style="flex: 1; padding: 8px;">
+                                <option value="">Select Resident to Add as Vehicle Owner</option>
+                                <% if (locals.residents) { %>
+                                    <% residents.forEach(resident => { %>
+                                        <option value="<%= resident.resident_id %>"><%= resident.full_name %></option>
+                                    <% }); %>
+                                <% } %>
+                            </select>
+                            <button type="button" class="btn btn-secondary" onclick="addResidentToForm('add')">Add</button>
                         </div>
+                        
+                        <div id="add_resident_tags" style="display: flex; flex-wrap: wrap; gap: 8px; min-height: 44px; padding: 10px; border: 1px dashed #ccc; border-radius: 4px;"></div>
+                        
+                        <div id="add_hidden_inputs"></div>
                     </div>
                     
                     <div class="modal-footer" style="margin-top: 20px;">
@@ -184,6 +188,7 @@
                     <label>Plate Number</label>
                     <input type="text" id="edit_plate_number" name="plate_number" required>
                 </div>
+
                 <div class="form-group" style="margin-top: 15px;">
                     <label>Vehicle Type</label>
                     <select id="edit_type" name="type" class="form-control" style="width: 100%; padding: 8px;" required>
@@ -194,26 +199,26 @@
                         <option value="Others">Others</option>
                     </select>
                 </div>
+
                 <div class="form-group" style="margin-top: 15px;">
-                        <label>Owners (Check all residents that own this vehicle)</label>
-                        
-                        <div class="checkbox-list-container" style="max-height: 150px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; border-radius: 4px;">
+                    <label>Owners</label>
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                        <select id="edit_resident_select" class="form-control" style="flex: 1; padding: 8px;">
+                            <option value="">Select Resident to Add as Vehicle Owner</option>
                             <% if (locals.residents) { %>
                                 <% residents.forEach(resident => { %>
-                                    <div style="margin-bottom: 5px;">
-                                        <input type="checkbox" 
-                                            id="edit_res_<%= resident.resident_id %>" 
-                                            name="resident_ids" 
-                                            value="<%= resident.resident_id %>"
-                                            class="resident-checkbox">
-                                        <label for="edit_res_<%= resident.resident_id %>" style="display: inline; font-weight: normal; margin-left: 5px;">
-                                            <%= resident.full_name %>
-                                        </label>
-                                    </div>
+                                    <option value="<%= resident.resident_id %>"><%= resident.full_name %></option>
                                 <% }); %>
                             <% } %>
-                        </div>
+                        </select>
+                        <button type="button" class="btn btn-secondary" onclick="addResidentToForm('edit')">Add</button>
                     </div>
+                    
+                    <div id="edit_resident_tags" style="display: flex; flex-wrap: wrap; gap: 8px; min-height: 44px; padding: 10px; border: 1px dashed #ccc; border-radius: 4px;"></div>
+                    
+                    <div id="edit_hidden_inputs"></div>
+                </div>
+
                 <div class="form-row">
                     <div class="form-group">
                         <label>Make</label>
@@ -224,11 +229,13 @@
                         <input type="text" id="edit_model" name="model" required>
                     </div>
                 </div>
+
                 <div class="form-row">
                     <div class="form-group">
                         <label>Color</label>
                         <input type="text" id="edit_color" name="color" required>
                     </div>
+
                     <div class="form-group">
                         <label>Sticker Year</label>
                         <input type="number" id="edit_sticker_year" name="sticker_year">
@@ -245,9 +252,48 @@
     </div>
 </div>
 
-
 <script>
-    function openEditModal(id, type, plate_number, make, model, color, sticker_year, resident_ids_string) {
+    function addResidentToForm(mode){
+        const selectBox = document.getElementById(`${mode}_resident_select`);
+        const id = selectBox.value;
+        const name = selectBox.options[selectBox.selectedIndex]?.text;
+
+        if (!id) return;
+
+        const tagsContainer = document.getElementById(`${mode}_resident_tags`);
+        const hiddenContainer = document.getElementById(`${mode}_hidden_inputs`);
+
+        if (document.getElementById(`${mode}_hidden_${id}`)){
+            alert('This resident has already been added.');
+            return;
+        }
+
+        const tag = document.createElement('div');
+
+        tag.id = `${mode}_tag_${id}`;
+        tag.style.cssText = "background: #e0f7fa; color: #006064; padding: 4px 10px; border-radius: 15px; display: flex; align-items: center; gap: 8px; font-size: 14px;";
+        tag.innerHTML = `
+            ${name} 
+            <button type="button" style="border: none; background: transparent; color: red; cursor: pointer; font-weight: bold;" onclick="removeResidentFromForm('${mode}', '${id}')">&times;</button>
+        `;
+        tagsContainer.appendChild(tag);
+
+        const hiddenInput = document.createElement('input');
+        hiddenInput.type = "hidden";
+        hiddenInput.name = "resident_ids";
+        hiddenInput.value = id;
+        hiddenInput.id = `${mode}_hidden_${id}`;
+        hiddenContainer.appendChild(hiddenInput);
+        
+        selectBox.value = ''; 
+    }
+
+    function removeResidentFromForm(mode, id){
+        document.getElementById(`${mode}_tag_${id}`).remove();
+        document.getElementById(`${mode}_hidden_${id}`).remove();
+    }
+
+    function openEditModal(id, type, plate_number, make, model, color, sticker_year, resident_ids_string){
         
         document.getElementById('editVehicleForm').action = '/vehicles/update/' + id;
         
@@ -258,16 +304,18 @@
         document.getElementById('edit_color').value = color || '';
         document.getElementById('edit_sticker_year').value = sticker_year || '';
         
-        const editForm = document.getElementById('editVehicleForm');
+        document.getElementById('edit_resident_tags').innerHTML = '';
+        document.getElementById('edit_hidden_inputs').innerHTML = '';
         
-        editForm.querySelectorAll('.resident-checkbox').forEach(cb => cb.checked = false);
-        
-        if (resident_ids_string) {
+        if(resident_ids_string){
             const selectedIds = resident_ids_string.split(',');
+            const selectBox = document.getElementById('edit_resident_select');
             
-            editForm.querySelectorAll('.resident-checkbox').forEach(cb => {
-                if (selectedIds.includes(cb.value)) {
-                    cb.checked = true;
+            selectedIds.forEach(ownerId => {
+                const optionExists = selectBox.querySelector(`option[value="${ownerId}"]`);
+                if(optionExists){
+                    selectBox.value = ownerId;
+                    addResidentToForm('edit');
                 }
             });
         }
@@ -276,15 +324,16 @@
     }
 </script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
+<script> // search functionality
+
+    document.addEventListener('DOMContentLoaded', () =>{
         const searchInput = document.getElementById('searchInput');
         const vehicleCountDisplay = document.getElementById('vehicleCount');
         const tableBody = document.querySelector('.data-table tbody');
         
         const rows = tableBody.querySelectorAll('tr:not(:has(.empty-state))'); 
 
-        if (searchInput && rows.length > 0){
+        if(searchInput && rows.length > 0){
             searchInput.addEventListener('input', function(){
                 const searchTerm = this.value.toLowerCase().trim();
                 let visibleCount = 0;
@@ -293,11 +342,11 @@
                     const rowText = row.textContent.toLowerCase();
                     
                     if (rowText.includes(searchTerm)){
-                        row.style.display = '';
+                        row.style.display = ''; 
                         visibleCount++;
                     }
                     else{
-                        row.style.display = 'none';
+                        row.style.display = 'none'; 
                     }
                 });
 
