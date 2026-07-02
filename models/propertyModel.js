@@ -1,26 +1,17 @@
 const { pool } = require('../config/db');
 
-// Returns all properties with their Homeowner name (if assigned).
-const getAllProperties = async () => {
+// ── READ ─────────────────────────────────────────────────────────────────────
+
+const selectAllProperties = async () => {
     const [rows] = await pool.query(`
-        SELECT
-            p.property_id,
-            p.property_type,
-            p.street_name,
-            rp.resident_id        AS owner_resident_id,
-            CONCAT(per.first_name, ' ', per.last_name) AS owner_name
-        FROM Property p
-        LEFT JOIN Resident_Property rp
-            ON p.property_id = rp.property_id AND rp.type = 'Homeowner'
-        LEFT JOIN Resident r   ON rp.resident_id = r.resident_id
-        LEFT JOIN Person   per ON r.person_id     = per.person_id
-        ORDER BY p.property_id ASC
+        SELECT property_id, lot_number, property_type, street_name
+        FROM Property
+        ORDER BY street_name ASC, lot_number ASC
     `);
     return rows;
 };
 
-// Returns all residents for the homeowner dropdown.
-const getAllResidents = async () => {
+const selectAllResidents = async () => {
     const [rows] = await pool.query(`
         SELECT
             r.resident_id,
@@ -32,75 +23,70 @@ const getAllResidents = async () => {
     return rows;
 };
 
-const createProperty = async (data) => {
-    const conn = await pool.getConnection();
-    try {
-        await conn.beginTransaction();
-
-        const [result] = await conn.query(
-            `INSERT INTO Property (property_type, street_name) VALUES (?, ?)`,
-            [data.property_type, data.street_name]
-        );
-        const propertyId = result.insertId;
-
-        if (data.owner_resident_id) {
-            await conn.query(
-                `INSERT INTO Resident_Property (resident_id, property_id, type) VALUES (?, ?, 'Homeowner')`,
-                [data.owner_resident_id, propertyId]
-            );
-        }
-
-        await conn.commit();
-        return propertyId;
-    } catch (err) {
-        await conn.rollback();
-        throw err;
-    } finally {
-        conn.release();
-    }
+const selectResidentsByPropertyId = async (propertyId) => {
+    const [rows] = await pool.query(`
+        SELECT
+            r.resident_id,
+            CONCAT(per.first_name, ' ', per.last_name) AS full_name,
+            rp.type
+        FROM Resident_Property rp
+        JOIN Resident r   ON rp.resident_id = r.resident_id
+        JOIN Person   per ON r.person_id     = per.person_id
+        WHERE rp.property_id = ?
+        ORDER BY per.last_name ASC
+    `, [propertyId]);
+    return rows;
 };
 
-const updateProperty = async (data) => {
-    const conn = await pool.getConnection();
-    try {
-        await conn.beginTransaction();
+// ── WRITE (accept conn so they run inside service transactions) ───────────────
 
-        await conn.query(
-            `UPDATE Property SET property_type = ?, street_name = ? WHERE property_id = ?`,
-            [data.property_type, data.street_name, data.property_id]
-        );
-
-        // Replace the homeowner link
-        await conn.query(
-            `DELETE FROM Resident_Property WHERE property_id = ? AND type = 'Homeowner'`,
-            [data.property_id]
-        );
-
-        if (data.owner_resident_id) {
-            await conn.query(
-                `INSERT INTO Resident_Property (resident_id, property_id, type) VALUES (?, ?, 'Homeowner')`,
-                [data.owner_resident_id, data.property_id]
-            );
-        }
-
-        await conn.commit();
-    } catch (err) {
-        await conn.rollback();
-        throw err;
-    } finally {
-        conn.release();
-    }
+const insertProperty = async (data, conn) => {
+    const [result] = await conn.query(
+        `INSERT INTO Property (lot_number, property_type, street_name) VALUES (?, ?, ?)`,
+        [data.lot_number || null, data.property_type, data.street_name]
+    );
+    return result.insertId;
 };
 
-// Resident_Property rows cascade-delete automatically.
-const deleteProperty = async (propertyId) => {
-    await pool.query(`DELETE FROM Property WHERE property_id = ?`, [propertyId]);
+const updatePropertyById = async (data, conn) => {
+    const [result] = await conn.query(
+        `UPDATE Property SET lot_number = ?, property_type = ?, street_name = ? WHERE property_id = ?`,
+        [data.lot_number || null, data.property_type, data.street_name, data.property_id]
+    );
+    return result.affectedRows;
+};
+
+const deletePropertyById = async (propertyId) => {
+    const [result] = await pool.query(
+        `DELETE FROM Property WHERE property_id = ?`,
+        [propertyId]
+    );
+    return result.affectedRows;
+};
+
+const insertResidentProperty = async (resident_id, property_id, type, conn) => {
+    const [result] = await conn.query(
+        `INSERT INTO Resident_Property (resident_id, property_id, type) VALUES (?, ?, ?)`,
+        [resident_id, property_id, type]
+    );
+    return result.affectedRows;
+};
+
+const deleteResidentsByPropertyId = async (property_id, conn) => {
+    const [result] = await conn.query(
+        `DELETE FROM Resident_Property WHERE property_id = ?`,
+        [property_id]
+    );
+    return result.affectedRows;
 };
 
 module.exports = {
-    getAllProperties,
-    getAllResidents,
-    createProperty,
-    updateProperty,
-    deleteProperty,
+    selectAllProperties,
+    selectAllResidents,
+    selectResidentsByPropertyId,
+    insertProperty,
+    updatePropertyById,
+    deletePropertyById,
+    insertResidentProperty,
+    deleteResidentsByPropertyId,
 };

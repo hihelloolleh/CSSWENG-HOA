@@ -1,9 +1,9 @@
 <!-- ============================================================
      PROPERTY VIEW — Full CRUD
-     Layout: views/layouts/main.ejs (has sidebar)
+     Layout: views/layouts/main.ejs
      Controller: controllers/propertyController.js
      Model: models/propertyModel.js
-     Extra CSS: property.css (passed via pageCSS in controller)
+     Extra CSS: property.css
      ============================================================ -->
 
 <div class="main-wrapper">
@@ -19,9 +19,7 @@
         </div>
         <div class="topbar-right">
             <div class="topbar-user">
-                <div class="user-avatar">
-                    <i class="fa-solid fa-user"></i>
-                </div>
+                <div class="user-avatar"><i class="fa-solid fa-user"></i></div>
                 <div class="user-info">
                     <span class="user-name">Village Admin</span>
                     <span class="user-role">Administrator</span>
@@ -44,27 +42,32 @@
         <% } %>
 
         <!-- ACTION BUTTONS -->
-        <div class="action-buttons">
+        <div class="action-buttons" style="margin-bottom: 20px;">
             <button class="btn btn-primary" onclick="openAddModal()">
                 <i class="fa-solid fa-plus"></i> Add Property
             </button>
         </div>
 
         <!-- SEARCH -->
-        <div class="search-bar">
+        <div class="search-bar" style="margin-bottom: 12px;">
             <input type="text" class="search-input" id="searchInput"
-                   placeholder="Search by street name, type, or owner..."
+                   placeholder="Search by lot number, street, or type..."
                    oninput="filterTable()">
         </div>
+
+        <!-- PROPERTY COUNTER -->
+        <p class="property-count" id="propertyCount">
+            Showing <strong><%= properties.length %></strong> propert<%= properties.length === 1 ? 'y' : 'ies' %>
+        </p>
 
         <!-- DATA TABLE -->
         <div class="table-container">
             <table class="data-table" id="propertyTable">
                 <thead>
                     <tr>
+                        <th>Lot Number</th>
                         <th>Street Name</th>
                         <th>Property Type</th>
-                        <th>Homeowner</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -78,15 +81,20 @@
                     <% } else { %>
                         <% properties.forEach(p => { %>
                             <tr>
+                                <td><%= p.lot_number || '—' %></td>
                                 <td><strong><%= p.street_name %></strong></td>
                                 <td><%= p.property_type %></td>
-                                <td><%= p.owner_name || '—' %></td>
                                 <td>
                                     <button class="btn-icon"
                                             data-id="<%= p.property_id %>"
+                                            onclick="openViewModal(this.dataset.id)">
+                                        <i class="fa-solid fa-eye"></i> View Residents
+                                    </button>
+                                    <button class="btn-icon"
+                                            data-id="<%= p.property_id %>"
+                                            data-lot="<%= p.lot_number || '' %>"
                                             data-street="<%= p.street_name %>"
                                             data-type="<%= p.property_type %>"
-                                            data-ownerid="<%= p.owner_resident_id || '' %>"
                                             onclick="openEditModal(this)">
                                         <i class="fa-solid fa-pen"></i>
                                     </button>
@@ -114,32 +122,73 @@
             <button class="modal-close" onclick="closeModal('propertyModal')">&times;</button>
         </div>
         <form id="propertyForm" method="POST" action="/properties">
-            <input type="hidden" id="property_id" name="property_id">
             <div class="modal-body">
 
+                <!-- Lot Number -->
                 <div class="form-group">
-                    <label for="street_name">Street Name / Address *</label>
-                    <input type="text" id="street_name" name="street_name"
-                           required placeholder="e.g. 12 Sampaguita St.">
+                    <label for="lot_number">Lot Number</label>
+                    <input type="text" id="lot_number" name="lot_number" placeholder="e.g. 100">
                 </div>
 
+                <!-- Street Name dropdown -->
+                <div class="form-group">
+                    <label for="street_name">Street Name *</label>
+                    <select id="street_name" name="street_name" required>
+                        <option value="">-- Select street --</option>
+                        <option value="Alabastro">Alabastro</option>
+                        <option value="Cameo">Cameo</option>
+                        <option value="Coral">Coral</option>
+                        <option value="Diamante">Diamante</option>
+                        <option value="Esmeralda">Esmeralda</option>
+                        <option value="Maharlika">Maharlika</option>
+                        <option value="Nacar">Nacar</option>
+                        <option value="Perla">Perla</option>
+                        <option value="Rubi">Rubi</option>
+                        <option value="Topacio">Topacio</option>
+                        <option value="Zapiro">Zapiro</option>
+                    </select>
+                </div>
+
+                <!-- Property Type -->
                 <div class="form-group">
                     <label for="property_type">Property Type *</label>
                     <select id="property_type" name="property_type" required>
                         <option value="">-- Select type --</option>
                         <option value="House">House</option>
-                        <option value="Others">Others</option>
+                        <option value="Lot">Lot</option>
                     </select>
                 </div>
 
-                <div class="form-group">
-                    <label for="owner_resident_id">Homeowner (optional)</label>
-                    <select id="owner_resident_id" name="owner_resident_id">
-                        <option value="">-- No homeowner assigned --</option>
+                <!-- Resident Association Section -->
+                <div class="form-section-header">Add Residents</div>
+                <hr style="margin-bottom: 12px;">
+
+                <!-- Already-added residents list -->
+                <div id="addedResidentsList" class="resident-list"></div>
+
+                <!-- Hidden inputs (rebuilt by JS on every change) -->
+                <div id="residentInputs"></div>
+
+                <!-- Mini-form to pick a resident + type -->
+                <div class="resident-add-row">
+                    <select id="residentDropdown" class="resident-select">
+                        <option value="">-- Select resident --</option>
                         <% residents.forEach(r => { %>
-                            <option value="<%= r.resident_id %>"><%= r.full_name %></option>
+                            <option value="<%= r.resident_id %>" data-name="<%= r.full_name %>">
+                                <%= r.full_name %>
+                            </option>
                         <% }) %>
                     </select>
+                    <select id="residentTypeDropdown" class="resident-select">
+                        <option value="Homeowner">Homeowner</option>
+                        <option value="Relative">Relative</option>
+                        <option value="Helper">Helper</option>
+                        <option value="Lessee">Lessee</option>
+                        <option value="Others">Others</option>
+                    </select>
+                    <button type="button" class="btn btn-secondary" onclick="addResident()">
+                        <i class="fa-solid fa-plus"></i> Add
+                    </button>
                 </div>
 
             </div>
@@ -148,6 +197,24 @@
                 <button type="submit" class="btn btn-primary" id="submitBtn">Add Property</button>
             </div>
         </form>
+    </div>
+</div>
+
+<!-------------------------------- VIEW RESIDENTS MODAL --------------------------------->
+<div id="viewModal" class="modal">
+    <div class="modal-content" style="max-width: 480px;">
+        <div class="modal-header">
+            <h2>View Residents</h2>
+            <button class="modal-close" onclick="closeModal('viewModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div id="viewResidentsList">
+                <p style="color:#888; text-align:center;">Loading...</p>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('viewModal')">Close</button>
+        </div>
     </div>
 </div>
 
@@ -160,7 +227,9 @@
         </div>
         <div class="modal-body">
             <p>Are you sure you want to delete <strong id="deletePropertyName"></strong>?</p>
-            <p style="color: #dc3545; font-size: 13px; margin-top: 8px; font-weight: 500;">This operation cannot be undone.</p>
+            <p style="color: #dc3545; font-size: 13px; margin-top: 8px; font-weight: 500;">
+                This operation cannot be undone.
+            </p>
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary" onclick="closeModal('deleteModal')">Cancel</button>
@@ -173,26 +242,139 @@
 
 <script src="/js/sidebar.js"></script>
 <script>
+    // ── Resident state for the add/edit modal ────────────────────────────────
+    let addedResidents = []; // [{resident_id, full_name, type}]
+
+    function renderResidentList() {
+        const listEl   = document.getElementById('addedResidentsList');
+        const inputsEl = document.getElementById('residentInputs');
+
+        listEl.innerHTML   = '';
+        inputsEl.innerHTML = '';
+
+        if (addedResidents.length === 0) {
+            listEl.innerHTML = '<p class="no-residents-msg">No residents added yet.</p>';
+            return;
+        }
+
+        addedResidents.forEach((r, i) => {
+            // Visual row
+            const row = document.createElement('div');
+            row.className = 'resident-list-item';
+            row.innerHTML = `
+                <span class="resident-name">${r.full_name}</span>
+                <span class="resident-type-badge">${r.type}</span>
+                <button type="button" class="btn-remove-resident" onclick="removeResident(${i})">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            `;
+            listEl.appendChild(row);
+
+            // Hidden form inputs
+            inputsEl.innerHTML += `
+                <input type="hidden" name="resident_ids[]"   value="${r.resident_id}">
+                <input type="hidden" name="resident_types[]" value="${r.type}">
+            `;
+        });
+    }
+
+    function addResident() {
+        const dropdown = document.getElementById('residentDropdown');
+        const typeDropdown = document.getElementById('residentTypeDropdown');
+
+        const resident_id = dropdown.value;
+        const full_name   = dropdown.options[dropdown.selectedIndex].dataset.name;
+        const type        = typeDropdown.value;
+
+        if (!resident_id) return;
+
+        // Prevent same resident being added twice
+        if (addedResidents.some(r => r.resident_id === resident_id)) {
+            alert(`${full_name} has already been added to this property.`);
+            return;
+        }
+
+        addedResidents.push({ resident_id, full_name, type });
+        renderResidentList();
+
+        // Reset dropdowns
+        dropdown.value     = '';
+        typeDropdown.value = 'Homeowner';
+    }
+
+    function removeResident(index) {
+        addedResidents.splice(index, 1);
+        renderResidentList();
+    }
+
+    // ── Modal: Add ──────────────────────────────────────────────────────────
     function openAddModal() {
-        document.getElementById('modalTitle').textContent  = 'Add Property';
-        document.getElementById('submitBtn').textContent   = 'Add Property';
-        document.getElementById('propertyForm').action     = '/properties';
+        document.getElementById('modalTitle').textContent = 'Add Property';
+        document.getElementById('submitBtn').textContent  = 'Add Property';
+        document.getElementById('propertyForm').action   = '/properties';
         document.getElementById('propertyForm').reset();
-        document.getElementById('property_id').value       = '';
+        addedResidents = [];
+        renderResidentList();
         document.getElementById('propertyModal').classList.add('active');
     }
 
-    function openEditModal(btn) {
-        document.getElementById('modalTitle').textContent       = 'Edit Property';
-        document.getElementById('submitBtn').textContent        = 'Save Changes';
-        document.getElementById('propertyForm').action          = '/properties/' + btn.dataset.id + '/update';
-        document.getElementById('property_id').value            = btn.dataset.id;
-        document.getElementById('street_name').value            = btn.dataset.street;
-        document.getElementById('property_type').value          = btn.dataset.type;
-        document.getElementById('owner_resident_id').value      = btn.dataset.ownerid || '';
+    // ── Modal: Edit ─────────────────────────────────────────────────────────
+    async function openEditModal(btn) {
+        document.getElementById('modalTitle').textContent = 'Edit Property';
+        document.getElementById('submitBtn').textContent  = 'Save Changes';
+        document.getElementById('propertyForm').action   = '/properties/' + btn.dataset.id + '/update';
+
+        document.getElementById('lot_number').value    = btn.dataset.lot   || '';
+        document.getElementById('street_name').value   = btn.dataset.street;
+        document.getElementById('property_type').value = btn.dataset.type;
+
+        // Fetch existing residents for this property
+        addedResidents = [];
+        renderResidentList();
+        try {
+            const res = await fetch('/properties/' + btn.dataset.id + '/residents');
+            if (res.ok) addedResidents = await res.json();
+        } catch (_) {}
+        renderResidentList();
+
         document.getElementById('propertyModal').classList.add('active');
     }
 
+    // ── Modal: View Residents ───────────────────────────────────────────────
+    async function openViewModal(id) {
+        document.getElementById('viewResidentsList').innerHTML =
+            '<p style="color:#888; text-align:center;">Loading...</p>';
+        document.getElementById('viewModal').classList.add('active');
+
+        try {
+            const res       = await fetch('/properties/' + id + '/residents');
+            const residents = await res.json();
+            const listEl    = document.getElementById('viewResidentsList');
+
+            if (residents.length === 0) {
+                listEl.innerHTML = '<p style="color:#888; text-align:center;">No residents linked to this property.</p>';
+                return;
+            }
+
+            listEl.innerHTML = `
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Name</th><th>Type</th></tr>
+                    </thead>
+                    <tbody>
+                        ${residents.map(r =>
+                            `<tr><td>${r.full_name}</td><td>${r.type}</td></tr>`
+                        ).join('')}
+                    </tbody>
+                </table>
+            `;
+        } catch (_) {
+            document.getElementById('viewResidentsList').innerHTML =
+                '<p style="color:#dc3545;">Failed to load residents.</p>';
+        }
+    }
+
+    // ── Modal: Delete ───────────────────────────────────────────────────────
     function confirmDelete(id, streetName) {
         document.getElementById('deletePropertyName').textContent = streetName;
         document.getElementById('deleteForm').action = '/properties/' + id + '/delete';
@@ -205,21 +387,33 @@
 
     // Close on backdrop click
     window.onclick = function(event) {
-        const propertyModal = document.getElementById('propertyModal');
-        const deleteModal   = document.getElementById('deleteModal');
-        if (event.target === propertyModal) closeModal('propertyModal');
-        if (event.target === deleteModal)   closeModal('deleteModal');
+        ['propertyModal', 'viewModal', 'deleteModal'].forEach(id => {
+            const el = document.getElementById(id);
+            if (event.target === el) closeModal(id);
+        });
     };
 
+    // ── Search filter with live counter ─────────────────────────────────────
     function filterTable() {
         const q = document.getElementById('searchInput').value.toLowerCase();
+        let visible = 0;
+
         document.querySelectorAll('#propertyTable tbody tr').forEach(row => {
             if (row.cells.length === 1 && row.cells[0].classList.contains('empty-state')) return;
-            row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+            const match = row.textContent.toLowerCase().includes(q);
+            row.style.display = match ? '' : 'none';
+            if (match) visible++;
         });
+
+        const countEl = document.getElementById('propertyCount');
+        countEl.innerHTML = `Showing <strong>${visible}</strong> propert${visible === 1 ? 'y' : 'ies'}`;
     }
 
+    // Auto-dismiss alerts
     setTimeout(() => {
         document.querySelectorAll('.alert').forEach(a => a.style.display = 'none');
     }, 4000);
+
+    // Init resident list on page load
+    renderResidentList();
 </script>

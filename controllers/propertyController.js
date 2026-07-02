@@ -1,11 +1,11 @@
-const propertyModel = require('../models/propertyModel');
+const propertyService = require('../services/propertyService');
 
 // ── GET /properties ──────────────────────────────────────────────────────────
 exports.getProperties = async (req, res) => {
     try {
         const [properties, residents] = await Promise.all([
-            propertyModel.getAllProperties(),
-            propertyModel.getAllResidents(),
+            propertyService.getAllProperties(),
+            propertyService.getAllResidents(),
         ]);
 
         res.render('property', {
@@ -23,14 +23,28 @@ exports.getProperties = async (req, res) => {
     }
 };
 
+// ── GET /properties/:id/residents  (JSON) ────────────────────────────────────
+exports.getPropertyResidents = async (req, res) => {
+    try {
+        const residents = await propertyService.getPropertyResidents(req.params.id);
+        res.json(residents);
+    } catch (err) {
+        console.error('getPropertyResidents error:', err);
+        res.status(500).json({ error: 'Failed to load residents.' });
+    }
+};
+
 // ── POST /properties ─────────────────────────────────────────────────────────
 exports.createProperty = async (req, res) => {
     try {
-        const { property_type, street_name, owner_resident_id } = req.body;
-        await propertyModel.createProperty({
-            property_type,
-            street_name,
-            owner_resident_id: owner_resident_id || null,
+        const { lot_number, property_type, street_name, resident_ids, resident_types } = req.body;
+
+        const ids   = [].concat(resident_ids   || []);
+        const types = [].concat(resident_types || []);
+
+        await propertyService.createProperty({
+            lot_number, property_type, street_name,
+            resident_ids: ids, resident_types: types,
         });
         res.redirect('/properties?success=Property+added+successfully.');
     } catch (err) {
@@ -42,12 +56,15 @@ exports.createProperty = async (req, res) => {
 // ── POST /properties/:id/update ──────────────────────────────────────────────
 exports.updateProperty = async (req, res) => {
     try {
-        const { property_type, street_name, owner_resident_id } = req.body;
-        await propertyModel.updateProperty({
-            property_id:       req.params.id,
-            property_type,
-            street_name,
-            owner_resident_id: owner_resident_id || null,
+        const { lot_number, property_type, street_name, resident_ids, resident_types } = req.body;
+
+        const ids   = [].concat(resident_ids   || []);
+        const types = [].concat(resident_types || []);
+
+        await propertyService.updateProperty({
+            property_id: req.params.id,
+            lot_number, property_type, street_name,
+            resident_ids: ids, resident_types: types,
         });
         res.redirect('/properties?success=Property+updated+successfully.');
     } catch (err) {
@@ -59,7 +76,7 @@ exports.updateProperty = async (req, res) => {
 // ── POST /properties/:id/delete ──────────────────────────────────────────────
 exports.deleteProperty = async (req, res) => {
     try {
-        await propertyModel.deleteProperty(req.params.id);
+        await propertyService.deleteProperty(req.params.id);
         res.redirect('/properties?success=Property+deleted+successfully.');
     } catch (err) {
         console.error('deleteProperty error:', err);

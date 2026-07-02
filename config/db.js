@@ -63,11 +63,12 @@ const createTables = async() => {
 
         const createPropertyTable = `
             CREATE TABLE IF NOT EXISTS Property(
-                property_id INT AUTO_INCREMENT PRIMARY KEY, 
-                property_type ENUM("House", "Others") NOT NULL,
+                property_id INT AUTO_INCREMENT PRIMARY KEY,
+                lot_number  VARCHAR(20),
+                property_type ENUM("House", "Lot") NOT NULL,
                 street_name VARCHAR(255)
             );
-        
+
         `;
         //In order to have a many-many relationship between property and resident
         const createResidentPropertyTable = `
@@ -147,6 +148,28 @@ const createTables = async() => {
 
         await pool.query(createBoardMemberTable);
         console.log("Successfully created Board_Member table!")
+
+        // Add any columns that were introduced after the tables were first created.
+        // INFORMATION_SCHEMA check avoids errors on fresh installs where the column
+        // is already present from the CREATE TABLE above.
+        const dbName = process.env.DB_NAME || 'hoa_db';
+        const missingColumns = [
+            { table: 'Person',   column: 'birth_date', definition: 'DATE',         after: 'suffix'      },
+            { table: 'Property', column: 'lot_number', definition: 'VARCHAR(20)',   after: 'property_id' },
+        ];
+
+        for (const { table, column, definition, after } of missingColumns) {
+            const [[{ cnt }]] = await pool.query(
+                `SELECT COUNT(*) AS cnt
+                 FROM INFORMATION_SCHEMA.COLUMNS
+                 WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND COLUMN_NAME = ?`,
+                [dbName, table, column]
+            );
+            if (cnt === 0) {
+                await pool.query(`ALTER TABLE \`${table}\` ADD COLUMN \`${column}\` ${definition} AFTER \`${after}\``);
+                console.log(`Migration: added ${column} to ${table}`);
+            }
+        }
 
     } catch(err) {
         console.error('Failed to create the database tables', err);
