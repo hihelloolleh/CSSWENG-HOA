@@ -75,14 +75,16 @@ const getAllPersons = async(conn) => {
 const addPerson = async(data, conn) => {
 
     const [result] = await conn.query(`
-        INSERT INTO Person (first_name, last_name, birth_date, email, contact_num)
-        VALUES(?, ?, ?, ?, ?)`,
+        INSERT INTO Person (first_name, last_name, birth_date, email, contact_num, middle_name, suffix)
+        VALUES(?, ?, ?, ?, ?, ?, ?)`,
         [
             data.first_name, 
             data.last_name,
             data.birth_date || null,
             data.email || null, 
-            data.contact_num
+            data.contact_num,
+            data.middle_name || null,
+            data.suffix || null
         ]
     );
 
