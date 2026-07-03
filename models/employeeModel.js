@@ -1,193 +1,161 @@
 const db = require('../config/db');
 const pool = db.pool;
 
+/**
+ * Fetches an employee record given its id.
+ *
+ * @param {*} employee_id
+ * @returns the employee record
+ */
+const selectEmployeeById = async (employee_id, conn) => {
+
+    const [rows] = await conn.query(`
+        SELECT
+            employee_id,
+            salary,
+            position,
+            employee_start_date,
+            employee_end_date,
+            person_id
+        FROM Employee
+        WHERE employee_id = ?`,
+        [employee_id]
+    );
+
+    return rows[0];
+};
+
+/**
+ * Fetches the person_id associated with an employee.
+ *
+ * @param {*} employee_id
+ * @returns person_id
+ */
+const selectPersonByEmployeeId = async (employee_id, conn) => {
+
+    const [rows] = await conn.query(`
+        SELECT
+            person_id
+        FROM Employee
+        WHERE employee_id = ?`,
+        [employee_id]
+    );
+
+    return rows[0];
+};
+
+/**
+ * Fetches all employees together with their personal information.
+ *
+ * @returns all employee records
+ */
 const getAllEmployees = async () => {
+
     const [rows] = await pool.query(`
         SELECT
             e.employee_id,
             e.person_id,
+
             p.first_name,
+            p.middle_name,
             p.last_name,
+            p.suffix,
+
             p.email,
             p.contact_num,
             e.position,
             e.salary
         FROM Employee e
-        JOIN Person p
-        ON e.person_id = p.person_id
+        JOIN Person p ON e.person_id = p.person_id
     `);
 
     return rows;
 };
 
-const createEmployee = async (data) => {
-    const conn = await pool.getConnection();
+/**
+ * Adds a new employee.
+ *
+ * @param {*} data
+ * @param {*} person_id
+ * @param {*} conn
+ * @returns generated employee_id
+ */
+const addEmployee = async (data, person_id, conn) => {
 
-    try {
-        await conn.beginTransaction();
+    const [result] = await conn.query(`
+        INSERT INTO Employee
+        (
+            salary,
+            position,
+            employee_start_date,
+            employee_end_date,
+            person_id
+        )
+        VALUES (?, ?, ?, ?, ?)`,
+        [
+            data.salary,
+            data.position,
+            data.employee_start_date,
+            data.employee_end_date || null,
+            person_id
+        ]
+    );
 
-        let personId;
-
-        const [existingPerson] = await conn.query(
-            `SELECT person_id 
-             FROM Person 
-             WHERE first_name = ? 
-               AND last_name = ? 
-               AND contact_num = ?`,
-            [
-                data.first_name,
-                data.last_name,
-                data.contact_num
-            ]
-        );
-
-        if (existingPerson.length > 0) {
-            personId = existingPerson[0].person_id;
-        }
-
-        if (!personId) {
-            const [personResult] = await conn.query(
-                `INSERT INTO Person (first_name, last_name, email, contact_num)
-                 VALUES (?, ?, ?, ?)`,
-                [
-                    data.first_name,
-                    data.last_name,
-                    data.email || null,
-                    data.contact_num || null
-                ]
-            );
-
-            personId = personResult.insertId;
-        }
-
-        const [empCheck] = await conn.query(
-            `SELECT employee_id 
-             FROM Employee 
-             WHERE person_id = ?`,
-            [personId]
-        );
-
-        if (empCheck.length > 0) {
-            throw new Error('This person is already an employee');
-        }
-
-        const [employeeResult] = await conn.query(
-            `INSERT INTO Employee 
-             (salary, position, employee_start_date, person_id)
-             VALUES (?, ?, CURDATE(), ?)`,
-            [
-                data.salary,
-                data.position,
-                personId
-            ]
-        );
-
-        await conn.commit();
-        return employeeResult.insertId;
-
-    } catch (err) {
-        await conn.rollback();
-        throw err;
-    } finally {
-        conn.release();
-    }
+    return result.insertId;
 };
 
-const updateEmployee = async (data) => {
-    const conn = await pool.getConnection();
+/**
+ * Updates an employee.
+ *
+ * @param {*} data
+ * @param {*} conn
+ * @returns affected rows
+ */
+const updateEmployee = async (data, conn) => {
 
-    try {
-        await conn.beginTransaction();
+    const [result] = await conn.query(`
+        UPDATE Employee
+        SET
+            salary = ?,
+            position = ?,
+            employee_start_date = ?,
+            employee_end_date = ?
+        WHERE employee_id = ?`,
+        [
+            data.salary,
+            data.position,
+            data.employee_start_date,
+            data.employee_end_date || null,
+            data.employee_id
+        ]
+    );
 
-        const [employeeRows] = await conn.query(
-            `SELECT person_id
-             FROM Employee
-             WHERE employee_id = ?`,
-            [data.employeeId]
-        );
-
-        if (employeeRows.length === 0) {
-            throw new Error('Employee not found');
-        }
-
-        const personId = employeeRows[0].person_id;
-
-        await conn.query(
-            `UPDATE Person
-             SET first_name = ?,
-                 last_name = ?,
-                 email = ?,
-                 contact_num = ?
-             WHERE person_id = ?`,
-            [
-                data.first_name,
-                data.last_name,
-                data.email || null,
-                data.contact_num || null,
-                personId
-            ]
-        );
-
-        await conn.query(
-            `UPDATE Employee
-             SET position = ?,
-                 salary = ?
-             WHERE employee_id = ?`,
-            [
-                data.position,
-                data.salary,
-                data.employeeId
-            ]
-        );
-
-        await conn.commit();
-
-    } catch (err) {
-        await conn.rollback();
-        throw err;
-    } finally {
-        conn.release();
-    }
+    return result.affectedRows;
 };
 
-const deleteEmployee = async (employeeId) => {
-    const conn = await pool.getConnection();
+/**
+ * Deletes an employee.
+ *
+ * @param {*} employee_id
+ * @param {*} conn
+ * @returns affected rows
+ */
+const deleteEmployee = async (employee_id, conn) => {
 
-    try {
-        await conn.beginTransaction();
+    const [result] = await conn.query(`
+        DELETE FROM Employee
+        WHERE employee_id = ?`,
+        [employee_id]
+    );
 
-        const [rows] = await conn.query(
-            `SELECT person_id
-             FROM Employee
-             WHERE employee_id = ?`,
-            [employeeId]
-        );
-
-        if (rows.length === 0) {
-            throw new Error('Employee not found');
-        }
-
-        const personId = rows[0].person_id;
-
-        await conn.query(
-            `DELETE FROM Person
-             WHERE person_id = ?`,
-            [personId]
-        );
-
-        await conn.commit();
-
-    } catch (err) {
-        await conn.rollback();
-        throw err;
-    } finally {
-        conn.release();
-    }
+    return result.affectedRows;
 };
 
 module.exports = {
+    selectEmployeeById,
+    selectPersonByEmployeeId,
     getAllEmployees,
-    createEmployee,
+    addEmployee,
     updateEmployee,
     deleteEmployee
 };
