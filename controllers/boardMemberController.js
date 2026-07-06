@@ -2,6 +2,7 @@
 // manages the Board Member table  
 // SPRINT 2+: connect all functions to the database via models.
 const boardMemberModel = require('../models/boardMemberModel');
+const boardMemberService = require('../services/boardMemberService');
 
 const getBoardMembers = async (req, res) => {
     try {
