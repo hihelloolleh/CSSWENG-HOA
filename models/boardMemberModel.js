@@ -4,17 +4,23 @@ const pool = db.pool;
 /**
  * Fetches all board member records from Board Member table
  * 
- * @returns ALl board member records
+ * @returns All board member records
  */
 const getAllBoardMembers = async() => {
     const [rows] = await pool.query(`
         SELECT 
-            board_id,
-            position,
-            board_start_date,
-            board_end_date,
-            resident_id
-        FROM Board_Member`
+            bm.board_id,
+            bm.position,
+            bm.board_start_date,
+            bm.board_end_date,
+            bm.resident_id,
+            p.first_name, 
+            p.last_name, 
+            p.contact_num,
+            p.email
+        FROM Board_Member bm
+        JOIN Resident r ON bm.resident_id = r.resident_id 
+        JOIN Person p ON r.person_id = p.person_id`
     );
 
     return rows;
@@ -22,8 +28,9 @@ const getAllBoardMembers = async() => {
 
 const getBoardMemberByResidentId = async(resident_id, conn) => {
     const [rows] = await conn.query(`
-        SELECT board_id
-        FROM Board_Member
+        SELECT bm.board_id, bm.resident_id, r.person_id 
+        FROM Board_Member bm 
+        JOIN Resident r ON bm.resident_id = r.resident_id 
         WHERE resident_id = ?`,
         [resident_id]
     );
@@ -82,7 +89,7 @@ const deleteBoardMember = async(board_id, conn) => {
  */
 const updateBoardMember = async(data, board_id, conn) => {
 
-    const [result] = await pool.query(`
+    const [result] = await conn.query(`
        UPDATE Board_Member
        SET position = ?,
            board_start_date = ?,
