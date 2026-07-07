@@ -49,6 +49,16 @@ const selectResidentsByPropertyId = async (propertyId) => {
     return rows;
 };
 
+const selectPropertyByLotAndStreet = async (lot_number, street_name, excludeId = null) => {
+    const [rows] = await pool.query(
+        `SELECT property_id FROM Property
+         WHERE lot_number = ? AND street_name = ?
+         AND (? IS NULL OR property_id != ?)`,
+        [lot_number || null, street_name, excludeId, excludeId]
+    );
+    return rows[0];
+};
+
 // ── WRITE (accept conn so they run inside service transactions) ───────────────
 
 const insertProperty = async (data, conn) => {
@@ -104,6 +114,7 @@ module.exports = {
     selectAllProperties,
     selectAllResidents,
     selectResidentsByPropertyId,
+    selectPropertyByLotAndStreet,
     insertProperty,
     updatePropertyById,
     deletePropertyById,
