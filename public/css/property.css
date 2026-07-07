@@ -432,3 +432,42 @@ body{
     outline: none;
     border-color: #526F50;
 }
+
+.resident-search-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 140px;
+}
+
+.resident-search-wrap .resident-select {
+    width: 100%;
+}
+
+.resident-dropdown-list {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    max-height: 180px;
+    overflow-y: auto;
+    list-style: none;
+    z-index: 200;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.resident-dropdown-list li {
+    padding: 9px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+}
+
+.resident-dropdown-list li:hover {
+    background: #f0f4f0;
+    color: #526F50;
+}

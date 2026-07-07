@@ -40,7 +40,7 @@ const createTables = async() => {
             CREATE TABLE IF NOT EXISTS Employee(
                 employee_id INT AUTO_INCREMENT PRIMARY KEY, 
                 salary DECIMAL(10, 2),
-                position ENUM("Security Guard", "Maintenance", "Bookeeper", "Secretary", "Others") NOT NULL, 
+                position ENUM('Security Guard', 'Maintenance', 'Bookkeeper', 'Secretary', 'Others') NOT NULL,
                 employee_start_date DATE,
                 employee_end_date DATE,
 

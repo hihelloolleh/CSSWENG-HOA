@@ -171,14 +171,11 @@
 
                 <!-- Mini-form to pick a resident + type -->
                 <div class="resident-add-row">
-                    <select id="residentDropdown" class="resident-select">
-                        <option value="">-- Select resident --</option>
-                        <% residents.forEach(r => { %>
-                            <option value="<%= r.resident_id %>" data-name="<%= r.full_name %>">
-                                <%= r.full_name %>
-                            </option>
-                        <% }) %>
-                    </select>
+                    <div class="resident-search-wrap" id="residentSearchWrap">
+                        <input type="text" id="residentSearchInput" class="resident-select" placeholder="Search resident..." autocomplete="off">
+                        <ul id="residentDropdownList" class="resident-dropdown-list"></ul>
+                    </div>
+                    <input type="hidden" id="residentSelectedId">
                     <select id="residentTypeDropdown" class="resident-select">
                         <option value="Homeowner">Homeowner</option>
                         <option value="Relative">Relative</option>
@@ -190,6 +187,11 @@
                         <i class="fa-solid fa-plus"></i> Add
                     </button>
                 </div>
+
+                <!-- Resident data for JS -->
+                <script id="residentData" type="application/json">
+                    <%- JSON.stringify(residents) %>
+                </script>
 
             </div>
             <div class="modal-footer">
@@ -278,15 +280,48 @@
         });
     }
 
+    // ── Resident search dropdown ────────────────────────────────────────────────
+    const allResidents = JSON.parse(document.getElementById('residentData').textContent);
+
+    const searchInput    = document.getElementById('residentSearchInput');
+    const dropdownList   = document.getElementById('residentDropdownList');
+    const selectedIdInput = document.getElementById('residentSelectedId');
+
+    searchInput.addEventListener('input', function () {
+        const query = this.value.trim().toLowerCase();
+        selectedIdInput.value = ''; // clear selection when user types
+        dropdownList.innerHTML = '';
+
+        if (!query) { dropdownList.style.display = 'none'; return; }
+
+        const matches = allResidents.filter(r => r.full_name.toLowerCase().includes(query));
+        if (matches.length === 0) { dropdownList.style.display = 'none'; return; }
+
+        matches.forEach(r => {
+            const li = document.createElement('li');
+            li.textContent = r.full_name;
+            li.dataset.id  = r.resident_id;
+            li.addEventListener('mousedown', function (e) {
+                e.preventDefault(); // keep focus
+                searchInput.value     = r.full_name;
+                selectedIdInput.value = r.resident_id;
+                dropdownList.style.display = 'none';
+            });
+            dropdownList.appendChild(li);
+        });
+        dropdownList.style.display = 'block';
+    });
+
+    searchInput.addEventListener('blur', () => {
+        setTimeout(() => { dropdownList.style.display = 'none'; }, 150);
+    });
+
     function addResident() {
-        const dropdown = document.getElementById('residentDropdown');
-        const typeDropdown = document.getElementById('residentTypeDropdown');
+        const resident_id = selectedIdInput.value;
+        const full_name   = searchInput.value.trim();
+        const type        = document.getElementById('residentTypeDropdown').value;
 
-        const resident_id = dropdown.value;
-        const full_name   = dropdown.options[dropdown.selectedIndex].dataset.name;
-        const type        = typeDropdown.value;
-
-        if (!resident_id) return;
+        if (!resident_id) { alert('Please select a resident from the list.'); return; }
 
         // Prevent same resident being added twice
         if (addedResidents.some(r => r.resident_id === resident_id)) {
@@ -297,9 +332,10 @@
         addedResidents.push({ resident_id, full_name, type });
         renderResidentList();
 
-        // Reset dropdowns
-        dropdown.value     = '';
-        typeDropdown.value = 'Homeowner';
+        // Reset search
+        searchInput.value     = '';
+        selectedIdInput.value = '';
+        document.getElementById('residentTypeDropdown').value = 'Homeowner';
     }
 
     function removeResident(index) {
@@ -313,6 +349,7 @@
         document.getElementById('submitBtn').textContent  = 'Add Property';
         document.getElementById('propertyForm').action   = '/properties';
         document.getElementById('propertyForm').reset();
+        searchInput.value = ''; selectedIdInput.value = '';
         addedResidents = [];
         renderResidentList();
         document.getElementById('propertyModal').classList.add('active');
@@ -329,6 +366,7 @@
         document.getElementById('property_type').value = btn.dataset.type;
 
         // Fetch existing residents for this property
+        searchInput.value = ''; selectedIdInput.value = '';
         addedResidents = [];
         renderResidentList();
         try {
