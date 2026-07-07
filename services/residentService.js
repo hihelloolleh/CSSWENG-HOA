@@ -2,6 +2,8 @@ const {pool} = require("../config/db");
 const personModel = require("../models/personModel");
 const residentModel = require("../models/residentModel");
 const boardMemberModel = require("../models/boardMemberModel");
+const propertyModel = require("../models/propertyModel");
+const vehicleModel = require("../models/vehicleModel");
 
 
 const addResident = async(data) => {
@@ -72,22 +74,36 @@ const updateResident = async(data) => {
    
 }
 
-const deleteResident = async(data) => {
+const deleteResident = async(resident_id) => {
     const conn = await pool.getConnection();
 
     try{
 
         await conn.beginTransaction();
 
-         const existingResident = await residentModel.selectPersonByResidentId(data.resident_id, conn);
+        await residentModel.deleteResident(resident_id, conn);
+        console.log(resident_id);
+        //get all the properties and vehicles they own
+        const properties = await propertyModel.selectPropertiesByResidentId(resident_id, conn);
+        console.log(properties);
+        const vehicles = await vehicleModel.getAllVehiclesByResident(resident_id, conn);
+        console.log(vehicles);
 
-        if(existingResident === null) {
-            throw new Error("Resident does not exist!");
-        }
-
-        await residentModel.deleteResident(existingResident.person_id, conn);
         //delete resident_property given residentid
-        //delete resident_vehicle given residentid
+        for (const p of properties) {
+            console.log(p.property_id);
+            await propertyModel.deleteResidentProperty(resident_id, p.property_id, conn);
+        }
+        
+         //delete resident_vehicle given residentid
+       
+        for(const v of vehicles) {
+            console.log(v.vehicle_id);
+            await vehicleModel.deleteResidentVehicle(resident_id, v.vehicle_id, conn)
+        }
+        
+    
+
         await conn.commit();
 
     } catch(err) {
@@ -100,5 +116,6 @@ const deleteResident = async(data) => {
 
 module.exports = {
     addResident, 
-    updateResident
+    updateResident,
+    deleteResident
 }

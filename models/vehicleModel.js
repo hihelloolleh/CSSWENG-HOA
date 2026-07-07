@@ -17,6 +17,20 @@ const VehicleModel = {
         return rows;
     },
 
+    getAllVehiclesByResident: async(resident_id, conn) => {
+        console.log("resident_id:", resident_id);
+        console.log("conn exists:", !!conn);
+
+        const [rows] = await conn.execute(`
+            SELECT vehicle_id
+            FROM Resident_Vehicle rv
+            WHERE rv.resident_id = ?`,
+            [resident_id]
+        );
+
+        return rows;
+    },
+
     getAllResidents: async () => {
         const query = `
             SELECT r.resident_id, CONCAT(p.first_name, ' ', p.last_name) AS full_name 
@@ -78,6 +92,14 @@ const VehicleModel = {
 
     deleteVehicle: async (vehicleId) => {
         await pool.execute('DELETE FROM Vehicle WHERE vehicle_id = ?', [vehicleId]);
+    },
+
+    deleteResidentVehicle: async(resident_id, vehicle_id, conn) => {
+        await conn.execute(`
+            DELETE FROM Resident_Vehicle
+            WHERE vehicle_id = ? AND resident_id = ?`,
+            [vehicle_id, resident_id]
+        )
     },
 };
 

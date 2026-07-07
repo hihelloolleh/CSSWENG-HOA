@@ -1,10 +1,10 @@
 // RESIDENT CONTROLLER
 // manages the Resident table  
 // SPRINT 2+: connect all functions to the database via models.
-const residentModel = require('../models/residentModel');
+
 const residentService = require('../services/residentService');
-const vehicleModel = require('../models/vehicleModel');
-const propertyModel = require('../models/propertyModel');
+const residentModel = require('../models/residentModel')
+
 
 const getResidents = async (req, res) => {
     try {
@@ -56,7 +56,8 @@ const updateResident = async(req, res) => {
 
 const deleteResident = async (req, res) => {
     try {
-        await residentModel.deleteResident(req.params.id)
+        console.log(req.params.id);
+        await residentService.deleteResident(req.params.id);
         return res.redirect('/residents');
     } catch(err) {
         console.log("Failed to delete resident: ", err);

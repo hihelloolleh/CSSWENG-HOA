@@ -76,7 +76,7 @@
                 <% } else { %>
                     <% residents.forEach(resident => { %>
                         <tr>
-                            <td><strong><%= resident.first_name %> <%= resident.last_name %></strong></td>
+                            <td><strong><%= resident.first_name %> <%= resident.middle_name %> <%= resident.last_name %> <%= resident.suffix %></strong></td>
                             <td><%= resident.birth_date ? resident.birth_date.toString().substring(0, 10) : '—' %></td>
                             <td><%= resident.email || '—' %></td>
                             <td><%= resident.contact_num || '—' %></td>

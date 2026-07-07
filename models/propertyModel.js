@@ -11,6 +11,17 @@ const selectAllProperties = async () => {
     return rows;
 };
 
+const selectPropertiesByResidentId = async(resident_id, conn) => {
+    const[rows] = await conn.query(`
+        SELECT rp.property_id
+        FROM Resident_Property rp
+        WHERE rp.resident_id = ? `,
+        [resident_id]
+    );
+
+    return rows;
+}
+
 const selectAllResidents = async () => {
     const [rows] = await pool.query(`
         SELECT
@@ -80,6 +91,15 @@ const deleteResidentsByPropertyId = async (property_id, conn) => {
     return result.affectedRows;
 };
 
+const deleteResidentProperty = async(resident_id, property_id, conn) => {
+    const [result] = await conn.query(
+        `DELETE FROM Resident_Property 
+        WHERE property_id = ? AND resident_id = ?`,
+        [property_id, resident_id]
+    );
+    return result.affectedRows;
+}
+
 module.exports = {
     selectAllProperties,
     selectAllResidents,
@@ -89,4 +109,6 @@ module.exports = {
     deletePropertyById,
     insertResidentProperty,
     deleteResidentsByPropertyId,
+    selectPropertiesByResidentId,
+    deleteResidentProperty
 };
