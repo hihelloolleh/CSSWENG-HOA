@@ -12,7 +12,7 @@ const addResident = async(data) => {
         await conn.beginTransaction();
 
         //check if first and last name is duplicated
-        const duplicateName = await personModel.selectPersonByName(data.first_name, data.last_name, data.middle_name, data.suffix, conn);
+        const duplicateName = await personModel.selectPersonByName(data.first_name, data.last_name, data.contact_num, conn);
 
         if(duplicateName != null) {
             throw new Error("This resident already exists!");
