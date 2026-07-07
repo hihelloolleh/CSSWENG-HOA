@@ -14,6 +14,9 @@ const getPropertyResidents = async (propertyId) => {
 };
 
 const createProperty = async (data) => {
+    const existing = await propertyModel.selectPropertyByLotAndStreet(data.lot_number, data.street_name);
+    if (existing) throw new Error('A property with that lot number and street already exists.');
+
     const conn = await pool.getConnection();
     try {
         await conn.beginTransaction();
@@ -40,6 +43,9 @@ const createProperty = async (data) => {
 };
 
 const updateProperty = async (data) => {
+    const existing = await propertyModel.selectPropertyByLotAndStreet(data.lot_number, data.street_name, data.property_id);
+    if (existing) throw new Error('A property with that lot number and street already exists.');
+
     const conn = await pool.getConnection();
     try {
         await conn.beginTransaction();
