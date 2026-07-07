@@ -22,6 +22,7 @@ const VehicleModel = {
             SELECT r.resident_id, CONCAT(p.first_name, ' ', p.last_name) AS full_name 
             FROM Resident r 
             JOIN Person p ON r.person_id = p.person_id
+            WHERE isActive = 1 AND deleteFlag = 0
         `;
 
         const [rows] = await pool.execute(query);

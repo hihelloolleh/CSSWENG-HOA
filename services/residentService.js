@@ -12,7 +12,7 @@ const addResident = async(data) => {
         await conn.beginTransaction();
 
         //check if first and last name is duplicated
-        const duplicateName = await personModel.selectPersonByName(data.first_name, data.last_name, conn);
+        const duplicateName = await personModel.selectPersonByName(data.first_name, data.last_name, data.middle_name, data.suffix, conn);
 
         if(duplicateName != null) {
             throw new Error("This resident already exists!");
@@ -70,6 +70,32 @@ const updateResident = async(data) => {
         conn.release();
     }
    
+}
+
+const deleteResident = async(data) => {
+    const conn = await pool.getConnection();
+
+    try{
+
+        await conn.beginTransaction();
+
+         const existingResident = await residentModel.selectPersonByResidentId(data.resident_id, conn);
+
+        if(existingResident === null) {
+            throw new Error("Resident does not exist!");
+        }
+
+        await residentModel.deleteResident(existingResident.person_id, conn);
+        //delete resident_property given residentid
+        //delete resident_vehicle given residentid
+        await conn.commit();
+
+    } catch(err) {
+        await conn.rollback();
+        throw err;
+    } finally {
+         conn.release();
+    }
 }
 
 module.exports = {

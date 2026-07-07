@@ -44,6 +44,8 @@ const getAllResidents = async() => {
             Resident.resident_id,
             Person.person_id,
             Person.first_name,
+            Person.middle_name,
+            Person.suffix,
             Person.last_name,
             Person.birth_date,
             Person.email,
@@ -52,7 +54,8 @@ const getAllResidents = async() => {
             Resident.residency_end_date
         FROM Resident
         JOIN Person
-            ON Resident.person_id = Person.person_id`
+            ON Resident.person_id = Person.person_id
+        WHERE isActive = 1 AND deleteFlag = 0`
     );
 
     return rows;
@@ -85,15 +88,22 @@ const addResident = async(data, person_id, conn) => {
  * @returns - The number of rows deleted
  */
 const deleteResident = async(resident_id, conn) => {
-
     const [result] = await conn.query(`
-        DELETE FROM Resident
-        WHERE resident_id = ?`,
-        [resident_id]
+       UPDATE Resident
+       SET deleteFlag = 1
+       WHERE resident_id = ?`,
+       [resident_id]
     );
-
+    //if i delete a resident that means i should also delete its 
     return result.affectedRows;
 };
+
+const deactivateResident = async(resident_id, residency_end_date) => {
+   //if resident gets deactivated
+   //1. delete property associations?
+   //
+
+}
 
 /**
  * Updates data from an existing resident record in the Resident table

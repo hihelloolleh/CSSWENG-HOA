@@ -3,6 +3,8 @@
 // SPRINT 2+: connect all functions to the database via models.
 const residentModel = require('../models/residentModel');
 const residentService = require('../services/residentService');
+const vehicleModel = require('../models/vehicleModel');
+const propertyModel = require('../models/propertyModel');
 
 const getResidents = async (req, res) => {
     try {
@@ -26,6 +28,7 @@ const getResidents = async (req, res) => {
 const addResident = async(req, res) => {
     try {
         await residentService.addResident(req.body);
+        console.log(req.body);
         res.redirect('/residents?success=Resident+added+successfully.');
         
     } catch(err) {

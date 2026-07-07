@@ -54,7 +54,8 @@ const createTables = async() => {
                 resident_id INT AUTO_INCREMENT PRIMARY KEY, 
                 residency_start_date DATE,
                 residency_end_date DATE,
-                isActive BOOLEAN,
+                isActive BOOLEAN NOT NULL DEFAULT 1,
+                deleteFlag BOOLEAN NOT NULL DEFAULT 0,
 
                 person_id INT,
                 FOREIGN KEY (person_id) REFERENCES Person(person_id) ON DELETE CASCADE

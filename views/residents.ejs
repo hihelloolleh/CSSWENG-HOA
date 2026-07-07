@@ -84,10 +84,11 @@
 
                                 <button class="btn-icon"
                                         data-id="<%= resident.resident_id %>"
-                                        data-name="<%= resident.first_name %> <%= resident.last_name %>"
+                                        data-name="<%= resident.first_name %> <%= resident.middle_name %> <%= resident.last_name %> <%= resident.suffix %>"
                                         data-dob="<%= resident.birth_date ? resident.birth_date.toString().substring(0, 10) : '' %>"
                                         data-email="<%= resident.email || '' %>"
                                         data-phone="<%= resident.contact_num || '' %>"
+
                                         data-residentstart="<%= resident.residency_start_date ? resident.residency_start_date.toString().substring(0,10) : '' %>"
                                         data-residentend="<%= resident.residency_end_date ? resident.residency_end_date.toString().substring(0,10) : '' %>"
                                         onclick="openViewModal(this)">
@@ -97,6 +98,8 @@
                                         data-id="<%= resident.resident_id %>"
                                         data-firstname="<%= resident.first_name %>"
                                         data-lastname="<%= resident.last_name %>"
+                                        data-middlename="<%= resident.middle_name %>"
+                                        data-suffix="<%= resident.suffix %>"
                                         data-dob="<%= resident.birth_date ? resident.birth_date.toString().substring(0, 10) : '' %>"
                                         data-email="<%= resident.email || '' %>"
                                         data-phone="<%= resident.contact_num || '' %>"
@@ -139,11 +142,19 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="firstName">First Name *</label>
-                            <input type="text" id="firstName" name="first_name" required placeholder="Enter first name" >
+                            <input type="text" id="firstName" name="first_name" required placeholder="e.g., Juan" >
+                        </div>
+                        <div class="form-group">
+                            <label for="firstName">Middle Name  </label>
+                            <input type="text" id="middleName" name="middle_name" placeholder="e.g., Santos" >
+                        </div>
+                        <div class="form-group">
+                            <label for="firstName">Suffix </label>
+                            <input type="text" id="suffix" name="suffix" placeholder="e.g., Jr, Sr" >
                         </div>
                         <div class="form-group">
                             <label for="lastName">Last Name *</label>
-                            <input type="text" id="lastName" name="last_name" required placeholder="Enter last name" >
+                            <input type="text" id="lastName" name="last_name" required placeholder="e.g., Dela Cruz" >
                         </div>
                     </div>
                     
@@ -156,15 +167,16 @@
             
                     <div class="form-group">
                         <label for="email">Email Address </label>
-                        <input type="email" id="email" name="email" placeholder="Enter email address">
+                        <input type="email" id="email" name="email" placeholder="e.g., juan_delacruz@gmail.com">
                     </div>
                     
                     <div class="form-row">
                         <div class="form-group">
                             <label for="phoneNumber">Phone Number *</label>
-                            <input type="tel" id="phoneNumber" name="contact_num" required placeholder="Enter mobile number">
+                            <input type="tel" id="phoneNumber" name="contact_num" required placeholder="e.g., 917-555-0123">
                         </div>
                     </div>
+
                 </div>
                 <!-- Property / Residential Information -->
                 <div class="form-section" style="margin-top: 20px;">
@@ -257,6 +269,8 @@
         document.getElementById('resident_id').value = id;
         const firstName = button.dataset.firstname;
         const lastName = button.dataset.lastname; 
+        const middleName = button.dataset.middlename;
+        const suffix = button.dataset.suffix;
         const dob = button.dataset.dob;             
         const email = button.dataset.email;         
         const phone = button.dataset.phone;    
@@ -267,6 +281,8 @@
         
         document.getElementById('firstName').value = firstName;
         document.getElementById('lastName').value = lastName;
+        document.getElementById('middleName').value = middleName;
+        document.getElementById('suffix').value = suffix;
         document.getElementById('dob').value = dob;
         document.getElementById('email').value = email;
         document.getElementById('phoneNumber').value = phone;

@@ -32,13 +32,16 @@ const selectPersonById = async(person_id, conn) => {
  * @param {*} conn 
  * @returns person record with the given name
  */
-const selectPersonByName = async(first_name, last_name, conn) => {
+const selectPersonByName = async(first_name, last_name, middle_name, suffix, conn) => {
 
-    const[rows] = await conn.query(`
+    const [rows] = await conn.query(`
         SELECT person_id
         FROM Person
-        WHERE first_name = ? AND last_name = ?`,
-        [first_name, last_name]
+        WHERE first_name = ?
+        AND last_name = ?
+        AND middle_name <=> ?
+        AND suffix <=> ?`,
+        [first_name, last_name, middle_name, suffix]
     );
 
     return rows[0];
@@ -125,7 +128,9 @@ const updatePerson = async(data, person_id, conn) => {
                 last_name = ?,
                 email = ?,
                 contact_num = ?,
-                birth_date = ?
+                birth_date = ?,
+                middle_name = ?,
+                suffix = ?
             WHERE person_id = ?`,
             [
                 data.first_name,
@@ -133,6 +138,8 @@ const updatePerson = async(data, person_id, conn) => {
                 data.email || null,
                 data.contact_num || null,
                 data.birth_date || null,
+                data.middle_name || null,
+                data.suffix || null,
                 person_id
             ]
         );
