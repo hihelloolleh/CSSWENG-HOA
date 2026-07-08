@@ -51,7 +51,7 @@
 
     <div class="search-bar">
         <input type="text" class="search-input" id="searchInput" 
-               placeholder="Search by name, email, or property..." 
+               placeholder="Search by name, email, status..." 
                oninput="filterTable()">
     </div>
 
@@ -81,7 +81,7 @@
                             <td><%= resident.birth_date ? resident.birth_date.toString().substring(0, 10) : '—' %></td>
                             <td><%= resident.email || '—' %></td>
                             <td><%= resident.contact_num || '—' %></td>
-                            <td><%= resident.isActive === 1 ? 'Active' : 'Inactive' %></td>
+                            <td><%= resident.isActive === 1 ? 'Ongoing' : 'Ended' %></td>
                             <td>
 
                                 <button class="btn-icon"
