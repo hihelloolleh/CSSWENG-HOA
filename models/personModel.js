@@ -36,24 +36,21 @@ const selectPersonById = async (person_id, conn) => {
  * @param {*} conn
  * @returns {Object}
  */
-const selectPersonByName = async (
-    first_name,
-    last_name,
-    contact_num,
-    conn
-) => {
-
-    const [rows] = await conn.query(`
-        SELECT
-            person_id
+const selectPersonByName = async (data, conn) => {
+    const [rows] = await conn.query(
+        `
+        SELECT person_id
         FROM Person
         WHERE first_name = ?
+          AND middle_name <=> ?
           AND last_name = ?
-          AND contact_num = ?`,
+          AND suffix <=> ?
+        `,
         [
-            first_name,
-            last_name,
-            contact_num
+            data.first_name,
+            data.middle_name || null,
+            data.last_name,
+            data.suffix || null
         ]
     );
 

@@ -6,46 +6,53 @@ const propertyModel = require("../models/propertyModel");
 const vehicleModel = require("../models/vehicleModel");
 
 
-const addResident = async(data) => {
-
+const addResident = async (data) => {
     const conn = await pool.getConnection();
 
     try {
         await conn.beginTransaction();
 
-        //check if first and last name is duplicated
-        const duplicateName = await personModel.selectPersonByName(data.first_name, data.last_name, data.contact_num, conn);
+        let person_id;
+        let resident_id;
 
-        if(duplicateName != null) {
-            throw new Error("This resident already exists!");
+        // Check if the person already exists
+        const person = await personModel.selectPersonByName(data, conn);
+
+        if (person) {
+            person_id = person.person_id;
+
+            const activeResident =
+                await residentModel.findActiveResidentByPersonId(person_id, conn);
+
+            if (activeResident) {
+                throw new Error("This resident already exists!");
+            }
+        } else {
+            person_id = await personModel.addPerson(data, conn);
+
+            if (!person_id) {
+                throw new Error("Failed to create Person record");
+            }
         }
 
-        //create the person record
-        const person_id = await personModel.addPerson(data, conn);
+        // Create the resident record (whether the person already existed or was just created)
+        resident_id = await residentModel.addResident(data, person_id, conn);
 
-        if(!person_id) {
-            throw new Error("Failed to create Person record");
-        }
-
-        //create the resident record
-        const resident_id = await residentModel.addResident(data, person_id, conn);
-
-        if(!resident_id) {
+        if (!resident_id) {
             throw new Error("Failed to create Resident record");
         }
 
-        
         await conn.commit();
         return resident_id;
 
-    } catch(err) {
+    } catch (err) {
         await conn.rollback();
         throw err;
 
     } finally {
         conn.release();
     }
-}
+};
 
 const updateResident = async(data) => {
 
@@ -62,7 +69,7 @@ const updateResident = async(data) => {
         }
 
         await personModel.updatePerson(data, existingResident.person_id, conn);
-        await residentModel.updateResident(data, conn);
+        await residentModel.updateResident(data.residency_start_date, conn);
     
         await conn.commit();
     } catch(err) {
@@ -74,6 +81,30 @@ const updateResident = async(data) => {
    
 }
 
+const endResidency = async(resident_id, end_date) => {
+    const conn = await pool.getConnection();
+
+     try {
+        await conn.beginTransaction();
+
+         //endResidency
+        await residentModel.deactivateResident(resident_id, end_date, conn);
+         //delete property relationships
+        const properties = await propertyModel.selectPropertiesByResidentId(resident_id, conn);
+        
+        for (const p of properties) {
+            await propertyModel.deleteResidentProperty(resident_id, p.property_id, conn);
+        }
+
+        await conn.commit();
+    } catch(err) {
+        await conn.rollback();
+        throw err;
+    } finally {
+        conn.release();
+    }
+}
+
 const deleteResident = async(resident_id) => {
     const conn = await pool.getConnection();
 
@@ -82,27 +113,22 @@ const deleteResident = async(resident_id) => {
         await conn.beginTransaction();
 
         await residentModel.deleteResident(resident_id, conn);
-        console.log(resident_id);
+        
         //get all the properties and vehicles they own
         const properties = await propertyModel.selectPropertiesByResidentId(resident_id, conn);
-        console.log(properties);
+        
         const vehicles = await vehicleModel.getAllVehiclesByResident(resident_id, conn);
-        console.log(vehicles);
-
+        
         //delete resident_property given residentid
         for (const p of properties) {
-            console.log(p.property_id);
             await propertyModel.deleteResidentProperty(resident_id, p.property_id, conn);
         }
         
          //delete resident_vehicle given residentid
-       
         for(const v of vehicles) {
-            console.log(v.vehicle_id);
             await vehicleModel.deleteResidentVehicle(resident_id, v.vehicle_id, conn)
         }
         
-    
 
         await conn.commit();
 
@@ -117,5 +143,6 @@ const deleteResident = async(resident_id) => {
 module.exports = {
     addResident, 
     updateResident,
-    deleteResident
+    deleteResident,
+    endResidency
 }

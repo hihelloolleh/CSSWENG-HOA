@@ -212,6 +212,10 @@ body {
     font-size: 14px;
 }
 
+#btn-end-residency {
+    color:#c82333;
+}
+
 .btn-icon:hover {
     background: #e8e8e8;
 }

@@ -19,9 +19,7 @@ const addEmployee = async (data) => {
 
         // Check if the person already exists
         const duplicatePerson = await personModel.selectPersonByName(
-            data.first_name,
-            data.last_name,
-            data.contact_num,
+            data,
             conn
         );
 

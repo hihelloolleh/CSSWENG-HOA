@@ -51,16 +51,31 @@ const getAllResidents = async() => {
             Person.email,
             Person.contact_num,
             Resident.residency_start_date,
-            Resident.residency_end_date
+            Resident.residency_end_date,
+            Resident.isActive
         FROM Resident
         JOIN Person
             ON Resident.person_id = Person.person_id
-        WHERE isActive = 1 AND deleteFlag = 0`
+        WHERE deleteFlag = 0`
     );
 
     return rows;
 };
 
+const findActiveResidentByPersonId = async (person_id, conn) => {
+    const [rows] = await conn.query(
+        `
+        SELECT resident_id
+        FROM Resident
+        WHERE person_id = ?
+          AND isActive = 1
+          AND deleteFlag = 0
+        `,
+        [person_id]
+    );
+
+    return rows[0];
+};
 /**
  * Adds a new resident record to the Resident table
  * 
@@ -69,12 +84,11 @@ const getAllResidents = async() => {
  */
 const addResident = async(data, person_id, conn) => {
     const [result] = await conn.query(`
-        INSERT INTO Resident (person_id, residency_start_date, residency_end_date)
-        VALUES(?, ?, ?)`,
+        INSERT INTO Resident (person_id, residency_start_date)
+        VALUES(?, ?)`,
         [
             person_id,
-            data.residency_start_date,
-            data.residency_end_date || null,
+            data.residency_start_date
         ]
     );
 
@@ -97,11 +111,27 @@ const deleteResident = async(resident_id, conn) => {
     //if i delete a resident that means i should also delete its 
     return result.affectedRows;
 };
+/**
+ * Deactivates an existing resident, meaning their residency has ended.
+ * This function sets the residency end date and sets the isActive property
+ * to false
+ * 
+ * @param {*} resident_id - The resident to be deleted
+ * @returns - The number of rows deleted
+ */
+const deactivateResident = async(resident_id, end_date, conn) => {
+   
+     const [result] = await conn.query(`
+        UPDATE Resident
+        SET residency_end_date = ?, isActive = 0
+        WHERE resident_id = ?`,
+        [
+            end_date,
+            resident_id
+        ]
+    );
 
-const deactivateResident = async(resident_id, residency_end_date) => {
-   //if resident gets deactivated
-   //1. delete property associations?
-   //
+    return result.affectedRows;
 
 }
 
@@ -111,16 +141,14 @@ const deactivateResident = async(resident_id, residency_end_date) => {
  * @param {*} data - Resident data to update
  * @returns - The number of rows updated
  */
-const updateResident = async(data, conn) => {
+const updateResident = async(start_date, conn) => {
 
     const [result] = await conn.query(`
         UPDATE Resident
-        SET residency_start_date = ?,
-            residency_end_date = ?
+        SET residency_start_date = ?
         WHERE resident_id = ?`,
         [
-            data.residency_start_date,
-            data.residency_end_date || null,
+            start_date,
             data.resident_id
         ]
     );
@@ -128,12 +156,15 @@ const updateResident = async(data, conn) => {
     return result.affectedRows;
 };
 
+
 module.exports = {
     selectResidentById,
     selectPersonByResidentId,
     getAllResidents,
     addResident,
     deleteResident,
-    updateResident
+    updateResident,
+    deactivateResident,
+    findActiveResidentByPersonId
 };
 

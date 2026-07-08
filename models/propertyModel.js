@@ -29,6 +29,7 @@ const selectAllResidents = async () => {
             CONCAT(per.first_name, ' ', per.last_name) AS full_name
         FROM Resident r
         JOIN Person per ON r.person_id = per.person_id
+        WHERE r.isActive = 1 AND r.deleteFlag = 0
         ORDER BY per.last_name ASC
     `);
     return rows;

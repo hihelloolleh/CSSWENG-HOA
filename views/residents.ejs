@@ -63,13 +63,14 @@
                     <th>Date of Birth</th>
                     <th>Email</th>
                     <th>Phone Number</th>
+                    <th>Residency Status</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 <% if (residents.length === 0) { %>
                     <tr>
-                        <td colspan="5" class="empty-state">
+                        <td colspan="6" class="empty-state">
                             No resident records found. Click "Add Resident" to create one.
                         </td>
                     </tr>
@@ -80,6 +81,7 @@
                             <td><%= resident.birth_date ? resident.birth_date.toString().substring(0, 10) : '—' %></td>
                             <td><%= resident.email || '—' %></td>
                             <td><%= resident.contact_num || '—' %></td>
+                            <td><%= resident.isActive === 1 ? 'Active' : 'Inactive' %></td>
                             <td>
 
                                 <button class="btn-icon"
@@ -94,6 +96,7 @@
                                         onclick="openViewModal(this)">
                                     View info
                                 </button>
+                            
                                 <button class="btn-icon" 
                                         data-id="<%= resident.resident_id %>"
                                         data-firstname="<%= resident.first_name %>"
@@ -104,11 +107,17 @@
                                         data-email="<%= resident.email || '' %>"
                                         data-phone="<%= resident.contact_num || '' %>"
                                         data-residentstart="<%= resident.residency_start_date ? resident.residency_start_date.toString().substring(0,10) : '' %>"
-                                        data-residentend="<%= resident.residency_end_date ? resident.residency_end_date.toString().substring(0,10) : '' %>"
+
                                         onclick="openEditModal(this)">
                                     <i class="fa-solid fa-edit"></i>
                                 </button>
- 
+                                <% if (resident.isActive) { %>
+                                    <button class="btn-icon" id="btn-end-residency" 
+                                            data-id="<%= resident.resident_id %>"
+                                            onclick="openEndResidencyModal(this.dataset.id)">
+                                        End residency
+                                    </button>
+                                <% } %>
                                 <button class="btn-icon btn-icon-danger" 
                                         data-id="<%= resident.resident_id %>"
                                         data-name="<%= resident.first_name %> <%= resident.last_name %>"
@@ -157,44 +166,35 @@
                             <input type="text" id="lastName" name="last_name" required placeholder="e.g., Dela Cruz" >
                         </div>
                     </div>
+
+                    <div class="form-row">
+                        
+                        <div class="form-group">
+                            <label for="phoneNumber">Phone Number *</label>
+                            <input type="tel" id="phoneNumber" name="contact_num" required placeholder="e.g., 917-555-0123">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email Address </label>
+                            <input type="email" id="email" name="email" placeholder="e.g., juan_delacruz@gmail.com">
+                        </div>
+                    </div>
                     
                     <div class="form-row">
                         <div class="form-group">
                             <label for="dob">Date of Birth </label>
                             <input type="date" id="dob" name="birth_date">
                         </div>
-                    </div>
-            
-                    <div class="form-group">
-                        <label for="email">Email Address </label>
-                        <input type="email" id="email" name="email" placeholder="e.g., juan_delacruz@gmail.com">
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="phoneNumber">Phone Number *</label>
-                            <input type="tel" id="phoneNumber" name="contact_num" required placeholder="e.g., 917-555-0123">
-                        </div>
-                    </div>
 
-                </div>
-                <!-- Property / Residential Information -->
-                <div class="form-section" style="margin-top: 20px;">
-                    <h3>Property / Residential Information</h3>
-                    <hr>
-
-                    <div class="form-row">
                         <div class="form-group">
                             <label for="residency-start-date">Residency Start Date *</label>
                             <input type="date" id="residency-start-date" name="residency_start_date" required>
                         </div>
 
-                        <div class="form-group" id="residency-end-container">
-                            <label for="residency-end-date">Residency End Date </label>
-                            <input type="date" id="residency-end-date" name="residency_end_date">
-                        </div>
                     </div>
+
                 </div>
+                
             </div>
                
             <div class="modal-footer">
@@ -247,6 +247,39 @@
         </div>
     </div>
 </div>
+
+<!--------------------------------END RESIDENCY MODAL--------------------------------->
+<div id="endResidencyModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>End residency</h2>
+            <button class="modal-close" onclick="closeModal('endResidencyModal')">&times;</button>
+        </div>
+
+        <form id="endResidencyForm" method="POST">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="residency-end-date">Residency End Date *</label>
+                    <input type="date" id="residency-end-date" name="residency_end_date" required>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"
+                        onclick="closeModal('endResidencyModal')">
+                    Cancel
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    End Residency
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
 <!--------------------------------SCRIPT--------------------------------->
 <script src="/js/sidebar.js"></script> <!-- sidebar functionality -->
 <script>
@@ -274,8 +307,7 @@
         const dob = button.dataset.dob;             
         const email = button.dataset.email;         
         const phone = button.dataset.phone;    
-        const residentStartDate = button.dataset.residentstart;
-        const residentEndDate = button.dataset.residentend;    
+        const residentStartDate = button.dataset.residentstart; 
 
 
         
@@ -288,11 +320,11 @@
         document.getElementById('phoneNumber').value = phone;
 
         document.getElementById('residency-start-date').value = residentStartDate;
-        document.getElementById('residency-end-date').value = residentEndDate;
        
         
         document.getElementById('residentModal').classList.add('active');
     }
+
     function openViewModal(button) {
    
         const name = button.dataset.name; 
@@ -310,6 +342,11 @@
         document.getElementById('view-residency-end').textContent = residentEndDate || 'Present';
 
         document.getElementById('viewModal').classList.add('active');
+    }
+
+    function openEndResidencyModal(id) {
+         document.getElementById('endResidencyForm').action = '/residents/' + id + '/endResidency';
+         document.getElementById('endResidencyModal').classList.add('active');
     }
 
     function confirmDelete(id, residentName) {

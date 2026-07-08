@@ -6,5 +6,6 @@ router.get('/', residentController.getResidents);
 router.post('/', residentController.addResident);
 router.post('/:id/delete', residentController.deleteResident);
 router.post('/:id/update', residentController.updateResident);
+router.post('/:id/endResidency', residentController.endResidency);
 
 module.exports = router;

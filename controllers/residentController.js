@@ -65,9 +65,21 @@ const deleteResident = async (req, res) => {
     }
 };
 
+const endResidency = async (req, res) => {
+    try {
+        console.log(req.params.id);
+        await residentService.endResidency(req.params.id, req.body.residency_end_date);
+        return res.redirect('/residents');
+    } catch(err) {
+        console.log("Failed to end residency: ", err);
+        return res.redirect('/residents?error=Failed+to+end+residency');
+    }
+}
+
 module.exports = {
     getResidents,
     addResident,
     deleteResident, 
-    updateResident
+    updateResident,
+    endResidency
 };
