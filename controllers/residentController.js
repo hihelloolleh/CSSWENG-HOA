@@ -3,18 +3,22 @@
 // SPRINT 2+: connect all functions to the database via models.
 
 const residentService = require('../services/residentService');
-const residentModel = require('../models/residentModel')
-
+const residentModel = require('../models/residentModel');
+const boardMemberModel = require('../models/boardMemberModel');
 
 const getResidents = async (req, res) => {
     try {
-        const residents = await residentModel.getAllResidents();
+        const [residents, boardMembers] = await Promise.all([
+            residentModel.getAllResidents(),
+            boardMemberModel.getAllBoardMembers(),
+        ]);
 
         res.render('residents', {
             title:      'Residents',
             activePage: 'residents',
             pageCSS:    'residents.css',
             residents,
+            boardMembers,
             error:      req.query.error   || null,
             success:    req.query.success || null,
         });
@@ -22,7 +26,6 @@ const getResidents = async (req, res) => {
         console.log("Error fetching residents: ", err);
         return res.status(500).send('Failed to load residents');
     }
-    
 };
 
 const addResident = async(req, res) => {

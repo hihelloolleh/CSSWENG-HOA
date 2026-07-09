@@ -1,64 +1,56 @@
-const {pool} = require("../config/db");
-const personModel = require("../models/personModel");
-const residentModel = require("../models/residentModel");
-const boardMemberModel = require("../models/boardMemberModel");
+const { pool } = require('../config/db');
+const boardMemberModel = require('../models/boardMemberModel');
 
-
-const addBoardMember = async(data) => {
-
+const addBoardMember = async (data) => {
     const conn = await pool.getConnection();
-
     try {
         await conn.beginTransaction();
-
-        //create the board member record
         const board_id = await boardMemberModel.addBoardMember(data, data.resident_id, conn);
-
-        if(!board_id) {
-            throw new Error("Failed to create Board Member record");
-        }
-        
         await conn.commit();
         return board_id;
-
-    } catch(err) {
+    } catch (err) {
         await conn.rollback();
         throw err;
-
     } finally {
         conn.release();
     }
-}
+};
 
-const updateBoardMember = async(data) => {
-
+const updateBoardMember = async (data) => {
     const conn = await pool.getConnection();
-
     try {
         await conn.beginTransaction();
-
-         //check if the resident that is being edited exists
-        const existingBoardMember = await boardMemberModel.getBoardMemberByResidentId(data.resident_id, conn);
-
-        if(existingBoardMember === null) {
-            throw new Error("Board member does not exist!");
-        }
-
-        await personModel.updatePerson(data, existingBoardMember.person_id, conn);
-        await residentModel.updateResident(data, existingBoardMember.resident_id, conn); 
-        await boardMemberModel.updateBoardMember(data, existingBoardMember.board_id, conn);
-    
+        await boardMemberModel.updateBoardMember(data, data.board_id, conn);
         await conn.commit();
-    } catch(err) {
+    } catch (err) {
         await conn.rollback();
         throw err;
     } finally {
         conn.release();
     }
-   
-}
+};
+
+const endTerm = async (board_id, end_date) => {
+    const conn = await pool.getConnection();
+    try {
+        await conn.beginTransaction();
+        await boardMemberModel.endTermBoardMember(board_id, end_date, conn);
+        await conn.commit();
+    } catch (err) {
+        await conn.rollback();
+        throw err;
+    } finally {
+        conn.release();
+    }
+};
+
+const deleteBoardMember = async (board_id) => {
+    return await boardMemberModel.deleteBoardMember(board_id);
+};
 
 module.exports = {
-    addBoardMember, 
-    updateBoardMember 
-}
+    addBoardMember,
+    updateBoardMember,
+    endTerm,
+    deleteBoardMember,
+};

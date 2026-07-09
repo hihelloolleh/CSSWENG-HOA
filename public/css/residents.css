@@ -125,6 +125,72 @@ body {
     background: #ccc;
 }
 
+.btn-toggle-active {
+    background: #3d553b;
+    color: white;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.25);
+}
+
+.btn-toggle-active:hover {
+    background: #2e4029;
+}
+
+.resident-search-wrap {
+    position: relative;
+}
+
+.resident-dropdown-list {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    max-height: 180px;
+    overflow-y: auto;
+    list-style: none;
+    z-index: 200;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.resident-dropdown-list li {
+    padding: 9px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+}
+
+.resident-dropdown-list li:hover {
+    background: #f0f4f0;
+    color: #526F50;
+}
+
+.resident-name-display {
+    padding: 10px 14px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background: #f8f8f8;
+    font-size: 14px;
+    color: #555;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #526F50;
+}
+
 .btn-danger {
     background: #dc3545;
     color: white;
