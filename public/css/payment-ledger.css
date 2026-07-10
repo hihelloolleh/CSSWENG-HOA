@@ -154,6 +154,12 @@ body {
     border-color: #526F50;
 }
 
+.payment-count {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 12px;
+}
+
 .table-container {
     background: white;
     border-radius: 12px;
