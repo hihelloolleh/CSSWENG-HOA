@@ -36,13 +36,19 @@
             </button>
         </div>
 
-        <div class="search-section" style="margin: 20px 0;">
-            <input type="text" id="searchInput" class="form-control" placeholder="Search by plate, owner, type, or color..." style="width: 100%; max-width: 400px; padding: 10px; margin-bottom: 10px;">
-            
-            <div class="counter-text" style="font-weight: 600; color: #555;">
-                Total Vehicles: <span id="vehicleCount"><%= vehicles.length %></span>
-            </div>
+        <!-- SEARCH -->
+        <div class="search-bar" style="margin-bottom: 12px;">
+            <input type="text" class="search-input" id="searchInput"
+                   placeholder="Search by plate, owner, type, or color...">
         </div>
+        
+        <!-- VEHICLE COUNTER -->
+        <p class="vehicle-count" id="paymentCount">
+            Showing <strong><%= vehicles.length %></strong> vehicles
+        </p>
+ 
+ 
+        
 
         <div class="table-container">
             <table class="data-table">
