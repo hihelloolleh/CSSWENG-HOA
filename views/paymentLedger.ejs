@@ -1,0 +1,134 @@
+<!-- ============================================================
+     PAYMENT LEDGER VIEW - NO CRUD YET 
+     Layout: views/layouts/main.ejs
+     Controller: NO CONTROLLER YET 
+     Model: NO MODEL YET 
+     Extra CSS: NO CSS YET 
+     ============================================================ -->
+
+<div class="main-wrapper">
+    <div class="sidebar-open nav-item">
+        <i class="fa-solid fa-bars"></i>
+        <span>Open Sidebar</span>
+    </div>
+
+    <header class="topbar">
+        <div class="topbar-left">
+            <h1 class="page-title">Payment Ledger</h1>
+            <p class="page-subtitle">View, add, edit, and manage all transactions</p>
+        </div>
+        <div class="topbar-right">
+            <div class="topbar-user">
+                <div class="user-avatar"><i class="fa-solid fa-user"></i></div>
+                <div class="user-info">
+                    <span class="user-name">Village Admin</span>
+                    <span class="user-role">Administrator</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="content"> 
+        <!-- SEARCH -->
+        <div class="search-bar" style="margin-bottom: 12px;">
+            <input type="text" class="search-input" id="searchInput"
+                   placeholder="Search transactions..."
+                   oninput="filterTable()">
+        
+           <!-- ACTION BUTTONS -->
+            <span class="action-buttons">
+                <button class="btn btn-secondary"> Export Report </button>
+                <button class="btn btn-primary" onclick="openAddModal()">
+                    <i class="fa-solid fa-plus"></i> Add Payment 
+                </button>
+            </span>
+        </div>
+         
+        <!-- PAYMENT COUNTER -->
+        <p class="payment-count" id="paymentCount">
+            Showing <strong>...</strong> properties
+        </p>
+
+        <!-- DATA TABLE -->
+        <div class="table-container">
+            <table class="data-table" id="paymentTable">
+                <thead>
+                    <!-- TODO: REMOVE INLINE CSS (PUT INTO DASHBOARD TABLE CSS)-->
+                    <tr>
+                        <th style="text-align: center;">Due Date<br>Date Paid</th>
+                        <th style="text-align: center;">Name/Resident</th>
+                        <th style="text-align: center;">Purpose</th>
+                        <th style="text-align: center;">Amount</th>
+                        <th style="text-align: center;">Method</th>
+                        <th style="text-align: center;">Status</th>
+                        <th style="text-align: center;">Details</th>
+                        <th style="text-align: center;">Edit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                        <tr>
+                            <td colspan="8" class="empty-state">
+                                No payment records found. Click "Add Payment" to create one.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="8" style="text-align: center;"><strong>SAMPLE DATA</strong></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center;">Oct 21, 2025<br>Oct 22, 2025</td>
+                            <td style="text-align: center;">Clark Kent</td>
+                            <td style="text-align: center;">Association Dues</td>
+                            <td style="text-align: center;">&#8369; 5,000</td>
+                            <td style="text-align: center;">DEBIT CARD</td>
+                            <td style="text-align: center;">
+                                <div class="payment-status">
+                                    Paid
+                                </div>
+                            </td>
+                            <td style="text-align: center;">
+                                <button class="btn-icon">
+                                    <i class="fa-solid fa-eye"></i> View Details
+                                </button>
+                            </td>
+                            <td style="text-align: center;">
+                                <button class="btn-icon">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <button class="btn-icon btn-icon-danger">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center;">Nov 21, 2025<br>Dec 22, 2025</td>
+                            <td style="text-align: center;">Bruce Wayne</td>
+                            <td style="text-align: center;">CAR STICKER</td>
+                            <td style="text-align: center;">&#8369; 750</td>
+                            <td style="text-align: center;">ONLINE PAYMENT</td>
+                            <td style="text-align: center;">
+                                <div class="payment-status">
+                                    Paid
+                                </div>
+                            </td>
+                            <td style="text-align: center;">
+                                <button class="btn-icon">
+                                    <i class="fa-solid fa-eye"></i> View Details
+                                </button>
+                            </td>
+                            <td style="text-align: center;">
+                                <button class="btn-icon">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <button class="btn-icon btn-icon-danger">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+ 
+<script src="/js/sidebar.js"></script>
+ 
