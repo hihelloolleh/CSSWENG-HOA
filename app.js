@@ -25,25 +25,29 @@ app.use(express.static(path.join(__dirname, 'public')));   // serves /public
 // ROUTES
 // ADD NEW ROUTE FILES HERE AS NEW PAGES ARE CREATED
 // ============================================================
-const indexRoutes         = require('./routes/index');
-const personRoutes        = require('./routes/personRoutes');
-const propertyRoutes      = require('./routes/propertyRoutes');
-const propertyOwnerRoutes = require('./routes/propertyOwnerRoutes');
-const employeeRoutes      = require('./routes/employeeRoutes');
-const vehicleRoutes       = require('./routes/vehicleRoutes');
-const stickerRoutes       = require('./routes/stickerRoutes');
-const residentRoutes      = require('./routes/residentRoutes'); 
-const boardMemberRoutes = require('./routes/boardMemberRoutes');
+const indexRoutes               = require('./routes/index');
+const personRoutes              = require('./routes/personRoutes');
+const propertyRoutes            = require('./routes/propertyRoutes');
+const propertyOwnerRoutes       = require('./routes/propertyOwnerRoutes');
+const employeeRoutes            = require('./routes/employeeRoutes');
+const vehicleRoutes             = require('./routes/vehicleRoutes');
+const stickerRoutes             = require('./routes/stickerRoutes');
+const residentRoutes            = require('./routes/residentRoutes'); 
+const boardMemberRoutes         = require('./routes/boardMemberRoutes');
+const financeDashboardRoutes    = require('./routes/financeDashboardRoutes'); 
+const paymentLedgerRoutes       = require('./routes/paymentLedgerRoutes'); 
 
-app.use('/',               indexRoutes);
-app.use('/persons',        personRoutes);
-app.use('/properties',     propertyRoutes);
-app.use('/property-owners',propertyOwnerRoutes);
-app.use('/employees',      employeeRoutes);
-app.use('/vehicles',       vehicleRoutes);
-app.use('/stickers',       stickerRoutes);
-app.use('/residents',      residentRoutes); 
-app.use('/boardMembers',  boardMemberRoutes);
+app.use('/',                    indexRoutes);
+app.use('/persons',             personRoutes);
+app.use('/properties',          propertyRoutes);
+app.use('/property-owners',     propertyOwnerRoutes);
+app.use('/employees',           employeeRoutes);
+app.use('/vehicles',            vehicleRoutes);
+app.use('/stickers',            stickerRoutes);
+app.use('/residents',           residentRoutes); 
+app.use('/boardMembers',        boardMemberRoutes);
+app.use('/finances',            financeDashboardRoutes);   
+app.use('/payments',            paymentLedgerRoutes); 
 
 // ============================================================
 // DATABSE SETUP AND CONNECTION
