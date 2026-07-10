@@ -35,7 +35,8 @@ const stickerRoutes             = require('./routes/stickerRoutes');
 const residentRoutes            = require('./routes/residentRoutes'); 
 const boardMemberRoutes         = require('./routes/boardMemberRoutes');
 const financeDashboardRoutes    = require('./routes/financeDashboardRoutes'); 
-const paymentLedgerRoutes       = require('./routes/paymentLedgerRoutes'); 
+const paymentLedgerRoutes       = require('./routes/paymentLedgerRoutes');
+const paymentRoutes             = require('./routes/paymentRoutes');
 
 app.use('/',                    indexRoutes);
 app.use('/persons',             personRoutes);
@@ -47,7 +48,8 @@ app.use('/stickers',            stickerRoutes);
 app.use('/residents',           residentRoutes); 
 app.use('/boardMembers',        boardMemberRoutes);
 app.use('/finances',            financeDashboardRoutes);   
-app.use('/payments',            paymentLedgerRoutes); 
+app.use('/payments',            paymentLedgerRoutes);
+app.use('/dues',                paymentRoutes);
 
 // ============================================================
 // DATABSE SETUP AND CONNECTION
