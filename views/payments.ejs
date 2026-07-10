@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title %> | HOA Management</title>
+    <link rel="stylesheet" href="/css/dashboard.css" />
+    <link rel="stylesheet" href="/css/payments.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body>
+    <!-- SIDEBAR -->
+    <%- include('partials/sidebar') %>
+
+    <!-- MAIN WRAPPER -->
+    <div class="main-wrapper">
+        <!-- TOP BAR -->
+        <div class="topbar">
+            <div class="topbar-left">
+                <button class="sidebar-open"><i class="fas fa-bars"></i></button>
+                <div>
+                    <div class="page-title"><%= title %></div>
+                    <div class="page-subtitle">View, add, edit, and manage all transactions</div>
+                </div>
+            </div>
+            <div class="topbar-user">
+                <div class="user-info">
+                    <span class="user-name">Admin User</span>
+                    <span class="user-role">HOA Administrator</span>
+                </div>
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="content">
+            <!-- Alerts -->
+            <% if (success) { %>
+                <div class="alert alert-success"><i class="fas fa-check-circle"></i> <%= success %></div>
+            <% } %>
+            <% if (error) { %>
+                <div class="alert alert-error"><i class="fas fa-exclamation-circle"></i> <%= error %></div>
+            <% } %>
+
+            <!-- Search and Action Bar -->
+            <div class="action-bar">
+                <div class="search-bar">
+                    <input type="text" class="search-input" placeholder="Search transactions..." id="searchInput" />
+                    <button class="btn btn-secondary" onclick="exportReport()">
+                        <i class="fas fa-file-export"></i> Export Report
+                    </button>
+                </div>
+                <button class="btn btn-primary" onclick="openModal('addPaymentModal')">
+                    <i class="fas fa-plus"></i> Add Payment
+                </button>
+            </div>
+
+            <!-- Payment Count -->
+            <div class="payment-count">Showing <span id="paymentCount"><%= payments ? payments.length : 0 %></span> payments</div>
+
+            <!-- Table -->
+            <div class="table-container">
+                <table class="data-table" id="paymentTable">
+                    <thead>
+                        <tr>
+                            <th>DUE DATE</th>
+                            <th>DATE PAID</th>
+                            <th>NAME/RESIDENT</th>
+                            <th>PURPOSE</th>
+                            <th>AMOUNT</th>
+                            <th>METHOD</th>
+                            <th>STATUS</th>
+                            <th>DETAILS</th>
+                            <th>EDIT</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (payments && payments.length > 0) { %>
+                            <% payments.forEach(function(payment) { %>
+                                <tr>
+                                    <td><%= payment.due_date || 'N/A' %></td>
+                                    <td><%= payment.payment_date || 'N/A' %></td>
+                                    <td><strong><%= payment.resident_name %></strong></td>
+                                    <td><%= payment.due_type || 'Monthly' %></td>
+                                    <td>₱<%= payment.amount ? payment.amount.toFixed(2) : '0.00' %></td>
+                                    <td><%= payment.payment_method || 'Cash' %></td>
+                                    <td>
+                                        <span class="badge badge-paid">Paid</span>
+                                    </td>
+                                    <td>
+                                        <button class="btn-icon" onclick="viewDetails('<%= payment.payment_id %>')" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <button class="btn-icon" onclick="editPayment('<%= payment.payment_id %>')" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn-icon btn-icon-danger" onclick="deletePayment('<%= payment.payment_id %>')" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="9" class="empty-state">
+                                    <i class="fas fa-inbox" style="font-size: 48px; display: block; margin-bottom: 16px; color: #ccc;"></i>
+                                    No payment records found. Click "Add Payment" to create one.
+                                </td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Sample Data (shown when no data exists) -->
+            <% if (!payments || payments.length === 0) { %>
+                <div style="margin-top: 24px; padding: 20px; background: #f8f9fa; border-radius: 12px;">
+                    <h4 style="color: #888; margin-bottom: 16px; font-weight: 400;">SAMPLE DATA</h4>
+                    <table class="data-table" style="background: white; border-radius: 8px; overflow: hidden;">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                                <th>Method</th>
+                                <th>Status</th>
+                                <th>Details</th>
+                                <th>Edit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Oct 21, 2025</td>
+                                <td>Clark Kent</td>
+                                <td>$5,000</td>
+                                <td>DEBIT CARD</td>
+                                <td><span class="badge badge-paid">Paid</span></td>
+                                <td><button class="btn-icon"><i class="fas fa-eye"></i></button></td>
+                                <td><button class="btn-icon"><i class="fas fa-edit"></i></button></td>
+                            </tr>
+                            <tr>
+                                <td>Nov 21, 2025</td>
+                                <td>Bruce Wayne</td>
+                                <td>$750</td>
+                                <td>ONLINE PAYMENT</td>
+                                <td><span class="badge badge-paid">Paid</span></td>
+                                <td><button class="btn-icon"><i class="fas fa-eye"></i></button></td>
+                                <td><button class="btn-icon"><i class="fas fa-edit"></i></button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            <% } %>
+        </div>
+    </div>
+
+    <!-- ─── MODALS ─── -->
+
+    <!-- Add Payment Modal -->
+    <div id="addPaymentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-plus-circle"></i> Add Payment</h2>
+                <button class="modal-close" onclick="closeModal('addPaymentModal')">&times;</button>
+            </div>
+            <form method="POST" action="/dues/payments">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="payment_due_id">Select Due</label>
+                        <select name="due_id" id="payment_due_id" required>
+                            <option value="">Select an unpaid due</option>
+                            <% 
+                            var unpaidDues = [];
+                            if (dues) {
+                                for (var i = 0; i < dues.length; i++) {
+                                    if (!dues[i].is_paid) {
+                                        unpaidDues.push(dues[i]);
+                                    }
+                                }
+                            }
+                            for (var i = 0; i < unpaidDues.length; i++) { 
+                            %>
+                                <option value="<%= unpaidDues[i].due_id %>">
+                                    <%= unpaidDues[i].resident_name %> - ₱<%= unpaidDues[i].due_amount.toFixed(2) %> (<%= unpaidDues[i].due_date %>)
+                                </option>
+                            <% } %>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="amount">Amount (₱)</label>
+                            <input type="number" name="amount" id="amount" step="0.01" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="payment_date">Payment Date</label>
+                            <input type="date" name="payment_date" id="payment_date" required />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="payment_method">Payment Method</label>
+                            <select name="payment_method" id="payment_method">
+                                <option value="Cash">Cash</option>
+                                <option value="Check">Check</option>
+                                <option value="Bank Transfer">Bank Transfer</option>
+                                <option value="Online">Online</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="reference_number">Reference Number</label>
+                            <input type="text" name="reference_number" id="reference_number" placeholder="Optional" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="notes">Notes</label>
+                        <textarea name="notes" id="notes" rows="2" placeholder="Optional notes..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('addPaymentModal')">Cancel</button>
+                    <button type="submit" class="btn btn-success">Record Payment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Payment Modal -->
+    <div id="editPaymentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-edit"></i> Edit Payment</h2>
+                <button class="modal-close" onclick="closeModal('editPaymentModal')">&times;</button>
+            </div>
+            <form method="POST" id="editPaymentForm">
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_payment_amount">Amount (₱)</label>
+                            <input type="number" name="amount" id="edit_payment_amount" step="0.01" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_payment_date">Payment Date</label>
+                            <input type="date" name="payment_date" id="edit_payment_date" required />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_payment_method">Payment Method</label>
+                            <select name="payment_method" id="edit_payment_method">
+                                <option value="Cash">Cash</option>
+                                <option value="Check">Check</option>
+                                <option value="Bank Transfer">Bank Transfer</option>
+                                <option value="Online">Online</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_reference_number">Reference Number</label>
+                            <input type="text" name="reference_number" id="edit_reference_number" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_notes">Notes</label>
+                        <textarea name="notes" id="edit_notes" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('editPaymentModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update Payment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Details Modal -->
+    <div id="viewDetailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-info-circle"></i> Payment Details</h2>
+                <button class="modal-close" onclick="closeModal('viewDetailsModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="detailsContent">
+                <!-- Details will be populated by JavaScript -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('viewDetailsModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ── Store data in JavaScript variables ──────────────────────────────
+        var paymentsData = [];
+        var duesData = [];
+        
+        try {
+            paymentsData = <%- JSON.stringify(payments) %>;
+        } catch(e) {
+            paymentsData = [];
+        }
+        
+        try {
+            duesData = <%- JSON.stringify(dues) %>;
+        } catch(e) {
+            duesData = [];
+        }
+
+        // ── Search functionality ─────────────────────────────────────────────
+        document.getElementById('searchInput').addEventListener('keyup', function() {
+            var input = this.value.toLowerCase();
+            var table = document.getElementById('paymentTable');
+            var rows = table.getElementsByTagName('tr');
+            var count = 0;
+
+            for (var i = 1; i < rows.length; i++) {
+                var cells = rows[i].getElementsByTagName('td');
+                var found = false;
+                for (var j = 0; j < cells.length; j++) {
+                    var text = cells[j].textContent.toLowerCase();
+                    if (text.indexOf(input) > -1) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (found) {
+                    rows[i].style.display = '';
+                    count++;
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+            document.getElementById('paymentCount').textContent = count;
+        });
+
+        // ── Export Report ────────────────────────────────────────────────────
+        function exportReport() {
+            alert('Export functionality will be implemented in the next sprint.');
+        }
+
+        // ── Modal functions ──────────────────────────────────────────────────
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        document.querySelectorAll('.modal').forEach(function(modal) {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
+
+        // ── View Details ─────────────────────────────────────────────────────
+        function viewDetails(paymentId) {
+            var payment = null;
+            for (var i = 0; i < paymentsData.length; i++) {
+                if (paymentsData[i].payment_id == paymentId) {
+                    payment = paymentsData[i];
+                    break;
+                }
+            }
+            if (payment) {
+                var html = '<div style="padding: 10px 0;">';
+                html += '<p><strong>Resident:</strong> ' + (payment.resident_name || 'N/A') + '</p>';
+                html += '<p><strong>Amount:</strong> ₱' + (payment.amount ? payment.amount.toFixed(2) : '0.00') + '</p>';
+                html += '<p><strong>Payment Date:</strong> ' + (payment.payment_date || 'N/A') + '</p>';
+                html += '<p><strong>Method:</strong> ' + (payment.payment_method || 'N/A') + '</p>';
+                html += '<p><strong>Reference:</strong> ' + (payment.reference_number || 'N/A') + '</p>';
+                html += '<p><strong>Notes:</strong> ' + (payment.notes || 'None') + '</p>';
+                html += '<p><strong>Status:</strong> <span class="badge badge-paid">Paid</span></p>';
+                html += '</div>';
+                document.getElementById('detailsContent').innerHTML = html;
+                openModal('viewDetailsModal');
+            }
+        }
+
+        // ── Edit Payment ──────────────────────────────────────────────────────
+        function editPayment(paymentId) {
+            var payment = null;
+            for (var i = 0; i < paymentsData.length; i++) {
+                if (paymentsData[i].payment_id == paymentId) {
+                    payment = paymentsData[i];
+                    break;
+                }
+            }
+            if (payment) {
+                document.getElementById('edit_payment_amount').value = payment.amount;
+                document.getElementById('edit_payment_date').value = payment.payment_date;
+                document.getElementById('edit_payment_method').value = payment.payment_method;
+                document.getElementById('edit_reference_number').value = payment.reference_number || '';
+                document.getElementById('edit_notes').value = payment.notes || '';
+                document.getElementById('editPaymentForm').action = '/dues/payments/' + paymentId + '/update';
+                openModal('editPaymentModal');
+            }
+        }
+
+        // ── Delete Payment ────────────────────────────────────────────────────
+        function deletePayment(paymentId) {
+            if (confirm('Are you sure you want to delete this payment? This will mark the associated due as unpaid.')) {
+                var form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/dues/payments/' + paymentId + '/delete';
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+
+        // ── Sidebar Toggle ───────────────────────────────────────────────────
+        document.addEventListener('DOMContentLoaded', function() {
+            var sidebar = document.querySelector('.sidebar');
+            var wrapper = document.querySelector('.main-wrapper');
+            var openBtn = document.querySelector('.sidebar-open');
+            var closeBtn = document.querySelector('.sidebar-close');
+
+            if (openBtn) {
+                openBtn.addEventListener('click', function() {
+                    if (window.innerWidth > 768) {
+                        sidebar.classList.toggle('collapsed');
+                        if (sidebar.classList.contains('collapsed')) {
+                            wrapper.style.marginLeft = '80px';
+                        } else {
+                            wrapper.style.marginLeft = '240px';
+                        }
+                    } else {
+                        sidebar.classList.toggle('mobile-open');
+                    }
+                });
+            }
+
+            if (closeBtn) {
+                closeBtn.addEventListener('click', function() {
+                    sidebar.classList.remove('mobile-open');
+                });
+            }
+
+            var financeToggle = document.querySelector('.finance-toggle');
+            var financeTab = document.querySelector('.main-tab');
+
+            if (financeToggle && financeTab) {
+                financeToggle.addEventListener('click', function() {
+                    financeTab.classList.toggle('open');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
