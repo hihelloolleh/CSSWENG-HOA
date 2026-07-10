@@ -436,6 +436,41 @@ body {
     display: none;
 }
 
+.main-tab .sub-tab {
+    display: none;
+    flex-direction: column;
+    margin-left: 20px;
+}
+
+.main-tab.open .sub-tab {
+    display: flex;
+}
+
+.finance-toggle {
+    cursor: pointer;
+}
+
+.finance-arrow {
+    margin-left: auto;
+    transition: transform 0.3s ease;
+}
+
+.main-tab.open .finance-arrow {
+    transform: rotate(180deg);
+}   
+ 
+.payment-status{
+    border-radius: 20px;
+    padding: 10px; 
+    border: 2px solid white; 
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+}
+
+.btn-icon{
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+}
+
 /* tablet view */
 @media (max-width: 1024px) {
 
