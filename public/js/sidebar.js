@@ -34,3 +34,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    const financeToggle = document.querySelector('.finance-toggle');
+    const financeTab = document.querySelector('.main-tab');
+
+    if (financeToggle && financeTab) {
+        financeToggle.addEventListener('click', () => {
+            financeTab.classList.toggle('open');
+        });
+    }
+});
