@@ -69,7 +69,7 @@
                     <% } else { %>
                         <% vehicles.forEach(function(vehicle) { %>
                             <tr>
-                                <td><span class="plate-number"><%= vehicle.plate_number %></span></td>
+                                <td><span class="plate-number"><%= vehicle.plate_number || 'N/A' %></span></td>
                                 <td><%= vehicle.type %></td>
                                 <td><%= vehicle.make %> <%= vehicle.model %></td>
                                 <td><%= vehicle.color %></td>
