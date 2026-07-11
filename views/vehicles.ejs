@@ -90,11 +90,12 @@
                                         <i class="fa-solid fa-edit"></i>
                                     </button>
 
-                                    <form action="/vehicles/delete/<%= vehicle.vehicle_id %>" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you wish to PERMANENTLY remove this vehicle? (This action CANNOT be undone)');">
-                                        <button type="submit" class="btn-icon btn-icon-danger">
-                                            <i class="fa-solid fa-trash"></i>
-                                        </button>
-                                    </form>
+                                    <button class="btn-icon btn-icon-danger"
+                                            onclick="confirmDelete(this.dataset.id, this.dataset.label)"
+                                            data-id="<%= vehicle.vehicle_id %>"
+                                            data-label="<%= vehicle.plate_number || vehicle.make + ' ' + vehicle.model %>">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
                                 </td>
                             </tr>
                         <% }) %>
@@ -172,7 +173,7 @@
                         <div id="add_hidden_inputs"></div>
                     </div>
                     
-                    <div class="modal-footer" style="margin-top: 20px;">
+                    <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" onclick="document.getElementById('vehicleModal').classList.remove('active')">Cancel</button>
                         <button type="submit" class="btn btn-primary">Save Vehicle</button>
                     </div>
@@ -248,9 +249,8 @@
                     </div>
                 </div>
                 
-                <div class="modal-footer" style="margin-top: 20px;">
-                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('editVehicleModal').classList.remove('active')">Cancel
-                    </button>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('editVehicleModal').classList.remove('active')">Cancel</button>
                     <button type="submit" class="btn btn-primary">Update Vehicle</button>
                 </div>
             </form>
@@ -258,7 +258,38 @@
     </div>
 </div>
 
+<!-- ── DELETE MODAL ─────────────────────────────────────────────────────────── -->
+<div id="deleteVehicleModal" class="modal">
+    <div class="modal-content" style="max-width:450px;">
+        <div class="modal-header">
+            <h2>Delete Vehicle</h2>
+            <button class="modal-close" onclick="document.getElementById('deleteVehicleModal').classList.remove('active')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p>Are you sure you want to delete <strong id="deleteVehicleName"></strong>?</p>
+            <p style="color:#dc3545;font-size:13px;margin-top:8px;font-weight:500;">This action cannot be undone.</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="document.getElementById('deleteVehicleModal').classList.remove('active')">Cancel</button>
+            <form id="deleteVehicleForm" method="POST" style="margin:0;">
+                <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
+    function confirmDelete(id, label) {
+        document.getElementById('deleteVehicleName').textContent = label;
+        document.getElementById('deleteVehicleForm').action = '/vehicles/delete/' + id;
+        document.getElementById('deleteVehicleModal').classList.add('active');
+    }
+
+    window.onclick = function(event) {
+        const m = document.getElementById('deleteVehicleModal');
+        if (event.target === m) m.classList.remove('active');
+    };
+
     function addResidentToForm(mode){
         const selectBox = document.getElementById(`${mode}_resident_select`);
         const id = selectBox.value;
