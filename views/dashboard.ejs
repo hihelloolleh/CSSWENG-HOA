@@ -12,11 +12,8 @@
     </div>
 
     <header class="topbar">
-        <div class="topbar-left"> 
-            <h1 class="page-title">Dashboard</h1>
-            <p class="page-subtitle">Welcome back, <strong>Admin</strong></p>
-            <!-- TODO (SPRINT 2+): RENDER LIVE DATE/TIME FROM SERVER OR JS -->
-            <p class="page-subtitle">June 16, 2026 08:00 PM PST</p>
+        <div class="topbar-left">  
+             <p class="page-title">Dashboard</p>
         </div>
         <div class="topbar-right">
             <div class="topbar-user">
@@ -26,14 +23,20 @@
                 <div class="user-info">
                     <!-- TODO (SPRINT 2+): SHOW LOGGED-IN USER NAME AND ROLE -->
                     <span class="user-name">Village Admin</span>
-                    <span class="user-role">Administrator</span>
+                    <span class="user-role">Administrator</span> 
                 </div>
             </div>
         </div>
     </header>
 
     <main class="content">
-
+        
+        <section class="welcome">
+            <h1 class="welcome-title">Welcome back, <strong>Admin</strong></h1>
+                <!-- TODO (SPRINT 2+): RENDER LIVE DATE/TIME FROM SERVER OR JS -->
+            <h3 class="welcome-date">Monday, June 16, 2026 &middot; 08:00 PM PST</h3>
+        </section>
+        
         <!-- SUMMARY STAT CARDS -->
         <section class="summary-cards">
             <div class="card stat-card">
@@ -194,18 +197,17 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>ID</th>
                             <th>Name</th>
                             <th>Position</th>
                             <th>Contact</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td>001</td><td>Clark Kent</td><td>President</td><td>0912 345 6789</td></tr>
-                        <tr><td>002</td><td>Diana Prince</td><td>Vice President</td><td>0912 345 6789</td></tr>
-                        <tr><td>003</td><td>Bruce Wayne</td><td>Board Member</td><td>0912 345 6789</td></tr>
-                        <tr><td>004</td><td>Zatanna Zatara</td><td>Board Member</td><td>0912 345 6789</td></tr>
-                        <tr><td>005</td><td>Kyle Rayner</td><td>Board Member</td><td>0912 345 6789</td></tr>
+                        <tr><td>Clark Kent</td><td>President</td><td>0912 345 6789</td></tr>
+                        <tr><td>Diana Prince</td><td>Vice President</td><td>0912 345 6789</td></tr>
+                        <tr><td>Bruce Wayne</td><td>Board Member</td><td>0912 345 6789</td></tr>
+                        <tr><td>Zatanna Zatara</td><td>Board Member</td><td>0912 345 6789</td></tr>
+                        <tr><td>Kyle Rayner</td><td>Board Member</td><td>0912 345 6789</td></tr>
                     </tbody>
                 </table>
             </div>
