@@ -125,6 +125,39 @@ const createTables = async() => {
             );        
         `;
 
+        const createRatesTable = `
+            CREATE TABLE IF NOT EXISTS Rates (
+                rate_id INT AUTO_INCREMENT PRIMARY KEY,
+                rate_category ENUM(
+                    'Car', 
+                    'Car (More than 6 stickers)', 
+                    'Motorcycle', 
+                    'Commercial', 
+                    'House (Monthly Payment)', 
+                    'Lot (Monthly Payment)', 
+                    'House (Annual Payment)', 
+                    'Lot (Annual Payment)'
+                ) NOT NULL UNIQUE,
+                amount DECIMAL(10, 2) NOT NULL,
+                effective_date DATE NOT NULL,
+                end_date DATE DEFAULT NULL
+            );
+        `;
+
+        // default values for rates
+        // IGNORE keyword so it won't seed again if the tables already have data even if db reboots
+        const seedDefaultRatesTable = `
+            INSERT IGNORE INTO Rates (rate_category, amount, effective_date, end_date) VALUES 
+            ('Car', 600.00, CURDATE(), NULL),
+            ('Car (More than 6 stickers)', 1000.00, CURDATE(), NULL),
+            ('Motorcycle', 370.00, CURDATE(), NULL),
+            ('Commercial', 1000.00, CURDATE(), NULL),
+            ('House (Monthly Payment)', 800.00, CURDATE(), NULL),
+            ('Lot (Monthly Payment)', 200.00, CURDATE(), NULL),
+            ('House (Annual Payment)', 8800.00, CURDATE(), NULL),
+            ('Lot (Annual Payment)', 2200.00, CURDATE(), NULL);
+        `;
+
         //Executes the SQL queries
 
         await pool.query(createPersonTable);
@@ -150,6 +183,12 @@ const createTables = async() => {
 
         await pool.query(createBoardMemberTable);
         console.log("Successfully created Board_Member table!")
+
+        await pool.query(createRatesTable);
+        console.log("Successfully created Rates table!")
+
+        await pool.query(seedDefaultRatesTable);
+        console.log("Successfully seeded Rates with default values!")
 
         // Add any columns that were introduced after the tables were first created.
         // INFORMATION_SCHEMA check avoids errors on fresh installs where the column
