@@ -177,12 +177,11 @@
                     </div>
                     <div class="form-group">
                         <label>Payer</label>
-                        <select name="paid_by" class="form-control">
-                            <option value="">— Select Payer —</option>
-                            <% persons.forEach(p => { %>
-                                <option value="<%= p.person_id %>"><%= p.full_name %></option>
-                            <% }) %>
-                        </select>
+                        <div class="resident-search-wrap">
+                            <input type="text" id="add_payer_search" class="form-control" placeholder="Search payer..." autocomplete="off">
+                            <ul id="add_payer_dropdown" class="resident-dropdown-list"></ul>
+                        </div>
+                        <input type="hidden" id="add_payer_id" name="paid_by">
                     </div>
                 </div>
                 <div class="form-row">
@@ -254,12 +253,11 @@
                     </div>
                     <div class="form-group">
                         <label>Payer</label>
-                        <select id="edit_paid_by" name="paid_by" class="form-control">
-                            <option value="">— Select Payer —</option>
-                            <% persons.forEach(p => { %>
-                                <option value="<%= p.person_id %>"><%= p.full_name %></option>
-                            <% }) %>
-                        </select>
+                        <div class="resident-search-wrap">
+                            <input type="text" id="edit_payer_search" class="form-control" placeholder="Search payer..." autocomplete="off">
+                            <ul id="edit_payer_dropdown" class="resident-dropdown-list"></ul>
+                        </div>
+                        <input type="hidden" id="edit_payer_id" name="paid_by">
                     </div>
                 </div>
                 <div class="form-row">
@@ -351,8 +349,50 @@
     </div>
 </div>
 
+<script id="personData" type="application/json"><%- JSON.stringify(persons) %></script>
+
 <script src="/js/sidebar.js"></script>
 <script>
+    // ── Payer search dropdown ────────────────────────────────────────────────
+    const allPersons = JSON.parse(document.getElementById('personData').textContent);
+
+    function initPayerSearch(mode) {
+        const searchInput = document.getElementById(`${mode}_payer_search`);
+        const dropdown    = document.getElementById(`${mode}_payer_dropdown`);
+        const hiddenId    = document.getElementById(`${mode}_payer_id`);
+
+        searchInput.addEventListener('input', function () {
+            const query = this.value.trim().toLowerCase();
+            hiddenId.value = '';
+            dropdown.innerHTML = '';
+
+            if (!query) { dropdown.style.display = 'none'; return; }
+
+            const matches = allPersons.filter(p => p.full_name.toLowerCase().includes(query));
+            if (matches.length === 0) { dropdown.style.display = 'none'; return; }
+
+            matches.forEach(p => {
+                const li = document.createElement('li');
+                li.textContent = p.full_name;
+                li.addEventListener('mousedown', function (e) {
+                    e.preventDefault();
+                    searchInput.value  = p.full_name;
+                    hiddenId.value     = p.person_id;
+                    dropdown.style.display = 'none';
+                });
+                dropdown.appendChild(li);
+            });
+            dropdown.style.display = 'block';
+        });
+
+        searchInput.addEventListener('blur', () => {
+            setTimeout(() => { dropdown.style.display = 'none'; }, 150);
+        });
+    }
+
+    initPayerSearch('add');
+    initPayerSearch('edit');
+
     // ── Modal helpers ────────────────────────────────────────────────────────
     function closeModal(id) {
         document.getElementById(id).classList.remove('active');
@@ -379,7 +419,10 @@
         document.getElementById('edit_payment_method').value      = btn.dataset.method;
         document.getElementById('edit_receipt_number').value      = btn.dataset.receipt;
         document.getElementById('edit_remarks').value             = btn.dataset.remarks;
-        document.getElementById('edit_paid_by').value             = btn.dataset.paidby;
+        const paidById = btn.dataset.paidby;
+        const person = allPersons.find(p => String(p.person_id) === String(paidById));
+        document.getElementById('edit_payer_search').value = person ? person.full_name : '';
+        document.getElementById('edit_payer_id').value     = paidById || '';
         document.getElementById('editModal').classList.add('active');
     }
 
