@@ -129,16 +129,59 @@ const createTables = async() => {
             CREATE TABLE IF NOT EXISTS Rates (
                 rate_id INT AUTO_INCREMENT PRIMARY KEY,
                 rate_category ENUM(
-                    'Car', 
-                    'Car (More than 6 stickers)', 
-                    'Motorcycle', 
-                    'Commercial', 
-                    'House (Monthly Payment)', 
-                    'Lot (Monthly Payment)', 
-                    'House (Annual Payment)', 
+                    'Car',
+                    'Car (More than 6 stickers)',
+                    'Motorcycle',
+                    'Commercial',
+                    'House (Monthly Payment)',
+                    'Lot (Monthly Payment)',
+                    'House (Annual Payment)',
                     'Lot (Annual Payment)'
                 ) NOT NULL UNIQUE,
                 amount DECIMAL(10, 2) NOT NULL
+            );
+        `;
+
+        const createPaymentTable = `
+            CREATE TABLE IF NOT EXISTS Payment (
+                payment_id      INT AUTO_INCREMENT PRIMARY KEY,
+                purpose         ENUM(
+                                    'Vehicle Sticker',
+                                    'Association Dues',
+                                    'Outstanding Balance',
+                                    'General Payments'
+                                ) NOT NULL,
+                amount_expected DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+                amount_paid     DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+                date_paid       DATE,
+                payment_method  ENUM('Cash', 'Check', 'Bank Transfer', 'GCash', 'Maya') NOT NULL,
+                receipt_number  VARCHAR(50),
+                remarks         TEXT,
+                created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+                paid_by         INT,
+                FOREIGN KEY (paid_by) REFERENCES Person(person_id) ON DELETE SET NULL
+            );
+        `;
+
+        const createOutstandingBalanceTable = `
+            CREATE TABLE IF NOT EXISTS Outstanding_Balance (
+                payment_id  INT PRIMARY KEY,
+                property_id INT,
+                resident_id INT,
+
+                FOREIGN KEY (payment_id)  REFERENCES Payment(payment_id)   ON DELETE CASCADE,
+                FOREIGN KEY (property_id) REFERENCES Property(property_id)  ON DELETE SET NULL,
+                FOREIGN KEY (resident_id) REFERENCES Resident(resident_id)  ON DELETE SET NULL
+            );
+        `;
+
+        const createAssociationDuesTable = `
+            CREATE TABLE IF NOT EXISTS Association_Dues (
+                payment_id INT PRIMARY KEY,
+                is_annual  BOOLEAN NOT NULL DEFAULT 0,
+
+                FOREIGN KEY (payment_id) REFERENCES Payment(payment_id) ON DELETE CASCADE
             );
         `;
 
@@ -188,13 +231,28 @@ const createTables = async() => {
         await pool.query(seedDefaultRatesTable);
         console.log("Successfully seeded Rates with default values!")
 
+        await pool.query(createPaymentTable);
+        console.log("Successfully created Payment table!")
+
+        await pool.query(createOutstandingBalanceTable);
+        console.log("Successfully created Outstanding_Balance table!")
+
+        await pool.query(createAssociationDuesTable);
+        console.log("Successfully created Association_Dues table!")
+
         // Add any columns that were introduced after the tables were first created.
         // INFORMATION_SCHEMA check avoids errors on fresh installs where the column
         // is already present from the CREATE TABLE above.
         const dbName = process.env.DB_NAME || 'hoa_db';
         const missingColumns = [
-            { table: 'Person',   column: 'birth_date', definition: 'DATE',         after: 'suffix'      },
-            { table: 'Property', column: 'lot_number', definition: 'VARCHAR(20)',   after: 'property_id' },
+            // original migrations
+            { table: 'Person',   column: 'birth_date',         definition: 'DATE',                              after: 'suffix'       },
+            { table: 'Property', column: 'lot_number',          definition: 'VARCHAR(20)',                        after: 'property_id'  },
+            // finance spec additions
+            { table: 'Resident', column: 'isDelinquent',        definition: 'BOOLEAN NOT NULL DEFAULT 0',         after: 'deleteFlag'   },
+            { table: 'Property', column: 'hasDues',             definition: 'BOOLEAN NOT NULL DEFAULT 0',         after: 'street_name'  },
+            { table: 'Property', column: 'outstandingBalance',  definition: 'DECIMAL(10,2) NOT NULL DEFAULT 0.00',after: 'hasDues'      },
+            { table: 'Vehicle',  column: 'hasSticker',          definition: 'BOOLEAN NOT NULL DEFAULT 0',         after: 'sticker_year' },
         ];
 
         for (const { table, column, definition, after } of missingColumns) {

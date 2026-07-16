@@ -8,6 +8,9 @@ async function seed() {
 
         // ── Clear existing data (order matters for FK constraints) ────────────
         await conn.query('SET FOREIGN_KEY_CHECKS = 0');
+        await conn.query('TRUNCATE TABLE Outstanding_Balance');
+        await conn.query('TRUNCATE TABLE Association_Dues');
+        await conn.query('TRUNCATE TABLE Payment');
         await conn.query('TRUNCATE TABLE Resident_Vehicle');
         await conn.query('TRUNCATE TABLE Resident_Property');
         await conn.query('TRUNCATE TABLE Board_Member');
@@ -182,6 +185,33 @@ async function seed() {
             );
         }
 
+        // ── Payments ──────────────────────────────────────────────────────────
+        // [purpose, amount_expected, amount_paid, date_paid, method, receipt, remarks, paid_by (personId index)]
+        const payments = [
+            ['Association Dues',   800.00,  800.00, '2025-01-15', 'GCash',         'OR-2025-001', 'Monthly dues Jan 2025',          0],  // Clark Kent
+            ['Association Dues',   800.00,  800.00, '2025-02-14', 'Cash',          'OR-2025-002', 'Monthly dues Feb 2025',          0],  // Clark Kent
+            ['Association Dues',   800.00,  800.00, '2025-03-10', 'Bank Transfer', 'OR-2025-003', 'Monthly dues Mar 2025',          2],  // Bruce Wayne
+            ['Vehicle Sticker',    600.00,  600.00, '2025-01-20', 'Cash',          'OR-2025-004', 'Car sticker — ABC 1234',         0],  // Clark Kent
+            ['Vehicle Sticker',    600.00,  600.00, '2025-01-22', 'GCash',         'OR-2025-005', 'Car sticker — XYZ 5678',         2],  // Bruce Wayne
+            ['Vehicle Sticker',    370.00,  370.00, '2025-02-05', 'Cash',          'OR-2025-006', 'Motorcycle sticker — MTR 001',   4],  // Barry Allen
+            ['Outstanding Balance',1600.00, 1600.00,'2025-04-01', 'Check',         'OR-2025-007', 'Settled 2-month backlog',        6],  // Hal Jordan
+            ['Outstanding Balance',2400.00, 1200.00,'2025-04-15', 'Cash',          'OR-2025-008', 'Partial payment on balance',     8],  // Oliver Queen
+            ['Association Dues',   800.00,  800.00, '2025-05-08', 'Maya',          'OR-2025-009', 'Monthly dues May 2025',          3],  // Diana Prince
+            ['General Payments',   500.00,  500.00, '2025-05-20', 'Cash',          'OR-2025-010', 'Gate pass fee',                  9],  // Zatanna Zatara
+            ['Association Dues',   800.00,    0.00, '2025-06-01', 'Cash',          null,          'Recorded, payment pending',      1],  // Lois Lane
+            ['Vehicle Sticker',   1000.00, 1000.00, '2025-06-10', 'Bank Transfer', 'OR-2025-011', 'Car sticker >6 stickers',        2],  // Bruce Wayne
+        ];
+
+        const paymentIds = [];
+        for (const [purpose, expected, paid, date, method, receipt, remarks, personIdx] of payments) {
+            const [r] = await conn.query(
+                `INSERT INTO Payment (purpose, amount_expected, amount_paid, date_paid, payment_method, receipt_number, remarks, paid_by)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+                [purpose, expected, paid, date, method, receipt, remarks, personIds[personIdx]]
+            );
+            paymentIds.push(r.insertId);
+        }
+
         await conn.commit();
         console.log('✓ Seed complete.');
         console.log(`  ${personIds.length} persons`);
@@ -190,6 +220,7 @@ async function seed() {
         console.log(`  ${boardMembers.length} board members`);
         console.log(`  ${employees.length} employees`);
         console.log(`  ${vehicleIds.length} vehicles`);
+        console.log(`  ${paymentIds.length} payments`);
 
     } catch (err) {
         await conn.rollback();
