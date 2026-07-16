@@ -89,7 +89,7 @@ const createTables = async() => {
         const createVehicleTable = `
             CREATE TABLE IF NOT EXISTS Vehicle (
                 vehicle_id INT AUTO_INCREMENT PRIMARY KEY, 
-                type ENUM("Car", "Motorcycle", "E-Bike", "Others"),
+                type ENUM("Car", "Motorcycle", "E-Bike", "Commercial", "Others"),
                 plate_number VARCHAR(10),
                 color VARCHAR(255) NOT NULL,
                 make VARCHAR(255) NOT NULL,
@@ -138,24 +138,22 @@ const createTables = async() => {
                     'House (Annual Payment)', 
                     'Lot (Annual Payment)'
                 ) NOT NULL UNIQUE,
-                amount DECIMAL(10, 2) NOT NULL,
-                effective_date DATE NOT NULL,
-                end_date DATE DEFAULT NULL
+                amount DECIMAL(10, 2) NOT NULL
             );
         `;
 
         // default values for rates
         // IGNORE keyword so it won't seed again if the tables already have data even if db reboots
         const seedDefaultRatesTable = `
-            INSERT IGNORE INTO Rates (rate_category, amount, effective_date, end_date) VALUES 
-            ('Car', 600.00, CURDATE(), NULL),
-            ('Car (More than 6 stickers)', 1000.00, CURDATE(), NULL),
-            ('Motorcycle', 370.00, CURDATE(), NULL),
-            ('Commercial', 1000.00, CURDATE(), NULL),
-            ('House (Monthly Payment)', 800.00, CURDATE(), NULL),
-            ('Lot (Monthly Payment)', 200.00, CURDATE(), NULL),
-            ('House (Annual Payment)', 8800.00, CURDATE(), NULL),
-            ('Lot (Annual Payment)', 2200.00, CURDATE(), NULL);
+            INSERT IGNORE INTO Rates (rate_category, amount) VALUES 
+            ('Car', 600.00),
+            ('Car (More than 6 stickers)', 1000.00),
+            ('Motorcycle', 370.00),
+            ('Commercial', 1000.00),
+            ('House (Monthly Payment)', 800.00),
+            ('Lot (Monthly Payment)', 200.00),
+            ('House (Annual Payment)', 8800.00),
+            ('Lot (Annual Payment)', 2200.00);
         `;
 
         //Executes the SQL queries
