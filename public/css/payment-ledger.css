@@ -416,4 +416,28 @@ body {
     outline: none;
     border-color: #526F50;
 }
- 
+
+/* ── Payment status badges ───────────────────────────────────────────────── */
+.payment-status {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-paid    { background: #d4edda; color: #155724; }
+.status-partial { background: #fff3cd; color: #856404; }
+.status-unpaid  { background: #f8d7da; color: #721c24; }
+
+/* ── Purpose badge ───────────────────────────────────────────────────────── */
+.purpose-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    background: #e8f0e8;
+    color: #3d553b;
+}
+
