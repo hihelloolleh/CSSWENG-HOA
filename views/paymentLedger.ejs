@@ -51,8 +51,8 @@
                 </form>
             </div>
 
-            <div style="display:flex; gap:12px;">
-                <button class="btn btn-primary" onclick="openAddModal()">
+            <div>
+                <button class="btn btn-primary" id="openModal">
                     <i class="fa-solid fa-plus"></i> Add Payment
                 </button>
             </div>
@@ -157,322 +157,37 @@
     </main>
 </div>
 
-<!-- ── ADD PAYMENT MODAL ─────────────────────────────────────────────────── -->
-<div id="addModal" class="modal">
+<div class="modal" id="modal">
     <div class="modal-content">
-        <div class="modal-header">
-            <h2>Add Payment</h2>
-            <button class="modal-close" onclick="closeModal('addModal')">&times;</button>
+        <div class="modal-header"> 
+            <h2>Create Payment</h2>
         </div>
-        <form action="/payments" method="POST">
-            <div class="modal-body">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Purpose *</label>
-                        <select name="purpose" class="form-control" required>
-                            <option value="">Select Purpose</option>
-                            <option value="Vehicle Sticker">Vehicle Sticker</option>
-                            <option value="Association Dues">Association Dues</option>
-                            <option value="Outstanding Balance">Outstanding Balance</option>
-                            <option value="General Payments">General Payments</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Payer</label>
-                        <div class="resident-search-wrap">
-                            <input type="text" id="add_payer_search" class="form-control" placeholder="Search payer..." autocomplete="off">
-                            <ul id="add_payer_dropdown" class="resident-dropdown-list"></ul>
-                        </div>
-                        <input type="hidden" id="add_payer_id" name="paid_by">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Amount Expected</label>
-                        <input type="number" name="amount_expected" class="form-control" min="0" step="0.01" placeholder="0.00">
-                    </div>
-                    <div class="form-group">
-                        <label>Amount Paid *</label>
-                        <input type="number" name="amount_paid" class="form-control" min="0" step="0.01" placeholder="0.00" required>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Date Paid *</label>
-                        <input type="date" name="date_paid" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Payment Method *</label>
-                        <select name="payment_method" class="form-control" required>
-                            <option value="">Select Method</option>
-                            <option value="Cash">Cash</option>
-                            <option value="Check">Check</option>
-                            <option value="Bank Transfer">Bank Transfer</option>
-                            <option value="GCash">GCash</option>
-                            <option value="Maya">Maya</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Receipt Number</label>
-                        <input type="text" name="receipt_number" class="form-control" placeholder="Optional">
-                    </div>
-                    <div class="form-group">
-                        <label>Remarks</label>
-                        <input type="text" name="remarks" class="form-control" placeholder="Optional">
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeModal('addModal')">Cancel</button>
-                <button type="submit" class="btn btn-primary">Save Payment</button>
-            </div>
-        </form>
-    </div>
-</div>
 
-<!-- ── EDIT PAYMENT MODAL ────────────────────────────────────────────────── -->
-<div id="editModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>Edit Payment</h2>
-            <button class="modal-close" onclick="closeModal('editModal')">&times;</button>
-        </div>
-        <form action="/payments/update" method="POST">
-            <input type="hidden" id="edit_payment_id" name="payment_id">
-            <div class="modal-body">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Purpose *</label>
-                        <select id="edit_purpose" name="purpose" class="form-control" required>
-                            <option value="">Select Purpose</option>
-                            <option value="Vehicle Sticker">Vehicle Sticker</option>
-                            <option value="Association Dues">Association Dues</option>
-                            <option value="Outstanding Balance">Outstanding Balance</option>
-                            <option value="General Payments">General Payments</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Payer</label>
-                        <div class="resident-search-wrap">
-                            <input type="text" id="edit_payer_search" class="form-control" placeholder="Search payer..." autocomplete="off">
-                            <ul id="edit_payer_dropdown" class="resident-dropdown-list"></ul>
-                        </div>
-                        <input type="hidden" id="edit_payer_id" name="paid_by">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Amount Expected</label>
-                        <input type="number" id="edit_amount_expected" name="amount_expected" class="form-control" min="0" step="0.01">
-                    </div>
-                    <div class="form-group">
-                        <label>Amount Paid *</label>
-                        <input type="number" id="edit_amount_paid" name="amount_paid" class="form-control" min="0" step="0.01" required>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Date Paid *</label>
-                        <input type="date" id="edit_date_paid" name="date_paid" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Payment Method *</label>
-                        <select id="edit_payment_method" name="payment_method" class="form-control" required>
-                            <option value="">Select Method</option>
-                            <option value="Cash">Cash</option>
-                            <option value="Check">Check</option>
-                            <option value="Bank Transfer">Bank Transfer</option>
-                            <option value="GCash">GCash</option>
-                            <option value="Maya">Maya</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Receipt Number</label>
-                        <input type="text" id="edit_receipt_number" name="receipt_number" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label>Remarks</label>
-                        <input type="text" id="edit_remarks" name="remarks" class="form-control">
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeModal('editModal')">Cancel</button>
-                <button type="submit" class="btn btn-primary">Save Changes</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- ── VIEW DETAILS MODAL ────────────────────────────────────────────────── -->
-<div id="viewModal" class="modal">
-    <div class="modal-content" style="max-width:480px;">
-        <div class="modal-header">
-            <h2>Payment Details</h2>
-            <button class="modal-close" onclick="closeModal('viewModal')">&times;</button>
-        </div>
         <div class="modal-body">
-            <table style="width:100%; border-collapse:collapse; font-size:14px;">
-                <tr><td style="padding:8px 0; color:#888; width:40%;">Payer</td>       <td id="v_payer"    style="font-weight:500;"></td></tr>
-                <tr><td style="padding:8px 0; color:#888;">Purpose</td>                 <td id="v_purpose"  style="font-weight:500;"></td></tr>
-                <tr><td style="padding:8px 0; color:#888;">Amount Expected</td>         <td id="v_expected" style="font-weight:500;"></td></tr>
-                <tr><td style="padding:8px 0; color:#888;">Amount Paid</td>             <td id="v_paid"     style="font-weight:500;"></td></tr>
-                <tr><td style="padding:8px 0; color:#888;">Date Paid</td>               <td id="v_date"     style="font-weight:500;"></td></tr>
-                <tr><td style="padding:8px 0; color:#888;">Payment Method</td>          <td id="v_method"   style="font-weight:500;"></td></tr>
-                <tr><td style="padding:8px 0; color:#888;">Receipt No.</td>             <td id="v_receipt"  style="font-weight:500;"></td></tr>
-                <tr><td style="padding:8px 0; color:#888;">Remarks</td>                 <td id="v_remarks"  style="font-weight:500;"></td></tr>
-            </table>
+            <form>
+                <div class="form-group">
+                    <label>Payment Purpose</label>
+                    <select id="purpose">
+                        <option value="">Choose...</option>
+                        <option value="association">Association Dues</option>
+                        <option value="vehicle">Vehicle Sticker</option>
+                        <option value="outstanding">Outstanding Balance</option>
+                        <option value="general">General Payments</option>
+                    </select>
+                </div>
+                
+            </form>
+            
         </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" onclick="closeModal('viewModal')">Close</button>
-        </div>
-    </div>
-</div>
 
-<!-- ── DELETE MODAL ──────────────────────────────────────────────────────── -->
-<div id="deleteModal" class="modal">
-    <div class="modal-content" style="max-width:450px;">
-        <div class="modal-header">
-            <h2>Delete Payment</h2>
-            <button class="modal-close" onclick="closeModal('deleteModal')">&times;</button>
-        </div>
-        <div class="modal-body">
-            <p>Are you sure you want to delete the payment record for <strong id="deletePaymentName"></strong>?</p>
-            <p style="color:#dc3545; font-size:13px; margin-top:8px; font-weight:500;">This action cannot be undone.</p>
-        </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" onclick="closeModal('deleteModal')">Cancel</button>
-            <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+            <button class="cancel btn btn-secondary"> Cancel </button>
+            <button class="btn btn-primary" id="continue"> Continue </button>   
         </div>
     </div>
 </div>
 
 <script id="personData" type="application/json"><%- JSON.stringify(persons) %></script>
-
+<script src="/js/paymentLedger.js"></script>
 <script src="/js/sidebar.js"></script>
-<script>
-    // ── Payer search dropdown ────────────────────────────────────────────────
-    const allPersons = JSON.parse(document.getElementById('personData').textContent);
-
-    function initPayerSearch(mode) {
-        const searchInput = document.getElementById(`${mode}_payer_search`);
-        const dropdown    = document.getElementById(`${mode}_payer_dropdown`);
-        const hiddenId    = document.getElementById(`${mode}_payer_id`);
-
-        searchInput.addEventListener('input', function () {
-            const query = this.value.trim().toLowerCase();
-            hiddenId.value = '';
-            dropdown.innerHTML = '';
-
-            if (!query) { dropdown.style.display = 'none'; return; }
-
-            const matches = allPersons.filter(p => p.full_name.toLowerCase().includes(query));
-            if (matches.length === 0) { dropdown.style.display = 'none'; return; }
-
-            matches.forEach(p => {
-                const li = document.createElement('li');
-                li.textContent = p.full_name;
-                li.addEventListener('mousedown', function (e) {
-                    e.preventDefault();
-                    searchInput.value  = p.full_name;
-                    hiddenId.value     = p.person_id;
-                    dropdown.style.display = 'none';
-                });
-                dropdown.appendChild(li);
-            });
-            dropdown.style.display = 'block';
-        });
-
-        searchInput.addEventListener('blur', () => {
-            setTimeout(() => { dropdown.style.display = 'none'; }, 150);
-        });
-    }
-
-    initPayerSearch('add');
-    initPayerSearch('edit');
-
-    // ── Modal helpers ────────────────────────────────────────────────────────
-    function closeModal(id) {
-        document.getElementById(id).classList.remove('active');
-    }
-
-    window.onclick = function (e) {
-        ['addModal','editModal','viewModal','deleteModal'].forEach(id => {
-            if (e.target === document.getElementById(id)) closeModal(id);
-        });
-    };
-
-    // ── Add modal ────────────────────────────────────────────────────────────
-    function openAddModal() {
-        document.getElementById('addModal').classList.add('active');
-    }
-
-    // ── Edit modal ───────────────────────────────────────────────────────────
-    function openEditModal(btn) {
-        document.getElementById('edit_payment_id').value          = btn.dataset.id;
-        document.getElementById('edit_purpose').value             = btn.dataset.purpose;
-        document.getElementById('edit_amount_expected').value     = btn.dataset.expected;
-        document.getElementById('edit_amount_paid').value         = btn.dataset.paid;
-        document.getElementById('edit_date_paid').value           = btn.dataset.date;
-        document.getElementById('edit_payment_method').value      = btn.dataset.method;
-        document.getElementById('edit_receipt_number').value      = btn.dataset.receipt;
-        document.getElementById('edit_remarks').value             = btn.dataset.remarks;
-        const paidById = btn.dataset.paidby;
-        const person = allPersons.find(p => String(p.person_id) === String(paidById));
-        document.getElementById('edit_payer_search').value = person ? person.full_name : '';
-        document.getElementById('edit_payer_id').value     = paidById || '';
-        document.getElementById('editModal').classList.add('active');
-    }
-
-    // ── View details modal ───────────────────────────────────────────────────
-    function openViewModal(btn) {
-        const fmt = v => v
-            ? '₱ ' + parseFloat(v).toLocaleString('en-PH', {minimumFractionDigits: 2})
-            : '—';
-        document.getElementById('v_payer').textContent    = btn.dataset.payer    || '—';
-        document.getElementById('v_purpose').textContent  = btn.dataset.purpose;
-        document.getElementById('v_expected').textContent = fmt(btn.dataset.expected);
-        document.getElementById('v_paid').textContent     = fmt(btn.dataset.paid);
-        document.getElementById('v_date').textContent     = btn.dataset.date
-            ? new Date(btn.dataset.date).toLocaleDateString('en-PH', {year:'numeric',month:'long',day:'numeric'})
-            : '—';
-        document.getElementById('v_method').textContent   = btn.dataset.method;
-        document.getElementById('v_receipt').textContent  = btn.dataset.receipt  || '—';
-        document.getElementById('v_remarks').textContent  = btn.dataset.remarks  || '—';
-        document.getElementById('viewModal').classList.add('active');
-    }
-
-    // ── Delete modal ─────────────────────────────────────────────────────────
-    function confirmDelete(id, label) {
-        document.getElementById('deletePaymentName').textContent = label;
-        document.getElementById('confirmDeleteBtn').onclick = async () => {
-            const res = await fetch(`/payments/${id}`, { method: 'DELETE' });
-            if (res.ok) window.location.href = '/payments?success=Payment+deleted+successfully.';
-            else        window.location.href = '/payments?error=Failed+to+delete+payment.';
-        };
-        document.getElementById('deleteModal').classList.add('active');
-    }
-
-    // ── Search filter (client-side) ──────────────────────────────────────────
-    function filterTable() {
-        const q    = document.getElementById('searchInput').value.toLowerCase();
-        const rows = document.querySelectorAll('#paymentTable tbody tr');
-        let visible = 0;
-        rows.forEach(row => {
-            if (row.cells.length === 1) return;
-            const match = row.textContent.toLowerCase().includes(q);
-            row.style.display = match ? '' : 'none';
-            if (match) visible++;
-        });
-        document.getElementById('visibleCount').textContent = visible;
-    }
-
-    // ── Auto-dismiss alerts ──────────────────────────────────────────────────
-    setTimeout(() => {
-        document.querySelectorAll('.alert').forEach(a => a.style.display = 'none');
-    }, 4000);
-</script>
+ 
