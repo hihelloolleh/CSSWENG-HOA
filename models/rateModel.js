@@ -1,18 +1,29 @@
 const { pool } = require('../config/db');
 
 module.exports = {
-
-    getActiveRates: async() => {
-
-        const[rows] = await pool.execute('SELECT * FROM rates WHERE end_date IS NULL OR end_date > CURDATE() ORDER BY rate_category ASC');
+    getActiveRates: async () => {
+        const [rows] = await pool.execute(`
+            SELECT rate_id, rate_category, amount 
+            FROM Rates 
+            ORDER BY 
+                FIELD(rate_category, 
+                    'Car',
+                    'Car (More than 6 stickers)',
+                    'Motorcycle',
+                    'Commercial',
+                    'House (Monthly Payment)',
+                    'Lot (Monthly Payment)',
+                    'House (Annual Payment)',
+                    'Lot (Annual Payment)'
+                )
+        `);
         return rows;
     },
 
     updateRate: async (rateId, amount, conn = pool) => {
-
-        await conn.execute('UPDATE Rates SET amount = ? WHERE rate_id = ?', [amount, rateId]);
+        await conn.execute(
+            'UPDATE Rates SET amount = ? WHERE rate_id = ?',
+            [amount, rateId]
+        );
     }
 };
-
-
-
