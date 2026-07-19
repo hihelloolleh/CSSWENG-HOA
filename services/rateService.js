@@ -1,33 +1,32 @@
-const rateModel = require('../models/rateModel');
 const { pool } = require('../config/db');
+const rateModel = require('../models/rateModel');
 
-const updateRate = async (rateId, amount) => {
+const rateService = {
+    updateRate: async (rateId, amount) => {
+        const conn = await pool.getConnection();
+        try {
+            await conn.beginTransaction();
 
-    if (amount === undefined || amount === '' || isNaN(amount) || Number(amount) < 0){
-        throw new Error("Invalid Input: Amount must be positive.");
-    }
+            // Check if rate exists
+            const [rate] = await conn.query(
+                'SELECT rate_id FROM Rates WHERE rate_id = ?',
+                [rateId]
+            );
+            if (!rate || rate.length === 0) {
+                throw new Error('Rate not found.');
+            }
 
-    const conn = await pool.getConnection();
+            // Update the rate
+            await rateModel.updateRate(rateId, amount, conn);
 
-    try{
-        await conn.beginTransaction();
-        
-        await rateModel.updateRate(rateId, amount, conn);
-
-        await conn.commit();
-
-        return true;
-    }
-    catch (error) {
-        await conn.rollback();
-        
-        throw error;
-    }
-    finally{
-        conn.release();
+            await conn.commit();
+        } catch (err) {
+            await conn.rollback();
+            throw err;
+        } finally {
+            conn.release();
+        }
     }
 };
 
-module.exports = {
-    updateRate
-};
+module.exports = rateService;
