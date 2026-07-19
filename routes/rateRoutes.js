@@ -4,6 +4,6 @@ const rateController = require('../controllers/rateController');
 
 router.get('/', rateController.getRatesPage);
 
-router.post('/update/:id', rateController.updateRate);
+router.post('/update', rateController.updateRate);
 
 module.exports = router;
