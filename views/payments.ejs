@@ -1,5 +1,5 @@
 <!-- ============================================================
-        PAYMENTS VIEW
+        PAYMENTS VIEW - NO CRUD YET 
         Layout: views/layouts/payments.ejs 
         Model: models/paymentModel.js (NOT IMPLEMENTED)
         Controller: controllers/paymentController.js
@@ -55,116 +55,155 @@
                 <form method="POST" action="/payments">
                     <% if (paymentType === "association") { %>
                         <div class="form-group">
-                            <label>Property Owner</label> 
+                            <label for="property">Property</label> 
                             <div class="search-bar">
-                                <input class="search-input" type="text" name="property_owner" placeholder="Search by first name, last name, or email...">
+                                <input class="search-input" type="text" name="property" placeholder="Search by lot number or street name..." required>
                             </div>
                         </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                            <label>Property Type</label>
-                            <select name="property_type">
-                                <option>House</option>
-                                <option>Lot</option>
-                            </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Street Name</label>
-                                <select name="street-name">
-                                    <option>Alabastro</option>
-                                    <option>Cameo</option>
-                                    <option>Coral</option>
-                                    <option>Diamante</option>
-                                    <option>Esmeralda</option>
-                                </select>
+                        
+                        <div class="form-group">
+                            <label for="homeowner">Homeowner</label> 
+                            <div class="search-bar">
+                                <input class="search-input" type="text" name="homeowner" placeholder="Search by first name, last name, or email..." required>
                             </div>
                         </div>
                             
+                        <div class="form-group">
+                            <label for="homeowner_status">Homeowner Status</label>  
+                            <div class="status-badge" style="font-weight:bold; color:rgb(0, 126, 0);">Good Standing</div> <!-- TO DO: CREATE STATUS BADGE -->
+                        </div>
+                        
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Expected Amount</label>
-                                <input type="text" name="unit_lot" placeholder="1500.00 PHP">
+                                <label for="payment_type">Payment Type</label>
+                                <select name="payment_type">
+                                    <option value="monthly">Monthly</option>
+                                    <option value="annual">Annual</option>
+                                </select>
                             </div>
 
-                            <div class="form-group"> 
-                                <label>Amount</label>
-                                <input type="number" name="amount">
+                            <div class="form-group">
+                                <label for="months">Months</label>
+                                <select name="months">
+                                    <option value="month_1">1</option>
+                                    <option value="month_2">2</option>
+                                    <option value="month_3">3</option>
+                                    <option value="month_4">4</option>
+                                    <option value="month_5">5</option>
+                                    <option value="month_6">6</option>
+                                    <option value="month_7">7</option>
+                                    <option value="month_8">8</option>
+                                    <option value="month_9">9</option>
+                                    <option value="month_10">10</option>
+                                    <option value="month_11">11</option>
+                                </select>
                             </div>
                         </div>
                         
                     <% } else if (paymentType === "vehicle") { %>
-                    
                         <div class="form-group"> 
-                            <label>Vehicle Owner</label>
-                            <input type="text" name="vehicle_owner">
+                            <label for="vehicle_owner">Vehicle Owner</label>
+                            <input type="text" name="vehicle_owner" placeholder="Search by first name, last name, or email...">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="vehicle">Vehicle</label>
+                            <input type="text" name="vehicle" placeholder="Search by plate number...">
+                        </div>
+                         
+                    <% } else if (paymentType === "outstanding") { %>
+                        <div class="form-group">
+                            <label for="property">Property</label>
+                            <input type="text" name="property" placeholder="Search by lot or street name...">
+                        </div>
+
+                    <% } else { %>
+                        <div class="form-group">
+                            <label for="payment_type">Payment Type</label>
+                            <select name="payment_type">
+                                <option value="basketball_rental">Basketball Court Rental</option>
+                                <option value="racquet_rental">Racquet Court Rental</option>
+                                <option value="football_rental">Football Field Rental</option>
+                                <option value="clubhouse_rental">Clubhouse Rental</option>
+                                <option value="tables_rental">Tables and Chair Rental</option>
+                                <option value="endorsement_letter">Endorsement Letter</option>
+                                <option value="construction_fee">Construction Fee</option>
+                                <option value="construction_bond">Construction Bond</option>
+                                <option value="renovation_fee">Renovation Fee</option>
+                                <option value="penalty">Penalty</option>
+                                <option value="donation">Donation</option>
+                                <option value="bulletin_fee">Bulletin Board Fee</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>  
+
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" name="name" placeholder="Ex. Juan P. Dela Cruz" required>
+                        </div>
+                    <% } %> 
+                    
+                    <% if (paymentType === "outstanding") { %>   
+                        <div class="form-group">
+                            <label for="expected_amount">Expected Amount</label>
+                            <input type="number" name="expected_amount" required>
+                        </div>
+    
+                        <div class="form-group">
+                            <label>Remarks</label>
+                            <textarea name="remarks"></textarea>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button class="btn btn-primary" type="submit"> Save Outstanding Balance </button>
+                        </div>
+                    <% } else { %>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="expected_amount">Expected Amount</label>
+                                <% if (paymentType === "general") { %> 
+                                    <input type="number" name="expected_amount">
+                                <% } else { %>
+                                    <input type="number" name="expected_amount" placeholder="1500.00 PHP" disabled>
+                                <% } %>   
+                            </div>
+
+                            <div class="form-group"> 
+                                <label for="amount_paid">Amount Paid</label>
+                                <input type="number" name="amount_paid" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="date_paid">Date Paid</label>
+                            <input type="date" name="date_paid" required>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Vehicle Type</label>
-                                <select name="vehicle_type">
-                                    <option>Sedan</option>
-                                    <option>SUV</option>
-                                    <option>Motorcycle</option>
+                                <label for="payment_method">Payment Method</label>
+                                <select name="payment_method">
+                                    <option value="Cash">Cash</option>
+                                    <option value="GCash">GCash</option>
+                                    <option value="Bank">Bank Transfer</option>
+                                    <option value="Other">Other</option>
                                 </select>
                             </div>
-                        
-                            <div class="form-group"> 
-                                <label>Plate Number</label>
-                                <input type="number" name="plate_number">
+
+                            <div class="form-group">
+                                <label for="receipt_number">Receipt Number</label>
+                                <input type="number" name="receipt_number" required>
                             </div>
                         </div>
-                        
-                    <% } else if (paymentType === "outstanding") { %>
-                        <div class="form-group">
-                            <label>Name</label>
-                            <input type="text" name="name">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>Payment Type</label>
-                            <select name="type">
-                                <option>Late Payment</option>
-                                <option>Illegal Parking</option>
-                                <option>Noise Complaint</option>
-                                <option>Other</option>
-                            </select>
-                        </div>
-                    <% } else { %>
-                        <div class="form-group">
-                            <label>Name</label>
-                            <input type="text" name="name">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>Payment Type</label>
-                            <select name="type">
-                                <option>Late Payment</option>
-                                <option>Illegal Parking</option>
-                                <option>Noise Complaint</option>
-                                <option>Other</option>
-                            </select>
-                        </div>  
-                    <% } %> 
-
-                    <div class="form-group">
-                        <label>Payment Method</label>
-                        <select name="payment_method">
-                            <option>Cash</option>
-                            <option>GCash</option>
-                            <option>Bank Transfer</option>
-                        </select>
-                    </div>
                     
-                    <div class="form-group">
-                        <label>Remarks</label>
-                        <textarea name="remarks"></textarea>
-                    </div>
+                        <div class="form-group">
+                            <label>Remarks</label>
+                            <textarea name="remarks"></textarea>
+                        </div>
 
-                    <div class="modal-footer">
-                        <button class="btn btn-primary" type="submit"> Save Payment </button>
-                    </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-primary" type="submit"> Save Payment </button>
+                    <% } %>     
                 </form>
             </div>
         </div>
