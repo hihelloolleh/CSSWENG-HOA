@@ -1,9 +1,9 @@
 <%
 // activePage is passed by every controller.
 // Values: 'dashboard' | 'residents' | 'boardMembers' | 'properties'
-//         | 'employees' | 'vehicles'
+//         | 'employees' | 'vehicles' | 'rates'
 const page = typeof activePage !== 'undefined' ? activePage : '';
-const financePages = ['financeDashboard', 'paymentLedger', 'payments'];
+const financePages = ['financeDashboard', 'paymentLedger', 'payments', 'rates'];
 const financeOpen = financePages.includes(page);
 %>
 
