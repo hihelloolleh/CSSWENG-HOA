@@ -89,6 +89,23 @@ const getAllPersons = async () => {
     return rows;
 };
 
+const getResidentsByProperty = async () => {
+    const [rows] = await pool.query(`
+        SELECT rp.property_id, p.person_id,
+               CONCAT(p.first_name, ' ', p.last_name) AS full_name
+        FROM Resident_Property rp
+        JOIN Resident r  ON rp.resident_id = r.resident_id
+        JOIN Person   p  ON r.person_id    = p.person_id
+        ORDER BY p.last_name, p.first_name
+    `);
+    const map = {};
+    for (const row of rows) {
+        if (!map[row.property_id]) map[row.property_id] = [];
+        map[row.property_id].push({ person_id: row.person_id, full_name: row.full_name });
+    }
+    return map;
+};
+
 module.exports = {
     getAllPayments,
     getPaymentsByPurpose,
@@ -96,4 +113,5 @@ module.exports = {
     updatePayment,
     deletePayment,
     getAllPersons,
+    getResidentsByProperty,
 };
