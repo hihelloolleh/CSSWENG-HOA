@@ -210,9 +210,6 @@ body {
     border: 1px solid rgb(239, 239, 239); 
 }
 
-.card:hover{
-    transform: translateY(-4px);
-}
 
 .card-header {
     display: flex;
@@ -369,10 +366,7 @@ body {
 }
 
 .table-card {
-    grid-column: 1 / -1;
-    max-width: 800px;
-    width: 100%;
-    margin: 0 auto;
+    min-width: 0;
 }
 
 .data-table {
@@ -429,6 +423,18 @@ body {
     background: #fff3e0;
     color: #e65100;
 }
+
+/* ── payment status badges (reused from payment-ledger) ─────────────────── */
+.payment-status {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+}
+.status-paid    { background: #d4edda; color: #155724; }
+.status-partial { background: #fff3cd; color: #856404; }
+.status-unpaid  { background: #f8d7da; color: #721c24; }
 
 /* desktop collapsed state */
 .sidebar.collapsed {

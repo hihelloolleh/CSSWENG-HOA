@@ -1,34 +1,27 @@
-// DASHBOARD CONTROLLER
-// currently renders with placeholder data.
-// SPRINT 2+: Replace placeholder values with real DB queries.
+const dashboardModel = require('../models/dashboardModel');
 
-exports.getDashboard = (req, res) => {
-    // TODO (SPRINT 2+): FETCH THESE COUNTS FROM THE DATABASE
-    const stats = {
-        totalPersons:    112,
-        totalProperties: 45,
-        totalEmployees:  12,
-        totalVehicles:   45,
-        activeStickers:  38,
-    };
+exports.getDashboard = async (req, res) => {
+    try {
+        const [stats, propertyStatus, delinquents, boardMembers, recentPayments] = await Promise.all([
+            dashboardModel.getStats(),
+            dashboardModel.getPropertyStatus(),
+            dashboardModel.getDelinquents(),
+            dashboardModel.getCurrentBoardMembers(),
+            dashboardModel.getRecentPayments(),
+        ]);
 
-    // TODO (SPRINT 2+): FETCH PROPERTY STATUS BREAKDOWN FROM DB
-    const propertyStatus = {
-        occupied:     32,
-        vacant:       8,
-        construction: 5,
-    };
-
-    // TODO (SPRINT 2+): FETCH RECENT RECORDS FROM DB
-    const recentPersons = [];
-    const recentProperties = [];
-
-    res.render('dashboard', {
-        title:            'Dashboard',
-        activePage:       'dashboard',
-        stats,
-        propertyStatus,
-        recentPersons,
-        recentProperties,
-    });
+        res.render('dashboard', {
+            title:          'Dashboard',
+            activePage:     'dashboard',
+            pageCSS:        'dashboard.css',
+            stats,
+            propertyStatus,
+            delinquents,
+            boardMembers,
+            recentPayments,
+        });
+    } catch (err) {
+        console.error('Dashboard error:', err);
+        res.status(500).send('Failed to load dashboard.');
+    }
 };

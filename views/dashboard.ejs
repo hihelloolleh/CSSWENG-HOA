@@ -1,121 +1,98 @@
-<!-- ============================================================
-     DASHBOARD VIEW
-     Layout: views/layouts/main.ejs (has sidebar)
-     Controller: controllers/dashboardController.js
-     SPRINT 2+: Replace hardcoded numbers with <%= stats.x %> etc.
-     ============================================================ -->
+<%
+    const fmt = (n) => {
+        const num = parseFloat(n) || 0;
+        if (num >= 1000000) return '₱' + (num / 1000000).toFixed(2) + 'M';
+        if (num >= 1000)    return '₱' + (num / 1000).toFixed(1)    + 'K';
+        return '₱' + num.toFixed(2);
+    };
+%>
 
-<div class="main-wrapper"> 
-    <div class="sidebar-open nav-item"> 
+<div class="main-wrapper">
+    <div class="sidebar-open nav-item">
         <i class="fa-solid fa-bars"></i>
         <span>Open Sidebar</span>
     </div>
 
     <header class="topbar">
-        <div class="topbar-left">  
-             <p class="page-title">Dashboard</p>
+        <div class="topbar-left">
+            <p class="page-title">Dashboard</p>
         </div>
         <div class="topbar-right">
             <div class="topbar-user">
-                <div class="user-avatar">
-                    <i class="fa-solid fa-user"></i>
-                </div>
+                <div class="user-avatar"><i class="fa-solid fa-user"></i></div>
                 <div class="user-info">
-                    <!-- TODO (SPRINT 2+): SHOW LOGGED-IN USER NAME AND ROLE -->
                     <span class="user-name">Village Admin</span>
-                    <span class="user-role">Administrator</span> 
+                    <span class="user-role">Administrator</span>
                 </div>
             </div>
         </div>
     </header>
 
     <main class="content">
-        
+
         <section class="welcome">
             <h1 class="welcome-title">Welcome back, <strong>Admin</strong></h1>
-                <!-- TODO (SPRINT 2+): RENDER LIVE DATE/TIME FROM SERVER OR JS -->
-            <h3 class="welcome-date">Monday, June 16, 2026 &middot; 08:00 PM PST</h3>
+            <h3 class="welcome-date" id="liveDatetime">—</h3>
         </section>
-        
-        <!-- SUMMARY STAT CARDS -->
+
+        <!-- ROW 1 — People & Assets -->
         <section class="summary-cards">
             <div class="card stat-card">
-                <div class="stat-icon green">
-                    <i class="fa-solid fa-users"></i>
-                </div>
+                <div class="stat-icon green"><i class="fa-solid fa-users"></i></div>
                 <div class="stat-info">
-                    <!-- TODO (SPRINT 2+): <%= stats.totalPersons %> -->
-                    <span class="stat-value">112</span>
-                    <span class="stat-label">Total Residents</span>
+                    <span class="stat-value"><%= stats.totalResidents %></span>
+                    <span class="stat-label">Active Residents</span>
                 </div>
             </div>
-
             <div class="card stat-card">
-                <div class="stat-icon blue">
-                    <i class="fa-solid fa-house"></i>
-                </div>
+                <div class="stat-icon blue"><i class="fa-solid fa-house"></i></div>
                 <div class="stat-info">
-                    <!-- TODO (SPRINT 2+): <%= stats.totalProperties %> -->
-                    <span class="stat-value">45</span>
+                    <span class="stat-value"><%= stats.totalProperties %></span>
                     <span class="stat-label">Total Properties</span>
                 </div>
             </div>
-
             <div class="card stat-card">
-                <div class="stat-icon orange">
-                    <i class="fa-solid fa-id-badge"></i>
-                </div>
+                <div class="stat-icon orange"><i class="fa-solid fa-id-badge"></i></div>
                 <div class="stat-info">
-                    <!-- TODO (SPRINT 2+): <%= stats.totalEmployees %> -->
-                    <span class="stat-value">12</span>
-                    <span class="stat-label">Total Employees</span>
+                    <span class="stat-value"><%= stats.totalEmployees %></span>
+                    <span class="stat-label">Active Employees</span>
                 </div>
             </div>
-
             <div class="card stat-card">
-                <div class="stat-icon purple">
-                    <i class="fa-solid fa-car"></i>
-                </div>
+                <div class="stat-icon purple"><i class="fa-solid fa-car"></i></div>
                 <div class="stat-info">
-                    <!-- TODO (SPRINT 2+): <%= stats.totalVehicles %> -->
-                    <span class="stat-value">45</span>
-                    <span class="stat-label">Active Vehicles</span>
+                    <span class="stat-value"><%= stats.totalVehicles %></span>
+                    <span class="stat-label">Registered Vehicles</span>
                 </div>
             </div>
         </section>
+
+        <!-- ROW 2 — Finance -->
         <section class="summary-cards row2">
             <div class="card stat-card">
-                <div class="stat-icon green">
-                    <i class="fa-solid fa-money-bill-trend-up"></i>
-                </div>
+                <div class="stat-icon green"><i class="fa-solid fa-money-bill-trend-up"></i></div>
                 <div class="stat-info">
-                    <span class="stat-value">1.5 M</span>
-                    <span class="stat-label">Total Revenue</span>
+                    <span class="stat-value"><%= fmt(stats.totalRevenue) %></span>
+                    <span class="stat-label">Total Collected</span>
                 </div>
             </div>
-
             <div class="card stat-card">
-                <div class="stat-icon yellow">
-                    <i class="fa-solid fa-hand-holding-dollar"></i>
-                </div>
+                <div class="stat-icon yellow"><i class="fa-solid fa-hand-holding-dollar"></i></div>
                 <div class="stat-info">
-                    <span class="stat-value">45 K</span>
-                    <span class="stat-label">Total Collectibles</span>
+                    <span class="stat-value"><%= fmt(stats.totalCollectibles) %></span>
+                    <span class="stat-label">Total Uncollected</span>
                 </div>
             </div>
-
             <div class="card stat-card">
-                <div class="stat-icon red">
-                    <i class="fa-solid fa-money-bill-transfer"></i>
-                </div>
+                <div class="stat-icon red"><i class="fa-solid fa-clock-rotate-left"></i></div>
                 <div class="stat-info">
-                    <span class="stat-value">120 K</span>
-                    <span class="stat-label">Total Expenses</span>
+                    <span class="stat-value"><%= stats.pendingCount %></span>
+                    <span class="stat-label">Pending Payments</span>
                 </div>
             </div>
         </section>
 
-        <!-- PROPERTY STATUS + STICKER STATUS -->
+        <!-- MIDDLE ROW — Property Status + Delinquency -->
         <section class="dashboard-grid">
 
             <div class="card property-status-card">
@@ -123,77 +100,74 @@
                     <h2>Property Status</h2>
                     <a href="/properties" class="view-all">View All</a>
                 </div>
-                <!-- STATUS BAR WIDTHS ARE HARDCODED FOR NOW -->
-                <!-- TODO (SPRINT 2+): CALCULATE WIDTHS FROM propertyStatus.x / total * 100 -->
                 <div class="status-list">
                     <div class="status-row">
                         <div class="status-dot occupied"></div>
-                        <span class="status-name">Occupied</span>
+                        <span class="status-name">With Residents</span>
                         <div class="status-bar-wrap">
-                            <div class="status-bar" style="width: 84%;"></div>
+                            <div class="status-bar" style="width: <%= propertyStatus.occupiedPct %>%;"></div>
                         </div>
-                        <!-- TODO (SPRINT 2+): <%= propertyStatus.occupied %> -->
-                        <span class="status-count">32</span>
+                        <span class="status-count"><%= propertyStatus.occupied %></span>
                     </div>
                     <div class="status-row">
                         <div class="status-dot vacant"></div>
-                        <span class="status-name">Empty Lots</span>
+                        <span class="status-name">No Residents</span>
                         <div class="status-bar-wrap">
-                            <div class="status-bar vacant" style="width: 11%;"></div>
+                            <div class="status-bar vacant" style="width: <%= propertyStatus.vacantPct %>%;"></div>
                         </div>
-                        <!-- TODO (SPRINT 2+): <%= propertyStatus.vacant %> -->
-                        <span class="status-count">8</span>
-                    </div>
-                    <div class="status-row">
-                        <div class="status-dot construction"></div>
-                        <span class="status-name">Under Construction</span>
-                        <div class="status-bar-wrap">
-                            <div class="status-bar construction" style="width: 5%;"></div>
-                        </div>
-                        <!-- TODO (SPRINT 2+): <%= propertyStatus.construction %> -->
-                        <span class="status-count">5</span>
+                        <span class="status-count"><%= propertyStatus.vacant %></span>
                     </div>
                 </div>
+                <p style="margin-top:20px; font-size:12px; color:#aaa;"><%= propertyStatus.total %> properties total</p>
             </div>
 
-            <!-- DELINQUENCY REPORT CARD -->
-            <!-- TODO (SPRINT 2+): LOOP THROUGH delinquents ARRAY FROM DB -->
+            <!-- DELINQUENCY REPORT -->
             <div class="card delinquency-card">
                 <div class="card-header">
-                    <h2>Delinquency Report</h2>
-                    <a href="#" class="view-all">View All</a>
+                    <h2>Pending Payments</h2>
+                    <a href="/payments" class="view-all">View All</a>
                 </div>
+                <% if (delinquents.length === 0) { %>
+                    <p style="color:#aaa; font-size:13px; text-align:center; padding:24px 0;">
+                        No pending payments — all dues are settled.
+                    </p>
+                <% } else { %>
                 <table class="data-table">
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Length</th>
-                            <th>Address</th>
+                            <th>Purpose</th>
+                            <th>Balance</th>
                             <th>Contact</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td>Robert Downey</td><td>1 month</td><td>12 Sampaguita St.</td><td>0912 345 6789</td></tr>
-                        <tr><td>Catherine Windsor</td><td>3 months</td><td>14 Sampaguita St.</td><td>0912 345 6789</td></tr>
-                        <tr><td>Bruce Banner</td><td>6 months</td><td>16 Sampaguita St.</td><td>0912 345 6789</td></tr>
-                        <tr><td>Eva Stratt</td><td>10 months</td><td>18 Sampaguita St.</td><td>0912 345 6789</td></tr>
-                        <tr><td>Ryland Grace</td><td>18 months</td><td>19 Sampaguita St.</td><td>0912 345 6789</td></tr>
+                        <% delinquents.forEach(d => { %>
+                        <tr>
+                            <td><%= d.full_name %></td>
+                            <td><%= d.purpose %></td>
+                            <td style="color:#dc3545; font-weight:600;">&#8369; <%= parseFloat(d.balance).toLocaleString('en-PH', {minimumFractionDigits:2}) %></td>
+                            <td><%= d.contact_num || '—' %></td>
+                        </tr>
+                        <% }) %>
                     </tbody>
                 </table>
+                <% } %>
             </div>
 
         </section>
 
-        <!-- RECENT RECORDS TABLES -->
+        <!-- BOTTOM ROW — Board of Directors + Recent Payments -->
         <section class="tables-row">
 
-            <!-- BOARD OF DIRECTORS CARD -->
-            <!-- TODO (SPRINT 2+): LOOP THROUGH boardMembers ARRAY FROM DB (Employee table filtered by role) -->
-            <div class="card table-card">
+            <div class="card table-card" style="max-width:100%; grid-column: auto;">
                 <div class="card-header">
                     <h2>Board of Directors</h2>
                     <a href="/boardMembers" class="view-all">View All</a>
                 </div>
+                <% if (boardMembers.length === 0) { %>
+                    <p style="color:#aaa; font-size:13px; text-align:center; padding:20px 0;">No active board members on record.</p>
+                <% } else { %>
                 <table class="data-table">
                     <thead>
                         <tr>
@@ -203,17 +177,84 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td>Clark Kent</td><td>President</td><td>0912 345 6789</td></tr>
-                        <tr><td>Diana Prince</td><td>Vice President</td><td>0912 345 6789</td></tr>
-                        <tr><td>Bruce Wayne</td><td>Board Member</td><td>0912 345 6789</td></tr>
-                        <tr><td>Zatanna Zatara</td><td>Board Member</td><td>0912 345 6789</td></tr>
-                        <tr><td>Kyle Rayner</td><td>Board Member</td><td>0912 345 6789</td></tr>
+                        <% boardMembers.forEach(b => { %>
+                        <tr>
+                            <td><%= b.full_name %></td>
+                            <td><%= b.position %></td>
+                            <td><%= b.contact_num || '—' %></td>
+                        </tr>
+                        <% }) %>
                     </tbody>
                 </table>
+                <% } %>
             </div>
+
+            <div class="card table-card" style="max-width:100%; grid-column: auto;">
+                <div class="card-header">
+                    <h2>Recent Payments</h2>
+                    <a href="/payments" class="view-all">View All</a>
+                </div>
+                <% if (recentPayments.length === 0) { %>
+                    <p style="color:#aaa; font-size:13px; text-align:center; padding:20px 0;">No payments recorded yet.</p>
+                <% } else { %>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Payer</th>
+                            <th>Purpose</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% recentPayments.forEach(pay => {
+                            const paid     = parseFloat(pay.amount_paid)     || 0;
+                            const expected = parseFloat(pay.amount_expected)  || 0;
+                            let status = 'Unpaid', cls = 'status-unpaid';
+                            if (paid >= expected && paid > 0) { status = 'Paid';    cls = 'status-paid'; }
+                            else if (paid > 0)                { status = 'Partial'; cls = 'status-partial'; }
+                            const dateFmt = pay.date_paid
+                                ? new Date(pay.date_paid).toLocaleDateString('en-PH', {month:'short', day:'numeric', year:'numeric'})
+                                : '—';
+                        %>
+                        <tr>
+                            <td><%= pay.payer_name || '—' %></td>
+                            <td><%= pay.purpose %></td>
+                            <td>&#8369; <%= paid.toLocaleString('en-PH', {minimumFractionDigits:2}) %></td>
+                            <td><span class="payment-status <%= cls %>"><%= status %></span></td>
+                            <td><%= dateFmt %></td>
+                        </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+                <% } %>
+            </div>
+
         </section>
 
     </main>
 </div>
 
 <script src="/js/sidebar.js"></script>
+<script>
+    (function () {
+        const el = document.getElementById('liveDatetime');
+        const days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+        const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+        function update() {
+            const now  = new Date();
+            const day  = days[now.getDay()];
+            const mon  = months[now.getMonth()];
+            const date = now.getDate();
+            const year = now.getFullYear();
+            let   hrs  = now.getHours();
+            const mins = String(now.getMinutes()).padStart(2, '0');
+            const ampm = hrs >= 12 ? 'PM' : 'AM';
+            hrs = hrs % 12 || 12;
+            el.textContent = `${day}, ${mon} ${date}, ${year} · ${hrs}:${mins} ${ampm}`;
+        }
+        update();
+        setInterval(update, 30000);
+    })();
+</script>
