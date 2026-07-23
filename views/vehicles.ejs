@@ -52,6 +52,7 @@
                         <th>Make & Model</th>
                         <th>Color</th>
                         <th>Sticker Year</th>
+                        <th>Status</th>
                         <th>Owner/s</th>
                         <th>Actions</th>
                     </tr>
@@ -76,10 +77,16 @@
                                         <span class="sticker-badge sticker-expired"><%= vehicle.sticker_year %></span>
                                     <% } %>
                                 </td>
-                                
+                                <td>
+                                    <% if (vehicle.status === 'Active') { %>
+                                        <span style="color: green; font-weight: bold;">Active</span>
+                                    <% } else { %>
+                                        <span style="color: red; font-weight: bold;">Inactive</span>
+                                    <% } %>
+                                </td>
                                 <td><%= vehicle.homeowners || 'Unassigned' %></td>
                                 <td style="display: flex; gap: 10px;">
-                                    <button type="button" class="btn-icon" onclick="openEditModal('<%= vehicle.vehicle_id %>', '<%= vehicle.type %>', '<%= vehicle.plate_number %>', '<%= vehicle.make %>', '<%= vehicle.model %>', '<%= vehicle.color %>', '<%= vehicle.sticker_year %>', '<%= vehicle.resident_ids || "" %>')">
+                                    <button type="button" class="btn-icon" onclick="openEditModal('<%= vehicle.vehicle_id %>', '<%= vehicle.type %>', '<%= vehicle.plate_number %>', '<%= vehicle.make %>', '<%= vehicle.model %>', '<%= vehicle.color %>', '<%= vehicle.sticker_year %>', '<%= vehicle.resident_ids || "" %>', '<%= vehicle.raw_status %>')">
                                         <i class="fa-solid fa-edit"></i>
                                     </button>
 
@@ -147,6 +154,14 @@
                             <label>Sticker Year</label>
                             <input type="number" name="sticker_year" placeholder="2026">
                         </div>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 15px;">
+                        <label class="required-label">Status</label>
+                        <select name="status" class="form-control" required>
+                            <option value="Active" selected>Active</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
                     </div>
 
                     <div class="form-group" style="margin-top: 15px;">
@@ -218,7 +233,7 @@
                     <label>Owners</label>
                     <div style="display: flex; gap: 10px; margin-bottom: 10px;">
                         <div style="position: relative; flex: 1;">
-                            <input type="text" id="edit_resident_search" class="form-control" placeholder="Search resident name..." autocomplete="off" style="width: 100%; padding: 8px;" required>
+                            <input type="text" id="edit_resident_search" class="form-control" placeholder="Search resident name..." autocomplete="off" style="width: 100%; padding: 8px;">
                             
                             <ul id="edit_dropdown_list" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #ccc; border-radius: 4px; z-index: 1000; max-height: 150px; overflow-y: auto; list-style: none; padding: 0; margin: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></ul>
                             
@@ -259,6 +274,14 @@
                         <label>Sticker Year</label>
                         <input type="number" id="edit_sticker_year" name="sticker_year">
                     </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 15px;">
+                    <label class="required-label">Status</label>
+                    <select id="edit_status" name="status" class="form-control" required>
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
                 </div>
                 
                 <div class="modal-footer">
@@ -346,7 +369,7 @@
         document.getElementById(`${mode}_hidden_${id}`).remove();
     }
 
-    function openEditModal(id, type, plate_number, make, model, color, sticker_year, resident_ids_string){
+    function openEditModal(id, type, plate_number, make, model, color, sticker_year, resident_ids_string, raw_status){
         
         document.getElementById('editVehicleForm').action = '/vehicles/update/' + id;
         
@@ -359,6 +382,7 @@
         
         document.getElementById('edit_resident_tags').innerHTML = '';
         document.getElementById('edit_hidden_inputs').innerHTML = '';
+        document.getElementById('edit_status').value = raw_status || 'Active';
         
         if(resident_ids_string){
             const selectedIds = resident_ids_string.split(',');

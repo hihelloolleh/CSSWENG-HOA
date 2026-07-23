@@ -3,7 +3,12 @@ const { pool } = require('../config/db');
 const VehicleModel = {
     getAllVehicles: async () =>{
         const query = `
-            SELECT v.type, v.vehicle_id, v.plate_number, v.make, v.model, v.color, v.sticker_year, 
+            SELECT v.type, v.vehicle_id, v.plate_number, v.make, v.model, v.color, v.sticker_year,
+            v.status as raw_status,
+            CASE 
+                WHEN COUNT(r.resident_id) > 0 AND COALESCE(SUM(r.isActive), 0) = 0 THEN 'Inactive'
+                ELSE v.status 
+            END as status,
             GROUP_CONCAT(CONCAT(p.first_name, ' ', p.last_name) SEPARATOR ', ') AS homeowners,
             GROUP_CONCAT(rv.resident_id SEPARATOR ',') AS resident_ids 
             FROM Vehicle v
@@ -100,22 +105,22 @@ const VehicleModel = {
     },
 
     createVehicle: async (vehicleData, conn = pool) =>{
-        const { type, plate_number, make, model, color, sticker_year } = vehicleData;
+        const { type, plate_number, make, model, color, sticker_year, status } = vehicleData;
 
         const [result] = await conn.execute(
-            'INSERT INTO Vehicle (type, plate_number, make, model, color, sticker_year) VALUES (?, ?, ?, ?, ?, ?)',
-            [type, plate_number, make, model, color, sticker_year]
+            'INSERT INTO Vehicle (type, plate_number, make, model, color, sticker_year, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [type, plate_number, make, model, color, sticker_year, status || 'Active']
         );
 
         return result.insertId;
     },
 
     updateVehicleData: async (vehicleId, vehicleData, conn = pool) =>{
-        const { type, plate_number, make, model, color, sticker_year } = vehicleData;
+        const { type, plate_number, make, model, color, sticker_year, status } = vehicleData;
 
         await conn.execute(
-            `UPDATE Vehicle SET type = ?, plate_number = ?, make = ?, model = ?, color = ?, sticker_year = ? WHERE vehicle_id = ?`,
-            [type, plate_number, make, model, color, sticker_year, vehicleId]
+            `UPDATE Vehicle SET type = ?, plate_number = ?, make = ?, model = ?, color = ?, sticker_year = ?, status = ? WHERE vehicle_id = ?`,
+            [type, plate_number, make, model, color, sticker_year, status, vehicleId]
         );
     },
 

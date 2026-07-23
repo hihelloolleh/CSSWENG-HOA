@@ -94,7 +94,9 @@ const createTables = async() => {
                 color VARCHAR(255) NOT NULL,
                 make VARCHAR(255) NOT NULL,
                 model VARCHAR(255) NOT NULL,
-                sticker_year YEAR
+                sticker_year YEAR,
+
+                status ENUM('Active', 'Inactive') DEFAULT 'Active'
             );
         
         `;
