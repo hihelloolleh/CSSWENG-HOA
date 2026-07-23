@@ -80,7 +80,7 @@
 
                     <% } else if (paymentType === 'vehicle') { %>
                         <div class="form-group">
-                            <label>Vehicle Owner / Payer</label>
+                            <label>Vehicle Owner / Payer *</label>
                             <div class="resident-search-wrap">
                                 <input type="text" id="payer_search" class="search-input" placeholder="Search by name..." autocomplete="off">
                                 <ul id="payer_dropdown" class="resident-dropdown-list"></ul>
@@ -89,12 +89,14 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Vehicle</label>
+                            <label>Vehicle(s) *</label>
                             <div class="resident-search-wrap">
-                                <input type="text" id="vehicle_search" class="search-input" placeholder="Search by plate number..." autocomplete="off">
+                                <input type="text" id="vehicle_search" class="search-input" placeholder="Search by plate number to add vehicles..." autocomplete="off">
                                 <ul id="vehicle_dropdown" class="resident-dropdown-list"></ul>
                             </div>
-                            <input type="hidden" id="vehicle_id" name="vehicle_id">
+                            <div id="vehicle_chips" style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;"></div>
+                            <div id="vehicle_ids_inputs"><!-- hidden vehicle_ids inputs injected here by JS --></div>
+                            <small id="sticker_rate_hint" style="color:#888; font-size:12px; margin-top:4px; display:block;">Select a payer and at least one vehicle to see the sticker rate</small>
                         </div>
 
                     <% } else if (paymentType === 'outstanding') { %>
@@ -199,24 +201,25 @@
                                 <% if (paymentType === 'general') { %>
                                     <input type="number" step="0.01" name="amount_expected" class="form-control">
                                 <% } else { %>
-                                    <input type="number" step="0.01" name="amount_expected" class="form-control" placeholder="Auto-filled" disabled>
+                                    <input type="number" step="0.01" name="amount_expected" id="amount_expected" class="form-control" placeholder="Auto-filled" readonly style="background:#f5f5f5;">
                                 <% } %>
                             </div>
                             <div class="form-group">
                                 <label>Amount Paid</label>
-                                <input type="number" step="0.01" name="amount_paid" class="form-control" required>
+                                <input type="number" step="0.01" name="amount_paid" id="amount_paid" class="form-control" required>
                             </div>
                         </div>
 
                         <div class="form-group">
                             <label>Date Paid</label>
-                            <input type="date" name="date_paid" class="form-control" max="<%= new Date().toISOString().split('T')[0] %>" required>
+                            <input type="date" name="date_paid" id="date_paid" class="form-control" max="<%= new Date().toISOString().split('T')[0] %>" required>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group">
                                 <label>Payment Method</label>
-                                <select name="payment_method" class="form-control">
+                                <select name="payment_method" id="payment_method" class="form-control" required>
+                                    <option value="" disabled selected>Select...</option>
                                     <option value="Cash">Cash</option>
                                     <option value="Check">Check</option>
                                     <option value="Bank Transfer">Bank Transfer</option>
@@ -226,7 +229,7 @@
                             </div>
                             <div class="form-group">
                                 <label>Receipt Number</label>
-                                <input type="text" name="receipt_number" class="form-control">
+                                <input type="text" name="receipt_number" id="receipt_number" class="form-control" required>
                             </div>
                         </div>
 
@@ -234,6 +237,8 @@
                             <label>Remarks</label>
                             <textarea name="remarks" class="form-control" rows="3" style="width:100%; resize:vertical;"></textarea>
                         </div>
+
+                        <small id="submit_error" class="error-message" style="display:none; color:#c0392b; font-size:13px; margin-bottom:8px;"></small>
 
                         <div class="modal-footer">
                             <button class="btn btn-primary" type="submit">Save Payment</button>
@@ -384,13 +389,181 @@
         );
     }
 
-    // Vehicle search (vehicle type)
+    // Vehicle search (vehicle type) — multi-select via chips
     if (document.getElementById('vehicle_search')) {
-        initSearch(
-            'vehicle_search', 'vehicle_dropdown', 'vehicle_id',
-            () => allVehicles,
-            v => v.plate_number ? `${v.plate_number} (${v.make} ${v.model})` : `${v.make} ${v.model}`,
-            v => v.vehicle_id
-        );
+        const vehicleSearchInput = document.getElementById('vehicle_search');
+        const vehicleDropdown    = document.getElementById('vehicle_dropdown');
+        const vehicleChips       = document.getElementById('vehicle_chips');
+        const vehicleIdsInputs   = document.getElementById('vehicle_ids_inputs');
+        const stickerHint        = document.getElementById('sticker_rate_hint');
+        const amountField        = document.getElementById('amount_expected');
+
+        let selectedVehicleIds = []; // AC 1.1: multiple vehicles can be selected
+
+        const vehicleLabel = v => v.plate_number ? `${v.plate_number} (${v.make} ${v.model})` : `${v.make} ${v.model}`;
+
+        function syncHiddenVehicleInputs() {
+            vehicleIdsInputs.innerHTML = '';
+            selectedVehicleIds.forEach(id => {
+                const input = document.createElement('input');
+                input.type  = 'hidden';
+                input.name  = 'vehicle_ids';
+                input.value = id;
+                vehicleIdsInputs.appendChild(input);
+            });
+        }
+
+        function renderChips() {
+            vehicleChips.innerHTML = '';
+            selectedVehicleIds.forEach(id => {
+                const v = allVehicles.find(v => String(v.vehicle_id) === String(id));
+                if (!v) return;
+                const chip = document.createElement('span');
+                chip.style.cssText = 'display:inline-flex; align-items:center; gap:6px; background:#eef2f7; border-radius:14px; padding:4px 10px; font-size:13px;';
+                chip.textContent = vehicleLabel(v);
+                const remove = document.createElement('button');
+                remove.type = 'button';
+                remove.textContent = '×';
+                remove.style.cssText = 'border:none; background:none; cursor:pointer; font-size:15px; line-height:1; color:#888;';
+                remove.addEventListener('click', () => {
+                    selectedVehicleIds = selectedVehicleIds.filter(vid => String(vid) !== String(id));
+                    renderChips();
+                    syncHiddenVehicleInputs();
+                    updateStickerEstimate();
+                });
+                chip.appendChild(remove);
+                vehicleChips.appendChild(chip);
+            });
+        }
+
+        vehicleSearchInput.addEventListener('input', function () {
+            const q = this.value.trim().toLowerCase();
+            vehicleDropdown.innerHTML = '';
+            if (!q) { vehicleDropdown.style.display = 'none'; return; }
+
+            const matches = allVehicles.filter(v =>
+                !selectedVehicleIds.some(id => String(id) === String(v.vehicle_id)) &&
+                vehicleLabel(v).toLowerCase().includes(q)
+            );
+            if (!matches.length) { vehicleDropdown.style.display = 'none'; return; }
+
+            matches.forEach(v => {
+                const li = document.createElement('li');
+                li.textContent = vehicleLabel(v);
+                li.addEventListener('mousedown', function (e) {
+                    e.preventDefault();
+                    selectedVehicleIds.push(v.vehicle_id);
+                    vehicleSearchInput.value = '';
+                    vehicleDropdown.style.display = 'none';
+                    renderChips();
+                    syncHiddenVehicleInputs();
+                    updateStickerEstimate();
+                });
+                vehicleDropdown.appendChild(li);
+            });
+            vehicleDropdown.style.display = 'block';
+        });
+
+        vehicleSearchInput.addEventListener('blur', () => {
+            setTimeout(() => { vehicleDropdown.style.display = 'none'; }, 150);
+        });
+
+        // Live sticker rate estimate — display only (AC 1.2/1.3/1.4); the
+        // server recomputes the authoritative amount on submit regardless.
+        async function updateStickerEstimate() {
+            const personId = document.getElementById('paid_by') ? document.getElementById('paid_by').value : '';
+
+            if (selectedVehicleIds.length === 0) {
+                if (amountField) amountField.value = '';
+                if (stickerHint) { stickerHint.textContent = 'Select a payer and at least one vehicle to see the sticker rate'; stickerHint.style.color = '#888'; }
+                return;
+            }
+
+            try {
+                const params = new URLSearchParams();
+                params.append('person_id', personId || '');
+                selectedVehicleIds.forEach(id => params.append('vehicle_ids', id));
+
+                const res  = await fetch(`/vehicles/sticker-rate-estimate?${params.toString()}`);
+                const json = await res.json();
+
+                if (!json.success) {
+                    if (stickerHint) { stickerHint.textContent = json.message; stickerHint.style.color = '#c0392b'; }
+                    return;
+                }
+
+                if (amountField) amountField.value = parseFloat(json.totalAmount).toFixed(2); // AC 1.3/1.4
+
+                if (stickerHint) {
+                    const breakdown = json.items.map(item => {
+                        const label = item.stickerNumber ? `sticker #${item.stickerNumber}` : item.type;
+                        return `${item.plate_number || item.type} — ${label} @ ₱${parseFloat(item.amount).toLocaleString('en-PH', {minimumFractionDigits:2})} (${item.rateCategory})`;
+                    }).join('; ');
+                    stickerHint.textContent = breakdown;
+                    stickerHint.style.color = '#888';
+                }
+            } catch (e) {
+                if (stickerHint) { stickerHint.textContent = 'Could not fetch rate estimate.'; stickerHint.style.color = '#c0392b'; }
+            }
+        }
+
+        // Recompute whenever payer changes (dropdown selection uses mousedown, so listen after it settles)
+        const vehiclePayerSearch = document.getElementById('payer_search');
+        if (vehiclePayerSearch) {
+            vehiclePayerSearch.addEventListener('blur', () => setTimeout(updateStickerEstimate, 200));
+        }
+
+        // ── Submit-time validation (AC 3.1 / AC 3.3) ───────────────────────
+        const vehicleForm  = vehicleSearchInput.closest('form');
+        const submitError  = document.getElementById('submit_error');
+
+        function markInvalid(el) { if (el) el.classList.add('error'); }
+        function clearInvalid(el) { if (el) el.classList.remove('error'); }
+
+        vehicleForm.addEventListener('submit', function (e) {
+            const paidByField      = document.getElementById('paid_by');
+            const receiptField     = document.getElementById('receipt_number');
+            const dateField        = document.getElementById('date_paid');
+            const methodField      = document.getElementById('payment_method');
+            const amountPaidField  = document.getElementById('amount_paid');
+
+            [paidByField, receiptField, dateField, methodField, amountPaidField, vehicleSearchInput]
+                .forEach(clearInvalid);
+            submitError.style.display = 'none';
+
+            const missing = [];
+            if (!paidByField.value)                       { missing.push('Resident'); markInvalid(document.getElementById('payer_search')); }
+            if (selectedVehicleIds.length === 0)           { missing.push('Vehicle');  markInvalid(vehicleSearchInput); }
+            if (!receiptField.value.trim())                { missing.push('Receipt Number'); markInvalid(receiptField); }
+            if (!dateField.value)                          { missing.push('Date Paid'); markInvalid(dateField); }
+            if (!methodField.value)                        { missing.push('Payment Method'); markInvalid(methodField); }
+
+            if (missing.length > 0) {
+                e.preventDefault();
+                submitError.textContent = `Please fill in: ${missing.join(', ')}.`;
+                submitError.style.display = 'block';
+                return;
+            }
+
+            // AC 5: date paid cannot be in the future (native max= already blocks this too)
+            const today = new Date().toISOString().split('T')[0];
+            if (dateField.value > today) {
+                e.preventDefault();
+                markInvalid(dateField);
+                submitError.textContent = 'Date paid cannot be in the future.';
+                submitError.style.display = 'block';
+                return;
+            }
+
+            // AC 3.1
+            const expected = parseFloat(amountField.value) || 0;
+            const paid     = parseFloat(amountPaidField.value);
+            if (isNaN(paid) || paid < expected) {
+                e.preventDefault();
+                markInvalid(amountPaidField);
+                submitError.textContent = 'Amount Paid cannot be less than the Amount Expected.';
+                submitError.style.display = 'block';
+            }
+        });
     }
 </script>
