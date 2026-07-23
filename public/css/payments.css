@@ -264,6 +264,18 @@
     border-color: #526F50;
 }
 
+.form-control.error,
+.search-input.error {
+    border-color: #c0392b !important;
+    background: #fdf1f0;
+}
+
+.form-control.error:focus,
+.search-input.error:focus {
+    outline: none;
+    border-color: #c0392b;
+}
+
 /* ── Payer / property / vehicle search dropdowns ─────────────────────────── */
 .resident-search-wrap {
     position: relative;
