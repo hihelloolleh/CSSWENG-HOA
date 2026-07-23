@@ -11,6 +11,14 @@ const selectAllProperties = async () => {
     return rows;
 };
 
+const getPropertyById = async (propertyId, conn = pool) => {
+    const [rows] = await conn.query(`
+        SELECT property_id, lot_number, property_type, street_name, hasDues, outstandingBalance
+        FROM Property WHERE property_id = ?
+    `, [propertyId]);
+    return rows[0] || null;
+};
+
 const selectPropertiesByResidentId = async(resident_id, conn) => {
     const[rows] = await conn.query(`
         SELECT rp.property_id
@@ -148,6 +156,7 @@ const deleteResidentProperty = async(resident_id, property_id, conn) => {
 
 module.exports = {
     selectAllProperties,
+    getPropertyById,
     selectAllResidents,
     selectResidentsByPropertyId,
     selectPropertyByLotAndStreet,

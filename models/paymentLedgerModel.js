@@ -91,8 +91,9 @@ const getAllPersons = async () => {
 
 const getResidentsByProperty = async () => {
     const [rows] = await pool.query(`
-        SELECT rp.property_id, p.person_id,
-               CONCAT(p.first_name, ' ', p.last_name) AS full_name
+        SELECT rp.property_id, r.resident_id, p.person_id,
+               CONCAT(p.first_name, ' ', p.last_name) AS full_name,
+               r.isDelinquent
         FROM Resident_Property rp
         JOIN Resident r  ON rp.resident_id = r.resident_id
         JOIN Person   p  ON r.person_id    = p.person_id
@@ -101,9 +102,21 @@ const getResidentsByProperty = async () => {
     const map = {};
     for (const row of rows) {
         if (!map[row.property_id]) map[row.property_id] = [];
-        map[row.property_id].push({ person_id: row.person_id, full_name: row.full_name });
+        map[row.property_id].push({
+            person_id: row.person_id,
+            resident_id: row.resident_id,
+            full_name: row.full_name,
+            isDelinquent: !!row.isDelinquent,
+        });
     }
     return map;
+};
+
+const createAssociationDuesRecord = async (paymentId, isAnnual, conn) => {
+    await conn.query(
+        `INSERT INTO Association_Dues (payment_id, is_annual) VALUES (?, ?)`,
+        [paymentId, isAnnual ? 1 : 0]
+    );
 };
 
 const createOutstandingBalanceRecord = async (paymentId, propertyId, residentId, conn) => {
@@ -133,4 +146,5 @@ module.exports = {
     getResidentsByProperty,
     createOutstandingBalanceRecord,
     createPaymentVehicleLinks,
+    createAssociationDuesRecord,
 };
