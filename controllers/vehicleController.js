@@ -1,5 +1,35 @@
 const vehicleService = require('../services/vehicleService');
 const VehicleModel = require('../models/vehicleModel'); // Keep this if get/delete still use it directly
+const stickerRateService = require('../services/stickerRateService');
+
+// GET /vehicles/sticker-rate-estimate?person_id=123&vehicle_ids=1&vehicle_ids=2
+// Read-only estimate shown on the payment form before submission (AC 1.2/1.3/1.4).
+// The Vehicle Sticker payment itself re-computes this server-side on submit,
+// so this endpoint is for display purposes only and is not the source of truth.
+exports.getStickerRateEstimate = async (req, res) => {
+    try {
+        const { person_id } = req.query;
+        let vehicleIds = req.query.vehicle_ids || [];
+        if (!Array.isArray(vehicleIds)) vehicleIds = [vehicleIds];
+
+        const resolved = await stickerRateService.resolveStickerRates(vehicleIds, person_id || null);
+
+        res.json({
+            success: true,
+            totalAmount: resolved.totalAmount,
+            items: resolved.items.map(item => ({
+                vehicle_id: item.vehicle.vehicle_id,
+                plate_number: item.vehicle.plate_number,
+                type: item.vehicle.type,
+                rateCategory: item.rateCategory,
+                amount: item.amount,
+                stickerNumber: item.stickerNumber,
+            })),
+        });
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+};
 
 exports.getVehicles = async (req, res) =>{
     try{

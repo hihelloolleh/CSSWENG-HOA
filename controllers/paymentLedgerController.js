@@ -27,11 +27,11 @@ const getPayments = async (req, res) => {
 
 const createPayment = async (req, res) => {
     try {
-        const inputDate = new Date(req.body.date_paid);
+        const inputDate = req.body.date_paid;
         const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
-        
+
         // to validate that payment date is not in the future
-        if (inputDate > today) {
+        if (inputDate && inputDate > today) {
             return res.redirect('/payments?error=Date+paid+cannot+be+in+the+future');
         }
 
