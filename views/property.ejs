@@ -323,9 +323,9 @@
 
         if (!resident_id) { alert('Please select a resident from the list.'); return; }
 
-        // Prevent same resident being added twice
-        if (addedResidents.some(r => r.resident_id === resident_id)) {
-            alert(`${full_name} has already been added to this property.`);
+        // Prevent same resident being added twice (compare as strings — DB returns ints, hidden input returns strings)
+        if (addedResidents.some(r => String(r.resident_id) === String(resident_id))) {
+            alert(`${full_name} is already linked to this property.`);
             return;
         }
 
