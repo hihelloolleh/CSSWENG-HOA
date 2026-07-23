@@ -113,6 +113,16 @@ const createOutstandingBalanceRecord = async (paymentId, propertyId, residentId,
     );
 };
 
+const createPaymentVehicleLinks = async (paymentId, vehicleRates, conn) => {
+    // vehicleRates: [{ vehicle_id, rateCategory }, ...]
+    for (const { vehicle_id, rateCategory } of vehicleRates) {
+        await conn.query(
+            `INSERT INTO Payment_Vehicle (payment_id, vehicle_id, rate_applied) VALUES (?, ?, ?)`,
+            [paymentId, vehicle_id, rateCategory]
+        );
+    }
+};
+
 module.exports = {
     getAllPayments,
     getPaymentsByPurpose,
@@ -122,4 +132,5 @@ module.exports = {
     getAllPersons,
     getResidentsByProperty,
     createOutstandingBalanceRecord,
+    createPaymentVehicleLinks,
 };

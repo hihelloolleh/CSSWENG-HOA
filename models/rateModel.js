@@ -25,5 +25,13 @@ module.exports = {
             'UPDATE Rates SET amount = ? WHERE rate_id = ?',
             [amount, rateId]
         );
+    },
+
+    getRateByCategory: async (rateCategory, conn = pool) => {
+        const [rows] = await conn.execute(
+            'SELECT rate_id, rate_category, amount FROM Rates WHERE rate_category = ?',
+            [rateCategory]
+        );
+        return rows[0] || null;
     }
 };

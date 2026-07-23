@@ -43,6 +43,53 @@ const VehicleModel = {
         return rows;
     },
 
+    getVehicleById: async (vehicle_id, conn = pool) => {
+        const [rows] = await conn.execute(
+            'SELECT vehicle_id, type, plate_number, make, model, color, sticker_year, hasSticker FROM Vehicle WHERE vehicle_id = ?',
+            [vehicle_id]
+        );
+        return rows[0] || null;
+    },
+
+    getVehiclesByIds: async (vehicleIds, conn = pool) => {
+        if (!vehicleIds || vehicleIds.length === 0) return [];
+        const placeholders = vehicleIds.map(() => '?').join(',');
+        const [rows] = await conn.execute(
+            `SELECT vehicle_id, type, plate_number, make, model, color, sticker_year, hasSticker
+             FROM Vehicle WHERE vehicle_id IN (${placeholders})`,
+            vehicleIds
+        );
+        return rows;
+    },
+
+    // Counts how many Car-type vehicles belonging to this resident already have
+    // a sticker issued for the given year, excluding the given vehicle id(s) —
+    // used to exclude the whole batch of vehicles currently being paid for,
+    // since none of them have this year's sticker yet.
+    countCarStickersForResident: async (resident_id, year, excludeVehicleIds, conn = pool) => {
+        const excludeIds = Array.isArray(excludeVehicleIds) ? excludeVehicleIds : [excludeVehicleIds];
+        const placeholders = excludeIds.length ? excludeIds.map(() => '?').join(',') : 'NULL';
+        const [rows] = await conn.execute(
+            `SELECT COUNT(*) AS carStickerCount
+             FROM Resident_Vehicle rv
+             JOIN Vehicle v ON v.vehicle_id = rv.vehicle_id
+             WHERE rv.resident_id = ?
+               AND v.type = 'Car'
+               AND v.sticker_year = ?
+               AND v.hasSticker = 1
+               AND v.vehicle_id NOT IN (${placeholders})`,
+            [resident_id, year, ...excludeIds]
+        );
+        return rows[0].carStickerCount;
+    },
+
+    markStickerIssued: async (vehicle_id, year, conn = pool) => {
+        await conn.execute(
+            'UPDATE Vehicle SET sticker_year = ?, hasSticker = 1 WHERE vehicle_id = ?',
+            [year, vehicle_id]
+        );
+    },
+
     findByPlate: async (plate_number, conn = pool) =>{
         const [rows] = await conn.execute(
             'SELECT vehicle_id FROM vehicle WHERE plate_number = ?',
