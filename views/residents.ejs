@@ -55,6 +55,12 @@
             <input type="text" class="search-input" id="searchInput"
                    placeholder="Search by name, email, status..."
                    oninput="filterTable()">
+            <button id="btnAddResident" class="btn btn-primary" onclick="openAddModal()">
+                <i class="fa-solid fa-plus"></i> Add Resident
+            </button>
+            <button id="btnAddBoardMember" class="btn btn-primary" style="display:none;" onclick="openBMAddModal()">
+                <i class="fa-solid fa-plus"></i> Add Board Member
+            </button>
         </div>
 
         <!-- ── RESIDENTS SECTION ────────────────────────────────────────────── -->
@@ -446,6 +452,8 @@ function switchTab(tab) {
 
     document.getElementById('tabResidents').classList.toggle('tab-active',    !boardMembersMode);
     document.getElementById('tabBoardMembers').classList.toggle('tab-active',  boardMembersMode);
+    document.getElementById('btnAddResident').style.display    = boardMembersMode ? 'none' : '';
+    document.getElementById('btnAddBoardMember').style.display = boardMembersMode ? '' : 'none';
 
     document.getElementById('pageTitle').textContent    = boardMembersMode ? 'Board Members' : 'Residents';
     document.getElementById('pageSubtitle').textContent = boardMembersMode

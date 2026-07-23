@@ -41,18 +41,14 @@
             </div>
         <% } %>
 
-        <!-- ACTION BUTTONS -->
-        <div class="action-buttons">
-            <button class="btn btn-primary" onclick="openAddModal()">
-                <i class="fa-solid fa-plus"></i> Add Property
-            </button>
-        </div>
-
         <!-- SEARCH -->
         <div class="search-bar">
             <input type="text" class="search-input" id="searchInput"
                    placeholder="Search by lot number, street, or type..."
                    oninput="filterTable()">
+            <button class="btn btn-primary" onclick="openAddModal()">
+                <i class="fa-solid fa-plus"></i> Add Property
+            </button>
         </div>
 
         <!-- PROPERTY COUNTER -->
