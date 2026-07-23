@@ -185,6 +185,28 @@ const createTables = async() => {
             );
         `;
 
+        // Links a single Vehicle Sticker payment to one or more vehicles
+        // (a payment can cover several vehicles at once). rate_applied
+        // records which Rates tier each vehicle was actually charged,
+        // since multiple vehicles in the same payment can land on
+        // different tiers (e.g. one at base rate, one surged).
+        const createPaymentVehicleTable = `
+            CREATE TABLE IF NOT EXISTS Payment_Vehicle (
+                payment_id   INT,
+                vehicle_id   INT,
+                rate_applied ENUM(
+                                 'Car',
+                                 'Car (More than 6 stickers)',
+                                 'Motorcycle',
+                                 'Commercial'
+                             ) NOT NULL,
+
+                PRIMARY KEY (payment_id, vehicle_id),
+                FOREIGN KEY (payment_id) REFERENCES Payment(payment_id) ON DELETE CASCADE,
+                FOREIGN KEY (vehicle_id) REFERENCES Vehicle(vehicle_id) ON DELETE CASCADE
+            );
+        `;
+
         // default values for rates
         // IGNORE keyword so it won't seed again if the tables already have data even if db reboots
         const seedDefaultRatesTable = `
@@ -239,6 +261,9 @@ const createTables = async() => {
 
         await pool.query(createAssociationDuesTable);
         console.log("Successfully created Association_Dues table!")
+
+        await pool.query(createPaymentVehicleTable);
+        console.log("Successfully created Payment_Vehicle table!")
 
         // Add any columns that were introduced after the tables were first created.
         // INFORMATION_SCHEMA check avoids errors on fresh installs where the column
