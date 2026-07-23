@@ -27,8 +27,60 @@ const getPayments = async (req, res) => {
 
 const createPayment = async (req, res) => {
     try {
+        const inputDate = new Date(req.body.date_paid);
+        const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
+        
+        // to validate that payment date is not in the future
+        if (inputDate > today) {
+            return res.redirect('/payments?error=Date+paid+cannot+be+in+the+future');
+        }
+
+        const purposeStr = req.body.purpose ? req.body.purpose.toLowerCase() : '';
+        
+        if (purposeStr.includes('general')) {
+            
+            // Map the raw HTML values to professional ledger labels
+            const subtypeMap = {
+                'basketball_rental': 'Basketball Court Rental',
+                'racquet_rental': 'Racquet Court Rental',
+                'football_rental': 'Football Field Rental',
+                'clubhouse_rental': 'Clubhouse Rental',
+                'tables_rental': 'Tables and Chairs Rental',
+                'endorsement_letter': 'Endorsement Letter',
+                'construction_fee': 'Construction Fee',
+                'construction_bond': 'Construction Bond',
+                'renovation_fee': 'Renovation Fee',
+                'penalty': 'Penalty',
+                'donation': 'Donation',
+                'bulletin_fee': 'Bulletin Board Fee',
+                'other': 'Other'
+            };
+
+            const rawSubType = req.body.payment_subtype;
+            const remark = subtypeMap[rawSubType] || 'General Payment';
+            const rawName = (req.body.payer_name_text || '').trim();
+            const originalRemarks = (req.body.remarks || '').trim();
+            
+            let finalRemarks = remark;
+            
+            if (!req.body.paid_by) {
+                req.body.paid_by = null;
+                if (rawName) {
+                    finalRemarks += ` (Non-resident Payer: ${rawName})`;
+                }
+            }
+
+            if (originalRemarks) {
+                finalRemarks += ` — ${originalRemarks}`;
+            }
+            
+            req.body.remarks = finalRemarks;
+            req.body.purpose = 'General Payments';
+        }
+
         await paymentLedgerService.addPayment(req.body);
         res.redirect('/payments?success=Payment+added+successfully.');
+        
     } catch (err) {
         console.error('createPayment error:', err);
         res.redirect(`/payments?error=${encodeURIComponent(err.message)}`);
@@ -37,6 +89,15 @@ const createPayment = async (req, res) => {
 
 const updatePayment = async (req, res) => {
     try {
+        if (req.body.date_paid) {
+            const inputDate = req.body.date_paid;
+            const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
+            
+            if (inputDate > today) {
+                return res.redirect('/payments?error=Edited+date+cannot+be+in+the+future');
+            }
+        }
+        
         const { payment_id, ...data } = req.body;
         await paymentLedgerService.updatePayment(payment_id, data);
         res.redirect('/payments?success=Payment+updated+successfully.');
