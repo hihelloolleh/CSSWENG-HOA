@@ -1,9 +1,10 @@
-const paymentLedgerModel = require('../models/paymentLedgerModel');
-const propertyModel      = require('../models/propertyModel');
-const residentModel      = require('../models/residentModel');
-const vehicleModel       = require('../models/vehicleModel');
-const stickerRateService = require('./stickerRateService');
-const { pool }           = require('../config/db');
+const paymentLedgerModel        = require('../models/paymentLedgerModel');
+const propertyModel             = require('../models/propertyModel');
+const residentModel             = require('../models/residentModel');
+const vehicleModel              = require('../models/vehicleModel');
+const stickerRateService        = require('./stickerRateService');
+const associationDuesRateService = require('./associationDuesRateService');
+const { pool }                  = require('../config/db');
 
 // AC 3.3: fields required for every payment, regardless of purpose.
 const REQUIRED_FIELDS = {
@@ -22,7 +23,7 @@ const assertRequiredFields = (data) => {
     }
 };
 
-// AC 5: date paid cannot be in the future (server-side backstop —
+// AC 5/6: date paid cannot be in the future (server-side backstop —
 // the form's <input type="date" max="..."> already blocks this client-side).
 const assertDateNotFuture = (datePaidStr) => {
     const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
@@ -36,7 +37,8 @@ const addPayment = async (data) => {
     try {
         await conn.beginTransaction();
 
-        let vehicleRateItems = null; // items resolved for Vehicle Sticker payments
+        let vehicleRateItems  = null; // items resolved for Vehicle Sticker payments
+        let associationResult = null; // resolved rate for Association Dues payments
 
         if (data.purpose === 'Vehicle Sticker') {
             assertRequiredFields(data);
@@ -59,6 +61,28 @@ const addPayment = async (data) => {
             }
         }
 
+        if (data.purpose === 'Association Dues') {
+            assertRequiredFields(data);
+            if (!data.property_id) {
+                throw new Error('A property must be selected.');
+            }
+            assertDateNotFuture(data.date_paid);
+
+            // amount_expected is never trusted from the client — always
+            // computed here from the current Rates table (rate × duration
+            // only; existing arrears are handled separately via Outstanding Balance).
+            associationResult = await associationDuesRateService.resolveAssociationDuesRate(
+                data.property_id, data.payment_type, data.months, conn
+            );
+            data.amount_expected = associationResult.amount;
+
+            // Scenario 2: block submission if Amount Paid < Amount Expected
+            const amountPaid = parseFloat(data.amount_paid);
+            if (isNaN(amountPaid) || amountPaid < associationResult.amount) {
+                throw new Error('Amount Paid cannot be less than the Amount Expected.');
+            }
+        }
+
         const paymentId = await paymentLedgerModel.createPayment(data, conn);
 
         if (vehicleRateItems) {
@@ -72,6 +96,21 @@ const addPayment = async (data) => {
             const year = new Date().getFullYear();
             for (const item of vehicleRateItems) {
                 await vehicleModel.markStickerIssued(item.vehicle.vehicle_id, year, conn);
+            }
+        }
+
+        if (associationResult) {
+            await paymentLedgerModel.createAssociationDuesRecord(paymentId, associationResult.isAnnual, conn);
+
+            // Dues are always paid in full here (underpayment is blocked above),
+            // so clear the payer's delinquent flag. Property.outstandingBalance /
+            // hasDues (arrears) are intentionally left untouched — those are
+            // only managed by the separate Outstanding Balance payment flow.
+            if (data.paid_by) {
+                const r = await residentModel.getResidentIdByPersonId(data.paid_by, conn);
+                if (r) {
+                    await residentModel.setDelinquent(r.resident_id, false, conn);
+                }
             }
         }
 
