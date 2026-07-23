@@ -5,6 +5,14 @@
      TODO (SPRINT 2+): BUILD THIS PAGE (table, register/edit/delete)
      ============================================================ -->
 
+<style> /* asterisk for the required fields*/
+    .required-label::after {
+        content: " *";
+        color: #dc3545;
+        font-weight: bold;
+    }
+</style>
+
 <div class="main-wrapper"> 
     <div class="sidebar-open nav-item"> 
         <i class="fa-solid fa-bars"></i>
@@ -30,22 +38,16 @@
         <!-- SEARCH -->
         <div class="search-bar" style="margin-bottom: 12px;">
             <input type="text" class="search-input" id="searchInput"
-                   placeholder="Search by plate, owner, type, or color...">
+                placeholder="Search by plate, owner, type, color, or sticker year...">
             <button class="btn btn-primary" onclick="document.getElementById('vehicleModal').classList.add('active')">
                 <i class="fa-solid fa-plus"></i> Add Vehicle
             </button>
-            <button class="btn btn-secondary">
-                <i class="fa-solid fa-upload"></i> Upload Excel
-            </button>
         </div>
-        
+
         <!-- VEHICLE COUNTER -->
-        <p class="vehicle-count" id="paymentCount">
-            Showing <strong><%= vehicles.length %></strong> vehicles
+        <p class="vehicle-count">
+            Showing <strong id="vehicleCountNumber"><%= vehicles.length %></strong> vehicles
         </p>
- 
- 
-        
 
         <div class="table-container">
             <table class="data-table">
@@ -113,7 +115,7 @@
                 <form id="vehicleForm" action="/vehicles/register" method="POST">
                     
                     <div class="form-group">
-                        <label>Vehicle Type</label>
+                        <label class="required-label">Vehicle Type</label>
                         <select id="edit_type" name="type" class="form-control" style="width: 100%; padding: 8px;" required>
                             <option value="">Select Vehicle Type</option>
                             <option value="Car">Car</option>
@@ -125,31 +127,31 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Plate Number</label>
-                        <input type="text" name="plate_number" required placeholder="ABC 1234">
+                        <label class="required-label">Plate Number</label>
+                        <input type="text" name="plate_number" placeholder="ABC 1234" required>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Make</label>
-                            <input type="text" name="make" placeholder="e.g., Toyota" required>
+                            <label class="required-label">Make</label>
+                            <input type="text" name="make" placeholder="e.g., Honda" required>
                         </div>
 
                         <div class="form-group">
-                            <label>Model</label>
-                            <input type="text" name="model" placeholder="e.g., Vios" required>
+                            <label class="required-label">Model</label>
+                            <input type="text" name="model" placeholder="e.g., NSX" required>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Color</label>
-                            <input type="text" name="color" required>
+                            <label class="required-label">Color</label>
+                            <input type="text" name="color" placeholder="e.g., Red" required>
                         </div>
 
                         <div class="form-group">
                             <label>Sticker Year</label>
-                            <input type="number" name="sticker_year" placeholder="2026" required>
+                            <input type="number" name="sticker_year" placeholder="2026">
                         </div>
                     </div>
 
@@ -202,12 +204,12 @@
         <div class="modal-body">
             <form id="editVehicleForm" method="POST">
                 <div class="form-group">
-                    <label>Plate Number</label>
+                    <label class="required-label">Plate Number</label>
                     <input type="text" id="edit_plate_number" name="plate_number" required>
                 </div>
 
                 <div class="form-group" style="margin-top: 15px;">
-                    <label>Vehicle Type</label>
+                    <label class="required-label">Vehicle Type</label>
                     <select id="edit_type" name="type" class="form-control" style="width: 100%; padding: 8px;" required>
                         <option value="">Select Vehicle Type</option>
                         <option value="Car">Car</option>
@@ -222,7 +224,7 @@
                     <label>Owners</label>
                     <div style="display: flex; gap: 10px; margin-bottom: 10px;">
                         <div style="position: relative; flex: 1;">
-                            <input type="text" id="edit_resident_search" class="form-control" placeholder="Search resident name..." autocomplete="off" style="width: 100%; padding: 8px;">
+                            <input type="text" id="edit_resident_search" class="form-control" placeholder="Search resident name..." autocomplete="off" style="width: 100%; padding: 8px;" required>
                             
                             <ul id="edit_dropdown_list" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #ccc; border-radius: 4px; z-index: 1000; max-height: 150px; overflow-y: auto; list-style: none; padding: 0; margin: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></ul>
                             
@@ -244,11 +246,11 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Make</label>
+                        <label class="required-label">Make</label>
                         <input type="text" id="edit_make" name="make" required>
                     </div>
                     <div class="form-group">
-                        <label>Model</label>
+                        <label class="required-label">Model</label>
                         <input type="text" id="edit_model" name="model" required>
                     </div>
                 </div>
@@ -382,10 +384,9 @@
 </script>
 
 <script> // search functionality
-
     document.addEventListener('DOMContentLoaded', () =>{
         const searchInput = document.getElementById('searchInput');
-        const vehicleCountDisplay = document.getElementById('vehicleCount');
+        const vehicleCountDisplay = document.getElementById('vehicleCountNumber'); 
         const tableBody = document.querySelector('.data-table tbody');
         
         const rows = tableBody.querySelectorAll('tr:not(:has(.empty-state))'); 
@@ -407,7 +408,9 @@
                     }
                 });
 
-                vehicleCountDisplay.textContent = visibleCount;
+                if(vehicleCountDisplay) {
+                    vehicleCountDisplay.textContent = visibleCount;
+                }
             });
         }
     });
@@ -470,6 +473,36 @@
     document.addEventListener('DOMContentLoaded', () => {
         setupClientSideSearch('add');
         setupClientSideSearch('edit');
+    });
+</script>
+
+<script> // to hide add modal and reset form
+    function closeAddModal(){
+        document.getElementById('vehicleModal').classList.remove('active');
+        
+        document.getElementById('vehicleForm').reset();
+        
+        document.getElementById('add_resident_tags').innerHTML = '';
+        document.getElementById('add_hidden_inputs').innerHTML = '';
+    }   
+</script>
+
+<script> // popups
+    document.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const errorMessage = urlParams.get('error');
+        const successMessage = urlParams.get('success');
+
+        if (errorMessage){
+            alert(errorMessage);
+            
+            window.history.replaceState({}, document.title, '/vehicles');
+        }
+
+        if (successMessage){
+            alert(successMessage);
+            window.history.replaceState({}, document.title, '/vehicles');
+        }
     });
 </script>
 

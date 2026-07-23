@@ -44,7 +44,7 @@ exports.registerVehicle = async (req, res) =>{
     }
 
     if (!type || !plate_number || !make || !model || !color || resident_ids.length === 0) {
-        return res.status(400).send("Type, Plate number, Make, Model, Color, and Residents are required.");
+        return res.redirect('/vehicles?error=Type,+Plate+number,+Make,+Model,+Color,+and+Residents+are+required.');
     }
 
     // redirect to services for the uhhhhhh services stuff
@@ -53,11 +53,11 @@ exports.registerVehicle = async (req, res) =>{
         
         await vehicleService.registerVehicle(vehicleData, resident_ids);
 
-        res.redirect('/vehicles');
+        res.redirect('/vehicles?success=Vehicle+added+successfully');
     }
     catch(error){
         console.error("Cannot save vehicle:", error.message);
-        res.status(400).send(error.message); 
+        res.redirect('/vehicles?error=' + encodeURIComponent(error.message));
     }
 };
 
@@ -82,8 +82,8 @@ exports.updateVehicle = async (req, res) =>{
     }
     
     // initial validation
-    if(!type || !plate_number || !make || !model || !color){
-        return res.status(400).send("Type, Plate Number, Make, Model, and Color are required.");
+    if (!type || !plate_number || !make || !model || !color || resident_ids.length === 0) {
+        return res.redirect('/vehicles?error=Type,+Plate+number,+Make,+Model,+Color,+and+Residents+are+required.');
     }
 
     // los servicios
@@ -92,11 +92,11 @@ exports.updateVehicle = async (req, res) =>{
         
         await vehicleService.updateVehicle(vehicleId, vehicleData, resident_ids);
 
-        res.redirect('/vehicles');
+        res.redirect('/vehicles?success=Vehicle+updated+successfully');
     }
     catch(error){
         console.error("Cannot update vehicle details:", error.message);
-        res.status(400).send(error.message);
+        res.redirect('/vehicles?error=' + encodeURIComponent(error.message));
     }
 };
 
@@ -105,10 +105,10 @@ exports.deleteVehicle = async (req, res) =>{
         const vehicleId = req.params.id;
         
         await VehicleModel.deleteVehicle(vehicleId);
-        res.redirect('/vehicles');
+        res.redirect('/vehicles?success=Vehicle+deleted+successfully');
     }
     catch (error){
         console.error("Cannot delete vehicle:", error);
-        res.status(500).send("Error deleting vehicle.");
+        res.redirect('/vehicles?error=Error+deleting+vehicle.');
     }
 };
