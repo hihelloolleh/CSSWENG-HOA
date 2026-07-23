@@ -42,7 +42,7 @@
 
                     <% if (paymentType === 'association') { %>
                         <div class="form-group">
-                            <label>Property</label>
+                            <label>Property *</label>
                             <div class="resident-search-wrap">
                                 <input type="text" id="property_search" class="search-input" placeholder="Search by lot number or street..." autocomplete="off">
                                 <ul id="property_dropdown" class="resident-dropdown-list"></ul>
@@ -51,32 +51,34 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Homeowner / Payer</label>
+                            <label>Homeowner / Payer *</label>
                             <div class="resident-search-wrap">
                                 <input type="text" id="payer_search" class="search-input" placeholder="Select a property first" autocomplete="off">
                                 <ul id="payer_dropdown" class="resident-dropdown-list"></ul>
                             </div>
                             <input type="hidden" id="paid_by" name="paid_by">
                             <small id="payer_hint" style="color:#888; font-size:12px; margin-top:4px; display:block;">Select a property first</small>
+                            <small id="delinquency_status" style="font-size:12px; margin-top:4px; display:none; font-weight:600;"></small>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group">
                                 <label>Payment Type</label>
-                                <select name="payment_type" class="form-control">
+                                <select name="payment_type" id="payment_type" class="form-control">
                                     <option value="monthly">Monthly</option>
                                     <option value="annual">Annual</option>
                                 </select>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" id="months_group">
                                 <label>Months</label>
-                                <select name="months" class="form-control">
+                                <select name="months" id="months" class="form-control">
                                     <% for (let m = 1; m <= 11; m++) { %>
                                         <option value="<%= m %>"><%= m %></option>
                                     <% } %>
                                 </select>
                             </div>
                         </div>
+                        <small id="dues_rate_hint" style="color:#888; font-size:12px; margin-top:-8px; margin-bottom:12px; display:block;">Select a property and payment type to see the rate</small>
 
                     <% } else if (paymentType === 'vehicle') { %>
                         <div class="form-group">
@@ -267,7 +269,7 @@
     let selectedPropertyId = null;
 
     // ── Generic searchable dropdown initializer ───────────────────────────────
-    function initSearch(inputId, dropdownId, hiddenId, getItems, labelFn, valueFn) {
+    function initSearch(inputId, dropdownId, hiddenId, getItems, labelFn, valueFn, onSelect) {
         const input    = document.getElementById(inputId);
         const dropdown = document.getElementById(dropdownId);
         const hidden   = document.getElementById(hiddenId);
@@ -290,6 +292,7 @@
                     input.value            = labelFn(item);
                     hidden.value           = valueFn(item);
                     dropdown.style.display = 'none';
+                    if (onSelect) onSelect(item);
                 });
                 dropdown.appendChild(li);
             });
@@ -341,18 +344,18 @@
                     selectedPropertyId     = String(prop.property_id);
                     propDropdown.style.display = 'none';
 
-                    // Auto-fill outstanding balance for the outstanding type
-                    const amountExpected = document.getElementById('amount_expected');
-                    if (amountExpected) {
+                    // Auto-fill outstanding balance — only on the Outstanding Balance
+                    // page (outstanding_hint only exists there; this must NOT fire on
+                    // Association Dues, which shares the same #amount_expected field id).
+                    const outstandingHintEl = document.getElementById('outstanding_hint');
+                    if (outstandingHintEl) {
+                        const amountExpected = document.getElementById('amount_expected');
                         const bal = parseFloat(prop.outstandingBalance || 0);
-                        amountExpected.value = bal.toFixed(2);
-                        const hint = document.getElementById('outstanding_hint');
-                        if (hint) {
-                            hint.textContent = prop.hasDues
-                                ? `Current outstanding balance: ₱${bal.toLocaleString('en-PH', {minimumFractionDigits:2})}`
-                                : 'This property has no recorded outstanding dues.';
-                            hint.style.color = prop.hasDues ? '#c77b00' : '#888';
-                        }
+                        if (amountExpected) amountExpected.value = bal.toFixed(2);
+                        outstandingHintEl.textContent = prop.hasDues
+                            ? `Current outstanding balance: ₱${bal.toLocaleString('en-PH', {minimumFractionDigits:2})}`
+                            : 'This property has no recorded outstanding dues.';
+                        outstandingHintEl.style.color = prop.hasDues ? '#c77b00' : '#888';
                     }
 
                     // Reset payer and update hint
@@ -365,7 +368,12 @@
                                 ? `${residents.length} resident(s) in this property`
                                 : 'No residents linked to this property';
                         }
+                        const statusEl = document.getElementById('delinquency_status');
+                        if (statusEl) statusEl.style.display = 'none';
                     }
+
+                    // Association Dues: property type determines the rate, so refresh the estimate
+                    if (typeof updateDuesEstimate === 'function') updateDuesEstimate();
                 });
                 propDropdown.appendChild(li);
             });
@@ -379,14 +387,140 @@
 
     // Payer search — filtered to property residents when a property is selected
     if (document.getElementById('payer_search')) {
+        const isAssociationForm = document.getElementById('property_search') && document.getElementById('payment_type');
+
         initSearch(
             'payer_search', 'payer_dropdown', 'paid_by',
             () => selectedPropertyId
                 ? (residentsByProperty[selectedPropertyId] || [])
                 : allPersons,
             p => p.full_name,
-            p => p.person_id
+            p => p.person_id,
+            isAssociationForm ? (resident) => {
+                // AC: display homeowner's current status (Current/Delinquent)
+                const statusEl = document.getElementById('delinquency_status');
+                if (statusEl) {
+                    if (resident.isDelinquent) {
+                        statusEl.textContent = 'Status: Delinquent';
+                        statusEl.style.color = '#c0392b';
+                    } else {
+                        statusEl.textContent = 'Status: Current';
+                        statusEl.style.color = '#2e7d32';
+                    }
+                    statusEl.style.display = 'block';
+                }
+                updateDuesEstimate();
+            } : null
         );
+    }
+
+    // ── Association Dues: months toggle + live rate estimate ─────────────────
+    if (document.getElementById('payment_type') && document.getElementById('property_search')) {
+        const paymentTypeSelect = document.getElementById('payment_type');
+        const monthsGroup       = document.getElementById('months_group');
+        const monthsSelect      = document.getElementById('months');
+        const duesHint          = document.getElementById('dues_rate_hint');
+        const duesAmountField   = document.getElementById('amount_expected');
+
+        function toggleMonthsVisibility() {
+            const isAnnual = paymentTypeSelect.value === 'annual';
+            monthsGroup.style.display = isAnnual ? 'none' : '';
+        }
+
+        // Defined before anything below references it — addEventListener needs
+        // an actual function value at registration time, not just later.
+        window.updateDuesEstimate = async function updateDuesEstimate() {
+            const propertyId = document.getElementById('property_id').value;
+            if (!propertyId) {
+                if (duesAmountField) duesAmountField.value = '';
+                if (duesHint) { duesHint.textContent = 'Select a property and payment type to see the rate'; duesHint.style.color = '#888'; }
+                return;
+            }
+
+            try {
+                const params = new URLSearchParams();
+                params.append('payment_type', paymentTypeSelect.value);
+                if (paymentTypeSelect.value !== 'annual') params.append('months', monthsSelect.value);
+
+                const res  = await fetch(`/properties/${propertyId}/association-dues-estimate?${params.toString()}`);
+                const json = await res.json();
+
+                if (!json.success) {
+                    if (duesAmountField) duesAmountField.value = '';
+                    if (duesHint) { duesHint.textContent = json.message; duesHint.style.color = '#c0392b'; }
+                    return;
+                }
+
+                if (duesAmountField) duesAmountField.value = parseFloat(json.amount).toFixed(2); // AC 3
+                if (duesHint) {
+                    duesHint.textContent = json.isAnnual
+                        ? `${json.propertyType} annual rate: ₱${parseFloat(json.unitRate).toLocaleString('en-PH', {minimumFractionDigits:2})}`
+                        : `${json.propertyType} monthly rate: ₱${parseFloat(json.unitRate).toLocaleString('en-PH', {minimumFractionDigits:2})} × ${monthsSelect.value} month(s)`;
+                    duesHint.style.color = '#888';
+                }
+            } catch (e) {
+                if (duesAmountField) duesAmountField.value = '';
+                if (duesHint) { duesHint.textContent = 'Could not fetch rate estimate.'; duesHint.style.color = '#c0392b'; }
+            }
+        };
+
+        toggleMonthsVisibility();
+        paymentTypeSelect.addEventListener('change', () => { toggleMonthsVisibility(); updateDuesEstimate(); });
+        monthsSelect.addEventListener('change', updateDuesEstimate);
+
+        // ── Submit-time validation (Scenario 2 / AC 6) ──────────────────────
+        const associationForm = paymentTypeSelect.closest('form');
+        const submitError     = document.getElementById('submit_error');
+
+        function markInvalid(el) { if (el) el.classList.add('error'); }
+        function clearInvalid(el) { if (el) el.classList.remove('error'); }
+
+        associationForm.addEventListener('submit', function (e) {
+            const propertyIdField  = document.getElementById('property_id');
+            const paidByField      = document.getElementById('paid_by');
+            const receiptField     = document.getElementById('receipt_number');
+            const dateField        = document.getElementById('date_paid');
+            const methodField      = document.getElementById('payment_method');
+            const amountPaidField  = document.getElementById('amount_paid');
+
+            [document.getElementById('property_search'), document.getElementById('payer_search'),
+             receiptField, dateField, methodField, amountPaidField].forEach(clearInvalid);
+            submitError.style.display = 'none';
+
+            const missing = [];
+            if (!propertyIdField.value)     { missing.push('Property');        markInvalid(document.getElementById('property_search')); }
+            if (!paidByField.value)         { missing.push('Homeowner');       markInvalid(document.getElementById('payer_search')); }
+            if (!receiptField.value.trim()) { missing.push('Receipt Number');  markInvalid(receiptField); }
+            if (!dateField.value)           { missing.push('Date Paid');       markInvalid(dateField); }
+            if (!methodField.value)         { missing.push('Payment Method');  markInvalid(methodField); }
+
+            if (missing.length > 0) {
+                e.preventDefault();
+                submitError.textContent = `Please fill in: ${missing.join(', ')}.`;
+                submitError.style.display = 'block';
+                return;
+            }
+
+            // AC 6: date paid cannot be in the future
+            const today = new Date().toISOString().split('T')[0];
+            if (dateField.value > today) {
+                e.preventDefault();
+                markInvalid(dateField);
+                submitError.textContent = 'Date paid cannot be in the future.';
+                submitError.style.display = 'block';
+                return;
+            }
+
+            // Scenario 2: block submission when Amount Paid < Amount Expected; entered info is retained (no navigation occurs)
+            const expected = parseFloat(duesAmountField.value) || 0;
+            const paid     = parseFloat(amountPaidField.value);
+            if (isNaN(paid) || paid < expected) {
+                e.preventDefault();
+                markInvalid(amountPaidField);
+                submitError.textContent = 'Amount Paid cannot be less than the Amount Expected.';
+                submitError.style.display = 'block';
+            }
+        });
     }
 
     // Vehicle search (vehicle type) — multi-select via chips
