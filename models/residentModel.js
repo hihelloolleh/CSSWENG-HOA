@@ -52,7 +52,8 @@ const getAllResidents = async() => {
             Person.contact_num,
             Resident.residency_start_date,
             Resident.residency_end_date,
-            Resident.isActive
+            Resident.isActive,
+            Resident.isDelinquent
         FROM Resident
         JOIN Person
             ON Resident.person_id = Person.person_id
@@ -157,6 +158,22 @@ const updateResident = async(start_date, conn) => {
 };
 
 
+const setDelinquent = async (residentId, value, conn) => {
+    await conn.query(
+        `UPDATE Resident SET isDelinquent = ? WHERE resident_id = ?`,
+        [value ? 1 : 0, residentId]
+    );
+};
+
+const getResidentIdByPersonId = async (personId, conn) => {
+    const db = conn || pool;
+    const [rows] = await db.query(
+        `SELECT resident_id FROM Resident WHERE person_id = ? AND deleteFlag = 0 ORDER BY isActive DESC LIMIT 1`,
+        [personId]
+    );
+    return rows[0] || null;
+};
+
 module.exports = {
     selectResidentById,
     selectPersonByResidentId,
@@ -165,6 +182,8 @@ module.exports = {
     deleteResident,
     updateResident,
     deactivateResident,
-    findActiveResidentByPersonId
+    findActiveResidentByPersonId,
+    setDelinquent,
+    getResidentIdByPersonId,
 };
 

@@ -1,25 +1,35 @@
 const { pool } = require('../config/db');
 
 const getStats = async () => {
-    const [[residents]]  = await pool.query(`SELECT COUNT(*) AS cnt FROM Resident WHERE residency_end_date IS NULL`);
-    const [[properties]] = await pool.query(`SELECT COUNT(*) AS cnt FROM Property`);
-    const [[employees]]  = await pool.query(`SELECT COUNT(*) AS cnt FROM Employee WHERE employee_end_date IS NULL`);
-    const [[vehicles]]   = await pool.query(`SELECT COUNT(*) AS cnt FROM Vehicle`);
-    const [[finance]]    = await pool.query(`
+    const [[residents]]    = await pool.query(`SELECT COUNT(*) AS cnt FROM Resident WHERE residency_end_date IS NULL`);
+    const [[properties]]   = await pool.query(`SELECT COUNT(*) AS cnt FROM Property`);
+    const [[employees]]    = await pool.query(`SELECT COUNT(*) AS cnt FROM Employee WHERE employee_end_date IS NULL`);
+    const [[vehicles]]     = await pool.query(`SELECT COUNT(*) AS cnt FROM Vehicle`);
+    const [[finance]]      = await pool.query(`
         SELECT
             COALESCE(SUM(amount_paid), 0) AS total_revenue,
             COALESCE(SUM(CASE WHEN amount_paid < amount_expected THEN amount_expected - amount_paid ELSE 0 END), 0) AS total_collectibles,
             COUNT(CASE WHEN amount_paid < amount_expected THEN 1 END) AS pending_count
         FROM Payment
     `);
+    const [[outstanding]]  = await pool.query(`
+        SELECT
+            COALESCE(SUM(outstandingBalance), 0) AS total_outstanding,
+            COUNT(CASE WHEN hasDues = 1 THEN 1 END) AS delinquent_properties
+        FROM Property
+    `);
+    const [[delinquents]]  = await pool.query(`SELECT COUNT(*) AS cnt FROM Resident WHERE isDelinquent = 1`);
     return {
-        totalResidents:    residents.cnt,
-        totalProperties:   properties.cnt,
-        totalEmployees:    employees.cnt,
-        totalVehicles:     vehicles.cnt,
-        totalRevenue:      parseFloat(finance.total_revenue),
-        totalCollectibles: parseFloat(finance.total_collectibles),
-        pendingCount:      finance.pending_count,
+        totalResidents:         residents.cnt,
+        totalProperties:        properties.cnt,
+        totalEmployees:         employees.cnt,
+        totalVehicles:          vehicles.cnt,
+        totalRevenue:           parseFloat(finance.total_revenue),
+        totalCollectibles:      parseFloat(finance.total_collectibles),
+        pendingCount:           finance.pending_count,
+        totalOutstanding:       parseFloat(outstanding.total_outstanding),
+        delinquentProperties:   outstanding.delinquent_properties,
+        delinquentResidents:    delinquents.cnt,
     };
 };
 

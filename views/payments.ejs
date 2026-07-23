@@ -105,6 +105,7 @@
                                 <ul id="property_dropdown" class="resident-dropdown-list"></ul>
                             </div>
                             <input type="hidden" id="property_id" name="property_id">
+                            <small id="outstanding_hint" style="color:#888; font-size:12px; margin-top:4px; display:block;">Select a property to see its current outstanding balance</small>
                         </div>
 
                         <div class="form-group">
@@ -117,9 +118,39 @@
                             <small id="payer_hint" style="color:#888; font-size:12px; margin-top:4px; display:block;">Select a property first</small>
                         </div>
 
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Outstanding Balance (Expected)</label>
+                                <input type="number" step="0.01" id="amount_expected" name="amount_expected"
+                                       class="form-control" readonly placeholder="Auto-filled from property"
+                                       style="background:#f5f5f5;">
+                            </div>
+                            <div class="form-group">
+                                <label>Amount Paid *</label>
+                                <input type="number" step="0.01" name="amount_paid" class="form-control" required>
+                            </div>
+                        </div>
+
                         <div class="form-group">
-                            <label>Expected Amount</label>
-                            <input type="number" step="0.01" name="amount_expected" class="form-control" required>
+                            <label>Date Paid *</label>
+                            <input type="date" name="date_paid" class="form-control" required>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Payment Method *</label>
+                                <select name="payment_method" class="form-control" required>
+                                    <option value="Cash">Cash</option>
+                                    <option value="Check">Check</option>
+                                    <option value="Bank Transfer">Bank Transfer</option>
+                                    <option value="GCash">GCash</option>
+                                    <option value="Maya">Maya</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Receipt Number</label>
+                                <input type="text" name="receipt_number" class="form-control">
+                            </div>
                         </div>
 
                         <div class="form-group">
@@ -128,7 +159,7 @@
                         </div>
 
                         <div class="modal-footer">
-                            <button class="btn btn-primary" type="submit">Save Outstanding Balance</button>
+                            <button class="btn btn-primary" type="submit">Record Payment</button>
                         </div>
 
                     <% } else { %>
@@ -304,6 +335,20 @@
                     propHidden.value       = prop.property_id;
                     selectedPropertyId     = String(prop.property_id);
                     propDropdown.style.display = 'none';
+
+                    // Auto-fill outstanding balance for the outstanding type
+                    const amountExpected = document.getElementById('amount_expected');
+                    if (amountExpected) {
+                        const bal = parseFloat(prop.outstandingBalance || 0);
+                        amountExpected.value = bal.toFixed(2);
+                        const hint = document.getElementById('outstanding_hint');
+                        if (hint) {
+                            hint.textContent = prop.hasDues
+                                ? `Current outstanding balance: ₱${bal.toLocaleString('en-PH', {minimumFractionDigits:2})}`
+                                : 'This property has no recorded outstanding dues.';
+                            hint.style.color = prop.hasDues ? '#c77b00' : '#888';
+                        }
+                    }
 
                     // Reset payer and update hint
                     if (payerInput) {

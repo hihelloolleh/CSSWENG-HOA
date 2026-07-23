@@ -27,19 +27,16 @@
     </header>
 
     <main class="content">
-        <div class="action-buttons">
+        <!-- SEARCH -->
+        <div class="search-bar" style="margin-bottom: 12px;">
+            <input type="text" class="search-input" id="searchInput"
+                   placeholder="Search by plate, owner, type, or color...">
             <button class="btn btn-primary" onclick="document.getElementById('vehicleModal').classList.add('active')">
                 <i class="fa-solid fa-plus"></i> Add Vehicle
             </button>
             <button class="btn btn-secondary">
                 <i class="fa-solid fa-upload"></i> Upload Excel
             </button>
-        </div>
-
-        <!-- SEARCH -->
-        <div class="search-bar" style="margin-bottom: 12px;">
-            <input type="text" class="search-input" id="searchInput"
-                   placeholder="Search by plate, owner, type, or color...">
         </div>
         
         <!-- VEHICLE COUNTER -->

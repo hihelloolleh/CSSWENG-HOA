@@ -83,3 +83,15 @@ exports.deleteProperty = async (req, res) => {
         res.redirect('/properties?error=Failed+to+delete+property.');
     }
 };
+
+// ── POST /properties/:id/outstanding-balance ─────────────────────────────────
+exports.setOutstandingBalance = async (req, res) => {
+    try {
+        const amount = parseFloat(req.body.amount) || 0;
+        await propertyService.setOutstandingBalance(req.params.id, amount);
+        res.redirect('/properties?success=Outstanding+balance+updated.');
+    } catch (err) {
+        console.error('setOutstandingBalance error:', err);
+        res.redirect('/properties?error=Failed+to+update+outstanding+balance.');
+    }
+};

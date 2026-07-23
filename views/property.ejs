@@ -41,18 +41,14 @@
             </div>
         <% } %>
 
-        <!-- ACTION BUTTONS -->
-        <div class="action-buttons">
-            <button class="btn btn-primary" onclick="openAddModal()">
-                <i class="fa-solid fa-plus"></i> Add Property
-            </button>
-        </div>
-
         <!-- SEARCH -->
         <div class="search-bar">
             <input type="text" class="search-input" id="searchInput"
                    placeholder="Search by lot number, street, or type..."
                    oninput="filterTable()">
+            <button class="btn btn-primary" onclick="openAddModal()">
+                <i class="fa-solid fa-plus"></i> Add Property
+            </button>
         </div>
 
         <!-- PROPERTY COUNTER -->
@@ -68,13 +64,14 @@
                         <th>Lot Number</th>
                         <th>Street Name</th>
                         <th>Property Type</th>
+                        <th>Status</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     <% if (properties.length === 0) { %>
                         <tr>
-                            <td colspan="4" class="empty-state">
+                            <td colspan="5" class="empty-state">
                                 No property records found. Click "Add Property" to create one.
                             </td>
                         </tr>
@@ -84,6 +81,13 @@
                                 <td><%= p.lot_number || '—' %></td>
                                 <td><strong><%= p.street_name %></strong></td>
                                 <td><%= p.property_type %></td>
+                                <td>
+                                    <% if (p.hasDues) { %>
+                                        <span class="badge badge-dues">Has Dues &#8369;<%= parseFloat(p.outstandingBalance).toLocaleString('en-PH', {minimumFractionDigits:2}) %></span>
+                                    <% } else { %>
+                                        <span class="badge badge-settled">Settled</span>
+                                    <% } %>
+                                </td>
                                 <td>
                                     <button class="btn-icon"
                                             data-id="<%= p.property_id %>"
@@ -97,6 +101,14 @@
                                             data-type="<%= p.property_type %>"
                                             onclick="openEditModal(this)">
                                         <i class="fa-solid fa-pen"></i>
+                                    </button>
+                                    <button class="btn-icon btn-icon-warning"
+                                            title="Set Outstanding Balance"
+                                            data-id="<%= p.property_id %>"
+                                            data-label="Lot <%= p.lot_number || '—' %> <%= p.street_name %>"
+                                            data-outstanding="<%= p.outstandingBalance || 0 %>"
+                                            onclick="openOutstandingModal(this)">
+                                        <i class="fa-solid fa-peso-sign"></i>
                                     </button>
                                     <button class="btn-icon btn-icon-danger"
                                             data-id="<%= p.property_id %>"
@@ -217,6 +229,39 @@
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary" onclick="closeModal('viewModal')">Close</button>
         </div>
+    </div>
+</div>
+
+<!---------------------- OUTSTANDING BALANCE MODAL --------------------------->
+<div id="outstandingModal" class="modal">
+    <div class="modal-content" style="max-width: 460px;">
+        <div class="modal-header">
+            <h2>Set Outstanding Balance</h2>
+            <button class="modal-close" onclick="closeModal('outstandingModal')">&times;</button>
+        </div>
+        <form id="outstandingForm" method="POST">
+            <div class="modal-body">
+                <p style="font-size:13px; color:#555; margin-bottom:14px;">
+                    Setting an outstanding balance will mark this property as having unpaid dues
+                    and flag all linked residents as <strong>delinquent</strong>.
+                    Setting the amount to <strong>0</strong> clears the balance and removes delinquent flags.
+                </p>
+                <div class="form-group">
+                    <label>Property</label>
+                    <input type="text" id="outstanding_property_label" class="form-control" readonly
+                           style="background:#f5f5f5; cursor:default;">
+                </div>
+                <div class="form-group">
+                    <label>Outstanding Balance Amount (₱) *</label>
+                    <input type="number" id="outstanding_amount" name="amount" min="0" step="0.01"
+                           class="form-control" required placeholder="e.g. 5000.00">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('outstandingModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Balance</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -412,6 +457,14 @@
         }
     }
 
+    // ── Modal: Outstanding Balance ───────────────────────────────────────────
+    function openOutstandingModal(btn) {
+        document.getElementById('outstanding_property_label').value = btn.dataset.label;
+        document.getElementById('outstanding_amount').value = parseFloat(btn.dataset.outstanding || 0).toFixed(2);
+        document.getElementById('outstandingForm').action = '/properties/' + btn.dataset.id + '/outstanding-balance';
+        document.getElementById('outstandingModal').classList.add('active');
+    }
+
     // ── Modal: Delete ───────────────────────────────────────────────────────
     function confirmDelete(id, streetName) {
         document.getElementById('deletePropertyName').textContent = streetName;
@@ -425,7 +478,7 @@
 
     // Close on backdrop click
     window.onclick = function(event) {
-        ['propertyModal', 'viewModal', 'deleteModal'].forEach(id => {
+        ['propertyModal', 'viewModal', 'outstandingModal', 'deleteModal'].forEach(id => {
             const el = document.getElementById(id);
             if (event.target === el) closeModal(id);
         });

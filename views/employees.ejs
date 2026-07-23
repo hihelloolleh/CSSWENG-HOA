@@ -29,16 +29,13 @@
             <div class="alert alert-error"><i class="fa-solid fa-circle-exclamation"></i> <%= error %></div>
         <% } %>
 
-        <div class="action-buttons">
-            <button class="btn btn-primary" onclick="openAddModal()">
-                <i class="fa-solid fa-plus"></i> Add Employee
-            </button>
-        </div>
-
         <div class="search-bar">
             <input type="text" class="search-input" id="searchInput"
                    placeholder="Search by name, position, or email..."
                    oninput="filterTable()">
+            <button class="btn btn-primary" onclick="openAddModal()">
+                <i class="fa-solid fa-plus"></i> Add Employee
+            </button>
         </div>
 
         <div class="table-container">

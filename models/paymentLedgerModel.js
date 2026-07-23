@@ -106,6 +106,13 @@ const getResidentsByProperty = async () => {
     return map;
 };
 
+const createOutstandingBalanceRecord = async (paymentId, propertyId, residentId, conn) => {
+    await conn.query(
+        `INSERT INTO Outstanding_Balance (payment_id, property_id, resident_id) VALUES (?, ?, ?)`,
+        [paymentId, propertyId || null, residentId || null]
+    );
+};
+
 module.exports = {
     getAllPayments,
     getPaymentsByPurpose,
@@ -114,4 +121,5 @@ module.exports = {
     deletePayment,
     getAllPersons,
     getResidentsByProperty,
+    createOutstandingBalanceRecord,
 };

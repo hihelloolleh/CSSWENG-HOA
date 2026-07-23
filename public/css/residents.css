@@ -94,6 +94,42 @@ body {
     flex-wrap: wrap;
 }
 
+.tab-bar {
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid #e0e0e0;
+    margin-bottom: 20px;
+    gap: 4px;
+}
+
+
+.tab-btn {
+    background: none;
+    border: none;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Poppins', sans-serif;
+    color: #888;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.15s, border-color 0.15s;
+}
+
+.tab-btn:hover {
+    color: #526F50;
+}
+
+.tab-btn.tab-active {
+    color: #526F50;
+    border-bottom-color: #526F50;
+    font-weight: 600;
+}
+
 .btn {
     padding: 10px 20px;
     border-radius: 8px;
@@ -294,6 +330,26 @@ body {
     background: #f8d7da;
 }
 
+.badge-delinquent {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.badge-good {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    background: #d4edda;
+    color: #155724;
+}
+
 .empty-state {
     text-align: center;
     padding: 40px;
@@ -390,13 +446,21 @@ body {
     font-size: 14px;
 }
 
-.form-group input,
+.form-group input:not([type="checkbox"]):not([type="radio"]),
 .form-group select {
     width: 100%;
     padding: 10px 14px;
     border: 1px solid #ddd;
     border-radius: 8px;
     font-size: 14px;
+}
+
+.form-group input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    border: none;
+    cursor: pointer;
 }
 
 .form-group input:focus,
