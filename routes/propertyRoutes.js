@@ -4,6 +4,7 @@ const propertyController = require('../controllers/propertyController');
 
 router.get('/',                           propertyController.getProperties);
 router.get('/:id/residents',              propertyController.getPropertyResidents);
+router.get('/:id/association-dues-estimate', propertyController.getAssociationDuesEstimate);
 router.post('/',                          propertyController.createProperty);
 router.post('/:id/update',                propertyController.updateProperty);
 router.post('/:id/delete',                propertyController.deleteProperty);
