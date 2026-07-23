@@ -82,8 +82,39 @@ const updateProperty = async (data) => {
     }
 };
 
+const setOutstandingBalance = async (propertyId, amount) => {
+    const conn = await pool.getConnection();
+    try {
+        await conn.beginTransaction();
+        await propertyModel.setOutstandingBalance(propertyId, amount, conn);
+        if (amount > 0) {
+            await propertyModel.markResidentsDelinquentForProperty(propertyId, conn);
+        } else {
+            await propertyModel.clearResidentsDelinquentForProperty(propertyId, conn);
+        }
+        await conn.commit();
+    } catch (err) {
+        await conn.rollback();
+        throw err;
+    } finally {
+        conn.release();
+    }
+};
+
 const deleteProperty = async (propertyId) => {
-    return await propertyModel.deletePropertyById(propertyId);
+    const conn = await pool.getConnection();
+    try {
+        await conn.beginTransaction();
+        // AC4: clear delinquent on residents before the property (and its Resident_Property links) are removed
+        await propertyModel.clearResidentsDelinquentForProperty(propertyId, conn);
+        await propertyModel.deletePropertyById(propertyId, conn);
+        await conn.commit();
+    } catch (err) {
+        await conn.rollback();
+        throw err;
+    } finally {
+        conn.release();
+    }
 };
 
 module.exports = {
@@ -93,4 +124,5 @@ module.exports = {
     createProperty,
     updateProperty,
     deleteProperty,
+    setOutstandingBalance,
 };

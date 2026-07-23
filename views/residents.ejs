@@ -41,19 +41,13 @@
             </div>
         <% } %>
 
-        <!-- Action bar -->
-        <div class="action-buttons">
-            <!-- Residents mode button -->
-            <button id="btnAddResident" class="btn btn-primary" onclick="openAddModal()">
-                <i class="fa-solid fa-plus"></i> Add Resident
+        <!-- Tab bar -->
+        <div class="tab-bar">
+            <button id="tabResidents" class="tab-btn tab-active" onclick="switchTab('residents')">
+                <i class="fa-solid fa-users"></i> Residents
             </button>
-            <!-- Board members mode button (hidden until toggled) -->
-            <button id="btnAddBoardMember" class="btn btn-primary" style="display:none;" onclick="openBMAddModal()">
-                <i class="fa-solid fa-plus"></i> Add Board Member
-            </button>
-            <!-- Toggle -->
-            <button id="btnToggleBM" class="btn btn-secondary" onclick="toggleBoardMembers()">
-                <i class="fa-solid fa-users"></i> Board Members
+            <button id="tabBoardMembers" class="tab-btn" onclick="switchTab('boardMembers')">
+                <i class="fa-solid fa-star"></i> Board Members
             </button>
         </div>
 
@@ -74,13 +68,14 @@
                             <th>Email</th>
                             <th>Phone Number</th>
                             <th>Residency Status</th>
+                            <th>Dues Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         <% if (residents.length === 0) { %>
                             <tr>
-                                <td colspan="6" class="empty-state">
+                                <td colspan="7" class="empty-state">
                                     No resident records found. Click "Add Resident" to create one.
                                 </td>
                             </tr>
@@ -92,6 +87,13 @@
                                     <td><%= resident.email || '—' %></td>
                                     <td><%= resident.contact_num || '—' %></td>
                                     <td><%= resident.isActive === 1 ? 'Ongoing' : 'Ended' %></td>
+                                    <td>
+                                        <% if (resident.isDelinquent) { %>
+                                            <span class="badge badge-delinquent">Delinquent</span>
+                                        <% } else { %>
+                                            <span class="badge badge-good">Good Standing</span>
+                                        <% } %>
+                                    </td>
                                     <td>
                                         <button class="btn-icon"
                                                 data-id="<%= resident.resident_id %>"
@@ -114,6 +116,7 @@
                                                 data-email="<%= resident.email || '' %>"
                                                 data-phone="<%= resident.contact_num || '' %>"
                                                 data-residentstart="<%= resident.residency_start_date ? resident.residency_start_date.toString().substring(0,10) : '' %>"
+                                                data-delinquent="<%= resident.isDelinquent ? '1' : '0' %>"
                                                 onclick="openEditModal(this)">
                                             <i class="fa-solid fa-edit"></i>
                                         </button>
@@ -259,6 +262,15 @@
                             <label>Residency Start Date *</label>
                             <input type="date" id="residency-start-date" name="residency_start_date" required>
                         </div>
+                    </div>
+                    <div class="form-group" id="delinquentGroup" style="display:none;">
+                        <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                            <input type="checkbox" id="isDelinquent" name="isDelinquent" value="1">
+                            <span>Mark as Delinquent</span>
+                        </label>
+                        <small style="color:#888; font-size:12px; margin-top:4px; display:block;">
+                            Delinquent status is normally set automatically when a property has outstanding dues.
+                        </small>
                     </div>
                 </div>
             </div>
@@ -423,17 +435,17 @@
 
 <script src="/js/sidebar.js"></script>
 <script>
-// ── Toggle ──────────────────────────────────────────────────────────────────
+// ── Tabs ─────────────────────────────────────────────────────────────────────
 let boardMembersMode = false;
 
-function toggleBoardMembers() {
-    boardMembersMode = !boardMembersMode;
-    const toggle = document.getElementById('btnToggleBM');
+function switchTab(tab) {
+    boardMembersMode = tab === 'boardMembers';
 
     document.getElementById('residentsSection').style.display    = boardMembersMode ? 'none' : '';
     document.getElementById('boardMembersSection').style.display = boardMembersMode ? '' : 'none';
-    document.getElementById('btnAddResident').style.display      = boardMembersMode ? 'none' : '';
-    document.getElementById('btnAddBoardMember').style.display   = boardMembersMode ? '' : 'none';
+
+    document.getElementById('tabResidents').classList.toggle('tab-active',    !boardMembersMode);
+    document.getElementById('tabBoardMembers').classList.toggle('tab-active',  boardMembersMode);
 
     document.getElementById('pageTitle').textContent    = boardMembersMode ? 'Board Members' : 'Residents';
     document.getElementById('pageSubtitle').textContent = boardMembersMode
@@ -444,12 +456,6 @@ function toggleBoardMembers() {
     document.getElementById('searchInput').placeholder = boardMembersMode
         ? 'Search by name, position, or email...'
         : 'Search by name, email, status...';
-
-    if (boardMembersMode) {
-        toggle.classList.add('btn-toggle-active');
-    } else {
-        toggle.classList.remove('btn-toggle-active');
-    }
 }
 
 function filterTable() {
@@ -467,6 +473,7 @@ function openAddModal() {
     document.getElementById('submitBtn').textContent  = 'Add Resident';
     document.getElementById('residentForm').action    = '/residents';
     document.getElementById('residentForm').reset();
+    document.getElementById('delinquentGroup').style.display = 'none';
     document.getElementById('residentModal').classList.add('active');
 }
 
@@ -483,6 +490,9 @@ function openEditModal(button) {
     document.getElementById('email').value            = button.dataset.email;
     document.getElementById('phoneNumber').value      = button.dataset.phone;
     document.getElementById('residency-start-date').value = button.dataset.residentstart;
+    // Show and populate the delinquent toggle only when editing
+    document.getElementById('delinquentGroup').style.display = '';
+    document.getElementById('isDelinquent').checked = button.dataset.delinquent === '1';
     document.getElementById('residentModal').classList.add('active');
 }
 
@@ -603,8 +613,8 @@ setTimeout(() => {
     document.querySelectorAll('.alert').forEach(a => a.style.display = 'none');
 }, 4000);
 
-// Auto-activate board members view if redirected back from a board member action
+// Auto-activate board members tab if redirected back from a board member action
 if (new URLSearchParams(window.location.search).get('view') === 'boardMembers') {
-    toggleBoardMembers();
+    switchTab('boardMembers');
 }
 </script>

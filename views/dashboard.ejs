@@ -35,6 +35,8 @@
             <h3 class="welcome-date" id="liveDatetime">—</h3>
         </section>
 
+        <!-- someone please fix formatting, I can't seem to get it right -->
+        <!-- there's a spacing problem between row 2 and 3 -->
         <!-- ROW 1 — People & Assets -->
         <section class="summary-cards">
             <div class="card stat-card">
@@ -88,6 +90,31 @@
                 <div class="stat-info">
                     <span class="stat-value"><%= stats.pendingCount %></span>
                     <span class="stat-label">Pending Payments</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ROW 3 — Outstanding Dues -->
+        <section class="summary-cards row2">
+            <div class="card stat-card">
+                <div class="stat-icon orange"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                <div class="stat-info">
+                    <span class="stat-value"><%= fmt(stats.totalOutstanding) %></span>
+                    <span class="stat-label">Total Outstanding Dues</span>
+                </div>
+            </div>
+            <div class="card stat-card">
+                <div class="stat-icon red"><i class="fa-solid fa-house-circle-exclamation"></i></div>
+                <div class="stat-info">
+                    <span class="stat-value"><%= stats.delinquentProperties %></span>
+                    <span class="stat-label">Properties with Dues</span>
+                </div>
+            </div>
+            <div class="card stat-card">
+                <div class="stat-icon red"><i class="fa-solid fa-user-xmark"></i></div>
+                <div class="stat-info">
+                    <span class="stat-value"><%= stats.delinquentResidents %></span>
+                    <span class="stat-label">Delinquent Residents</span>
                 </div>
             </div>
         </section>

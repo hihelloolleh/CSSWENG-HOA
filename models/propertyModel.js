@@ -4,7 +4,7 @@ const { pool } = require('../config/db');
 
 const selectAllProperties = async () => {
     const [rows] = await pool.query(`
-        SELECT property_id, lot_number, property_type, street_name
+        SELECT property_id, lot_number, property_type, street_name, hasDues, outstandingBalance
         FROM Property
         ORDER BY street_name ASC, lot_number ASC
     `);
@@ -78,12 +78,47 @@ const updatePropertyById = async (data, conn) => {
     return result.affectedRows;
 };
 
-const deletePropertyById = async (propertyId) => {
-    const [result] = await pool.query(
+const deletePropertyById = async (propertyId, conn) => {
+    const db = conn || pool;
+    const [result] = await db.query(
         `DELETE FROM Property WHERE property_id = ?`,
         [propertyId]
     );
     return result.affectedRows;
+};
+
+const setOutstandingBalance = async (propertyId, amount, conn) => {
+    const hasDues = amount > 0 ? 1 : 0;
+    await conn.query(
+        `UPDATE Property SET outstandingBalance = ?, hasDues = ? WHERE property_id = ?`,
+        [amount, hasDues, propertyId]
+    );
+};
+
+// Mark all residents linked to a property as delinquent
+const markResidentsDelinquentForProperty = async (propertyId, conn) => {
+    await conn.query(`
+        UPDATE Resident SET isDelinquent = 1
+        WHERE resident_id IN (
+            SELECT resident_id FROM Resident_Property WHERE property_id = ?
+        )
+    `, [propertyId]);
+};
+
+// Clear isDelinquent for residents of a property who have no OTHER property with hasDues=1
+const clearResidentsDelinquentForProperty = async (propertyId, conn) => {
+    await conn.query(`
+        UPDATE Resident SET isDelinquent = 0
+        WHERE resident_id IN (
+            SELECT resident_id FROM Resident_Property WHERE property_id = ?
+        )
+        AND resident_id NOT IN (
+            SELECT rp2.resident_id
+            FROM Resident_Property rp2
+            JOIN Property p ON rp2.property_id = p.property_id
+            WHERE p.hasDues = 1 AND rp2.property_id != ?
+        )
+    `, [propertyId, propertyId]);
 };
 
 const insertResidentProperty = async (resident_id, property_id, type, conn) => {
@@ -122,5 +157,8 @@ module.exports = {
     insertResidentProperty,
     deleteResidentsByPropertyId,
     selectPropertiesByResidentId,
-    deleteResidentProperty
+    deleteResidentProperty,
+    setOutstandingBalance,
+    markResidentsDelinquentForProperty,
+    clearResidentsDelinquentForProperty,
 };

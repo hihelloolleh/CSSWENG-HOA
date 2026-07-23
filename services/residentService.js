@@ -70,7 +70,13 @@ const updateResident = async(data) => {
 
         await personModel.updatePerson(data, existingResident.person_id, conn);
         await residentModel.updateResident(data.residency_start_date, conn);
-    
+
+        // Manual delinquent toggle from the edit form
+        if (data.isDelinquent !== undefined) {
+            const flag = data.isDelinquent === '1' || data.isDelinquent === true || data.isDelinquent === 1;
+            await residentModel.setDelinquent(data.resident_id, flag, conn);
+        }
+
         await conn.commit();
     } catch(err) {
         await conn.rollback();
@@ -78,7 +84,7 @@ const updateResident = async(data) => {
     } finally {
         conn.release();
     }
-   
+
 }
 
 const endResidency = async(resident_id, end_date) => {
