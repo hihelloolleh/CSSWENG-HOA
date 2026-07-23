@@ -1,4 +1,5 @@
 const propertyService = require('../services/propertyService');
+const associationDuesRateService = require('../services/associationDuesRateService');
 
 // ── GET /properties ──────────────────────────────────────────────────────────
 exports.getProperties = async (req, res) => {
@@ -31,6 +32,29 @@ exports.getPropertyResidents = async (req, res) => {
     } catch (err) {
         console.error('getPropertyResidents error:', err);
         res.status(500).json({ error: 'Failed to load residents.' });
+    }
+};
+
+// ── GET /properties/:id/association-dues-estimate?payment_type=&months=  (JSON) ──
+// Read-only estimate shown on the payment form before submission (AC 3).
+// The Association Dues payment itself re-computes this server-side on submit,
+// so this endpoint is for display purposes only and is not the source of truth.
+exports.getAssociationDuesEstimate = async (req, res) => {
+    try {
+        const { payment_type, months } = req.query;
+        const resolved = await associationDuesRateService.resolveAssociationDuesRate(
+            req.params.id, payment_type, months
+        );
+        res.json({
+            success: true,
+            amount: resolved.amount,
+            rateCategory: resolved.rateCategory,
+            unitRate: resolved.unitRate,
+            isAnnual: resolved.isAnnual,
+            propertyType: resolved.property.property_type,
+        });
+    } catch (err) {
+        res.status(400).json({ success: false, message: err.message });
     }
 };
 
