@@ -14,9 +14,6 @@
     <header class="topbar">
         <div class="topbar-left"> 
             <h1 class="page-title">Finance Dashboard</h1>
-            <p class="page-subtitle">Welcome back, <strong>Admin</strong></p>
-            <!-- TODO (SPRINT 2+): RENDER LIVE DATE/TIME FROM SERVER OR JS -->
-            <p class="page-subtitle">June 16, 2026 08:00 PM PST</p>
         </div>
         <div class="topbar-right">
             <div class="topbar-user">
@@ -33,38 +30,139 @@
     </header>
 
     <main class="content">
+        <section class="finance-header">
+            <div class="finance-search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Search transactions..." id="transactionSearch">
+            </div>
 
-        <!-- SUMMARY STAT CARDS -->
-        <section class="summary-cards row2">
-            <div class="card stat-card">
-                <div class="stat-icon green">
-                    <i class="fa-solid fa-money-bill-trend-up"></i>
+            <div class="finance-actions">
+                <a href="/payments" class="btn-outline">
+                    <i class="fa-solid fa-file-arrow-down"></i>&nbsp; Export Report
+                </a>
+
+                <a href="/payments" class="btn-green">
+                    <i class="fa-solid fa-plus"></i>&nbsp; Add Payment
+                </a>
+            </div>
+        </section>
+
+        <section class="finance-summary">
+            <div class="card finance-card">
+                <div class="finance-card-content">
+                    <p class="finance-card-title">Total Collected (YTD)</p>
+                    <h2 class="finance-card-value"> ₱1,012,201.75</h2>
                 </div>
-                <div class="stat-info">
-                    <span class="stat-value">1.5 M</span>
-                    <span class="stat-label">Total Revenue</span>
+
+                <div class="finance-card-icon green">
+                    <i class="ph ph-trend-up"></i>
                 </div>
             </div>
 
-            <div class="card stat-card">
-                <div class="stat-icon yellow">
-                    <i class="fa-solid fa-hand-holding-dollar"></i>
+            <div class="card finance-card">
+                <div class="finance-card-content">
+                    <p class="finance-card-title">Total Collected (This Month)</p>
+                    <h2 class="finance-card-value">₱100,100.10</h2>
                 </div>
-                <div class="stat-info">
-                    <span class="stat-value">45 K</span>
-                    <span class="stat-label">Total Collectibles</span>
+
+                <div class="finance-card-icon green">
+                    <i class="ph ph-hand-coins"></i>
                 </div>
+
             </div>
 
-            <div class="card stat-card">
-                <div class="stat-icon red">
-                    <i class="fa-solid fa-money-bill-transfer"></i>
+            <div class="card finance-card">
+                <div class="finance-card-content">
+                    <p class="finance-card-title">Outstanding Dues</p>
+                    <h2 class="finance-card-value">₱100,100.10</h2>
                 </div>
-                <div class="stat-info">
-                    <span class="stat-value">120 K</span>
-                    <span class="stat-label">Total Expenses</span>
+
+                <div class="finance-card-icon red">
+                    <i class="ph ph-trend-down"></i>
                 </div>
             </div>
+        </section>
+
+        <section class="card">
+            <div class="card-header">
+                <h2>Recent Transactions</h2>
+                <a href="/payments" class="view-all">View All →</a>
+            </div>
+
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Resident</th>
+                        <th>Purpose</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>October 15, 2025</td>
+                        <td>
+                            <strong>Charles Leclerc</strong><br>
+                            <small>10 Sampaguita St.</small>
+                        </td>
+                        <td>Association dues</td>
+                        <td>₱1,000.00</td>
+                        <td>
+                            <span class="payment-status status-paid">Paid</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>October 15, 2025</td>
+                        <td>
+                            <strong>Charles Leclerc</strong><br>
+                            <small>10 Sampaguita St.</small>
+                        </td>
+                        <td>Association dues</td>
+                        <td>₱1,000.00</td>
+                        <td>
+                            <span class="payment-status status-paid">Paid</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>October 15, 2025</td>
+                        <td>
+                            <strong>Charles Leclerc</strong><br>
+                            <small>10 Sampaguita St.</small>
+                        </td>
+                        <td>Association dues</td>
+                        <td>₱1,000.00</td>
+                        <td>
+                            <span class="payment-status status-paid">Paid</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>October 15, 2025</td>
+                        <td>
+                            <strong>Charles Leclerc</strong><br>
+                            <small>10 Sampaguita St.</small>
+                        </td>
+                        <td>Association dues</td>
+                        <td>₱1,000.00</td>
+                        <td>
+                            <span class="payment-status status-paid">Paid</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>October 15, 2025</td>
+                        <td>
+                            <strong>Charles Leclerc</strong><br>
+                            <small>10 Sampaguita St.</small>
+                        </td>
+                        <td>Association dues</td>
+                        <td>₱1,000.00</td>
+                        <td>
+                            <span class="payment-status status-paid">Paid</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </section>
     </main>
 </div>
