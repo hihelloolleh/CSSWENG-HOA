@@ -80,7 +80,7 @@
 }
 
 .back-btn{
-    width:230px
+    width:235px
 }; 
   
 /* ── Badges ────────────────────────────────────────────────────────────────── */
@@ -217,6 +217,10 @@
     margin-bottom: 20px;
 }
 
+.form-group textarea{
+    width:100%; 
+    resize:vertical;
+}
 .form-group label {
     display: block;
     font-weight: 500;
@@ -312,6 +316,28 @@
 .resident-dropdown-list li:hover {
     background: #f0f5f0;
     color: #3d553b;
+}
+
+.required-label::after {
+    content: " *";
+    color: #dc3545;
+    font-weight: bold;
+}
+
+
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  appearance: none;  
+  margin: 0;
+}
+
+/* Firefox and standard overrides */
+input[type=number] {
+  -moz-appearance: textfield;
+  appearance: textfield;  
 }
 
 /* ── Responsive ───────────────────────────────────────────────────────────── */
