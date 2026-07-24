@@ -573,7 +573,7 @@ body {
 .finance-search{
     flex:1;
     background:white;
-    border-radius:30px;
+    border-radius:12px;
     padding:12px 18px;
     display:flex;
     align-items:center;
@@ -670,6 +670,46 @@ body {
 .btn-outline:hover,
 .btn-green:hover{
     opacity:.92;
+}
+
+.btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-primary {
+    background: #526F50;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #3d553b;
+}
+
+.btn-secondary {
+    background: #e0e0e0;
+    color: #333;
+}
+
+.btn-secondary:hover {
+    background: #ccc;
+}
+
+.btn-danger {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #c82333;
 }
 
 /* mobile view */
