@@ -44,6 +44,10 @@
             </button>
         </div>
 
+        <p class="employee-count" id="employeeCount">
+            Showing <strong><%= employees.length %></strong> employee<%= employees.length === 1 ? 'y' : 's' %>
+        </p>
+
         <div class="table-container">
             <table class="data-table" id="employeeTable">
                 <thead>

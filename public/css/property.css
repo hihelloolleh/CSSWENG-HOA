@@ -402,14 +402,12 @@ body{
     border-color: #526F50;
 }
 
-/* ── Property counter ──────────────────────────────────────────────────────── */
 .property-count {
     font-size: 13px;
-    color: #666;
-    margin-bottom: 12px;
+    color: #666; 
+    padding-left: 10px; 
 }
-
-/* ── Resident section inside modal ────────────────────────────────────────── */
+ 
 .form-section-header {
     font-size: 14px;
     font-weight: 600;

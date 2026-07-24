@@ -26,7 +26,12 @@
         <% if (error) { %>
             <div class="alert alert-error"><i class="fas fa-exclamation-circle"></i> <%= error %></div>
         <% } %>
-
+        
+        <!-- Last Updated Info -->
+        <div class="last-updated">
+            <i class="fas fa-clock"></i> Rates are used for automated sticker and dues calculations
+        </div>
+        
         <div class="table-container">
             <table class="data-table" id="ratesTable">
                 <thead>
@@ -59,11 +64,6 @@
                     <% } %>
                 </tbody>
             </table>
-        </div>
-
-        <!-- Last Updated Info -->
-        <div class="last-updated">
-            <i class="fas fa-clock"></i> Rates are used for automated sticker and dues calculations
         </div>
     </div>
 </div>
