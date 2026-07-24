@@ -5,14 +5,6 @@
      TODO (SPRINT 2+): BUILD THIS PAGE (table, register/edit/delete)
      ============================================================ -->
 
-<style> /* asterisk for the required fields*/
-    .required-label::after {
-        content: " *";
-        color: #dc3545;
-        font-weight: bold;
-    }
-</style>
-
 <div class="main-wrapper"> 
     <div class="sidebar-open nav-item"> 
         <i class="fa-solid fa-bars"></i>
@@ -35,7 +27,6 @@
     </header>
 
     <main class="content">
-        <!-- SEARCH -->
         <div class="search-bar" style="margin-bottom: 12px;">
             <input type="text" class="search-input" id="searchInput"
                 placeholder="Search by plate, owner, type, color, or sticker year...">
@@ -44,7 +35,6 @@
             </button>
         </div>
 
-        <!-- VEHICLE COUNTER -->
         <p class="vehicle-count">
             Showing <strong id="vehicleCountNumber"><%= vehicles.length %></strong> vehicles
         </p>

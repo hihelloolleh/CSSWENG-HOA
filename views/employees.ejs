@@ -30,9 +30,15 @@
         <% } %>
 
         <div class="search-bar">
-            <input type="text" class="search-input" id="searchInput"
-                   placeholder="Search by name, position, or email..."
-                   oninput="filterTable()">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input
+                    type="text"
+                    id="searchInput"
+                    class="search-input"
+                    placeholder="Search by name, position, or email...">
+            </div>
+
             <button class="btn btn-primary" onclick="openAddModal()">
                 <i class="fa-solid fa-plus"></i> Add Employee
             </button>

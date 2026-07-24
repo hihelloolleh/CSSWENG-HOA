@@ -368,3 +368,9 @@ body {
     background: #f2f2f2;
     color: #888;
 }
+
+.required-label::after {
+    content: " *";
+    color: #dc3545;
+    font-weight: bold;
+}

@@ -41,22 +41,23 @@
             </div>
         <% } %>
 
-        <!-- SEARCH -->
         <div class="search-bar">
-            <input type="text" class="search-input" id="searchInput"
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" class="search-input" id="searchInput"
                    placeholder="Search by lot number, street, or type..."
                    oninput="filterTable()">
+            </div>
+
             <button class="btn btn-primary" onclick="openAddModal()">
                 <i class="fa-solid fa-plus"></i> Add Property
             </button>
         </div>
 
-        <!-- PROPERTY COUNTER -->
         <p class="property-count" id="propertyCount">
             Showing <strong><%= properties.length %></strong> propert<%= properties.length === 1 ? 'y' : 'ies' %>
         </p>
 
-        <!-- DATA TABLE -->
         <div class="table-container">
             <table class="data-table" id="propertyTable">
                 <thead>
