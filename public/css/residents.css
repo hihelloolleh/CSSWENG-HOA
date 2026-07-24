@@ -172,6 +172,7 @@ body {
 
 .resident-search-wrap {
     position: relative;
+    padding-bottom: 10px; 
 }
 
 .resident-dropdown-list {
@@ -212,6 +213,10 @@ body {
     color: #555;
 }
 
+.form-section h3{
+    padding-bottom: 10px; 
+}
+
 .form-control {
     width: 100%;
     padding: 10px 14px;
@@ -219,6 +224,10 @@ body {
     border-radius: 8px;
     font-size: 14px;
     font-family: 'Poppins', sans-serif;
+}
+
+.form-group select{
+    margin-bottom: 10px;
 }
 
 .form-control:focus {
@@ -448,11 +457,16 @@ body {
     padding: 24px;
 }
 
-.form-group {
-    margin-bottom: 20px;
+.required-label::after {
+    content: " *";
+    color: #dc3545;
+    font-weight: bold;
 }
 
-
+.form-group {
+    margin-bottom: 5px;
+}
+ 
 .checkbox-inline {
     display: flex;       
     flex-direction: row-reverse; 
@@ -510,6 +524,7 @@ body {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 16px;
+    padding-top: 15px; 
 }
 
 .modal-footer {
