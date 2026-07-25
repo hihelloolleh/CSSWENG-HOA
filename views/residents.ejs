@@ -159,7 +159,13 @@
 
         <!-- ── BOARD MEMBERS SECTION (hidden by default) ────────────────────── -->
         <div id="boardMembersSection" style="display:none;">
-            
+
+            <div class="bm-filter-bar">
+                <button class="bm-filter-btn bm-filter-active" data-filter="all"      onclick="filterBoardMembers('all')">All</button>
+                <button class="bm-filter-btn"                  data-filter="active"   onclick="filterBoardMembers('active')">Active</button>
+                <button class="bm-filter-btn"                  data-filter="inactive" onclick="filterBoardMembers('inactive')">Inactive</button>
+            </div>
+
             <p class="boardMember-count">
                 Showing <strong id="boardMembersCountNumber"><%= boardMembers.length %></strong> board members
             </p>
@@ -186,7 +192,7 @@
                             </tr>
                         <% } else { %>
                             <% boardMembers.forEach(bm => { %>
-                                <tr>
+                                <tr data-active="<%= bm.board_end_date ? 'inactive' : 'active' %>">
                                     <td><strong><%= bm.first_name %> <%= bm.last_name %></strong></td>
                                     <td>
                                         <% (bm.position || '').split(',').forEach(pos => { %>
@@ -487,15 +493,28 @@ function switchTab(tab) {
     document.getElementById('searchInput').placeholder = boardMembersMode
         ? 'Search by name, position, or email...'
         : 'Search by name, email, status...';
+
+    if (boardMembersMode) filterBoardMembers('all');
 }
 
 function filterTable() {
     const q = document.getElementById('searchInput').value.toLowerCase();
-    const tableId = boardMembersMode ? 'boardTable' : 'residentTable';
-    document.querySelectorAll('#' + tableId + ' tbody tr').forEach(row => {
-        if (row.cells.length === 1) return;
-        row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
-    });
+    if (boardMembersMode) {
+        let visible = 0;
+        document.querySelectorAll('#boardTable tbody tr[data-active]').forEach(row => {
+            const matchesFilter = bmCurrentFilter === 'all' || row.dataset.active === bmCurrentFilter;
+            const matchesSearch = !q || row.textContent.toLowerCase().includes(q);
+            const show = matchesFilter && matchesSearch;
+            row.style.display = show ? '' : 'none';
+            if (show) visible++;
+        });
+        document.getElementById('boardMembersCountNumber').textContent = visible;
+    } else {
+        document.querySelectorAll('#residentTable tbody tr').forEach(row => {
+            if (row.cells.length === 1) return;
+            row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+        });
+    }
 }
 
 // ── Resident modals ──────────────────────────────────────────────────────────
@@ -633,6 +652,26 @@ document.getElementById('bmForm').addEventListener('submit', function(e) {
     }
     document.getElementById('bm_position').value = checked.join(',');
 });
+
+// ── Board member filter ──────────────────────────────────────────────────────
+let bmCurrentFilter = 'all';
+
+function filterBoardMembers(filter) {
+    bmCurrentFilter = filter;
+
+    document.querySelectorAll('.bm-filter-btn').forEach(btn => {
+        btn.classList.toggle('bm-filter-active', btn.dataset.filter === filter);
+    });
+
+    const rows = document.querySelectorAll('#boardTable tbody tr[data-active]');
+    let visible = 0;
+    rows.forEach(row => {
+        const show = filter === 'all' || row.dataset.active === filter;
+        row.style.display = show ? '' : 'none';
+        if (show) visible++;
+    });
+    document.getElementById('boardMembersCountNumber').textContent = visible;
+}
 
 function openEndTermModal(btn) {
     document.getElementById('endTermName').textContent = btn.dataset.name;
