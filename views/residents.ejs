@@ -188,7 +188,11 @@
                             <% boardMembers.forEach(bm => { %>
                                 <tr>
                                     <td><strong><%= bm.first_name %> <%= bm.last_name %></strong></td>
-                                    <td><%= bm.position %></td>
+                                    <td>
+                                        <% (bm.position || '').split(',').forEach(pos => { %>
+                                            <span class="badge-position"><%= pos.trim() %></span>
+                                        <% }) %>
+                                    </td>
                                     <td><%= bm.email || '—' %></td>
                                     <td><%= bm.contact_num || '—' %></td>
                                     <td><%= bm.board_start_date ? bm.board_start_date.toString().substring(0,10) : '—' %></td>
@@ -387,15 +391,17 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="required-label">Position</label>
-                    <select id="bm_position" name="position" class="form-control" required>
-                        <option value="">— Select position —</option>
-                        <option value="President">President</option>
-                        <option value="Vice President">Vice President</option>
-                        <option value="Treasurer">Treasurer</option>
-                        <option value="Admin">Admin</option>
-                        <option value="Board Member">Board Member</option>
-                    </select>
+                    <label class="required-label">Position(s)</label>
+                    <input type="hidden" id="bm_position" name="position">
+                    <div class="position-checkboxes">
+                        <label class="pos-check-label"><input type="checkbox" class="bm-pos-cb" value="President"> President</label>
+                        <label class="pos-check-label"><input type="checkbox" class="bm-pos-cb" value="Vice President"> Vice President</label>
+                        <label class="pos-check-label"><input type="checkbox" class="bm-pos-cb" value="Treasurer"> Treasurer</label>
+                        <label class="pos-check-label"><input type="checkbox" class="bm-pos-cb" value="Secretary"> Secretary</label>
+                        <label class="pos-check-label"><input type="checkbox" class="bm-pos-cb" value="Admin"> Admin</label>
+                        <label class="pos-check-label"><input type="checkbox" class="bm-pos-cb" value="Board Member"> Board Member</label>
+                    </div>
+                    <small id="bm_position_hint" style="color:#dc3545; font-size:12px; display:none;">Select at least one position.</small>
                 </div>
 
                 <div class="form-group">
@@ -575,18 +581,28 @@ bmSearchInput.addEventListener('blur', () => {
     setTimeout(() => { bmDropdownList.style.display = 'none'; }, 150);
 });
 
+function setBMPositionCheckboxes(positionStr) {
+    const active = (positionStr || '').split(',').map(s => s.trim());
+    document.querySelectorAll('.bm-pos-cb').forEach(cb => {
+        cb.checked = active.includes(cb.value);
+    });
+}
+
 function openBMAddModal() {
     document.getElementById('bmModalTitle').textContent = 'Add Board Member';
     document.getElementById('bmSubmitBtn').textContent  = 'Add Board Member';
     document.getElementById('bmForm').action            = '/boardMembers';
     document.getElementById('bmForm').reset();
     document.getElementById('bm_board_id').value        = '';
+    document.getElementById('bm_position').value        = '';
+    document.getElementById('bm_position_hint').style.display = 'none';
     bmResidentIdInput.value = '';
     bmSearchInput.value     = '';
     document.getElementById('bmResidentPickerGroup').style.display = '';
     document.getElementById('bmResidentSearchInput').style.display = '';
     bmSearchInput.required  = true;
     document.getElementById('bmResidentNameDisplay').style.display = 'none';
+    setBMPositionCheckboxes('');
     document.getElementById('bmModal').classList.add('active');
 }
 
@@ -602,10 +618,21 @@ function openBMEditModal(btn) {
     nameDisplay.textContent = btn.dataset.name;
     nameDisplay.style.display = 'block';
 
-    document.getElementById('bm_position').value         = btn.dataset.position;
+    setBMPositionCheckboxes(btn.dataset.position);
+    document.getElementById('bm_position_hint').style.display = 'none';
     document.getElementById('bm_board_start_date').value = btn.dataset.start;
     document.getElementById('bmModal').classList.add('active');
 }
+
+document.getElementById('bmForm').addEventListener('submit', function(e) {
+    const checked = [...document.querySelectorAll('.bm-pos-cb:checked')].map(cb => cb.value);
+    if (!checked.length) {
+        e.preventDefault();
+        document.getElementById('bm_position_hint').style.display = 'block';
+        return;
+    }
+    document.getElementById('bm_position').value = checked.join(',');
+});
 
 function openEndTermModal(btn) {
     document.getElementById('endTermName').textContent = btn.dataset.name;

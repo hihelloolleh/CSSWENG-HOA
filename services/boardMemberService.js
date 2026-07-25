@@ -5,7 +5,18 @@ const addBoardMember = async (data) => {
     const conn = await pool.getConnection();
     try {
         await conn.beginTransaction();
-        const board_id = await boardMemberModel.addBoardMember(data, data.resident_id, conn);
+
+        const existing = await boardMemberModel.getActiveBoardMemberByResidentId(data.resident_id, conn);
+        if (existing) {
+            throw new Error('This resident is already an active board member. Edit their existing entry to change positions.');
+        }
+
+        const positions = Array.isArray(data.position) ? data.position.join(',') : data.position;
+        const board_id = await boardMemberModel.addBoardMember(
+            { ...data, position: positions },
+            data.resident_id,
+            conn
+        );
         await conn.commit();
         return board_id;
     } catch (err) {
@@ -20,7 +31,8 @@ const updateBoardMember = async (data) => {
     const conn = await pool.getConnection();
     try {
         await conn.beginTransaction();
-        await boardMemberModel.updateBoardMember(data, data.board_id, conn);
+        const positions = Array.isArray(data.position) ? data.position.join(',') : data.position;
+        await boardMemberModel.updateBoardMember({ ...data, position: positions }, data.board_id, conn);
         await conn.commit();
     } catch (err) {
         await conn.rollback();

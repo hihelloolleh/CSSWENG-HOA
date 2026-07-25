@@ -41,6 +41,15 @@ const getBoardMemberByResidentId = async (resident_id, conn) => {
     return rows[0];
 };
 
+const getActiveBoardMemberByResidentId = async (resident_id, conn) => {
+    const db = conn || pool;
+    const [rows] = await db.query(
+        `SELECT board_id FROM Board_Member WHERE resident_id = ? AND board_end_date IS NULL`,
+        [resident_id]
+    );
+    return rows[0] || null;
+};
+
 const addBoardMember = async (data, resident_id, conn) => {
     const [result] = await conn.query(`
         INSERT INTO Board_Member (position, board_start_date, board_end_date, resident_id)
@@ -80,6 +89,7 @@ module.exports = {
     selectAllResidents,
     getAllBoardMembers,
     getBoardMemberByResidentId,
+    getActiveBoardMemberByResidentId,
     addBoardMember,
     updateBoardMember,
     endTermBoardMember,
