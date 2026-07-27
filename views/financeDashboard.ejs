@@ -1,9 +1,11 @@
-<!-- ============================================================
-     DASHBOARD VIEW
-     Layout: views/layouts/main.ejs (has sidebar)
-     Controller: controllers/dashboardController.js
-   
-     ============================================================ -->
+<%
+    const fmt = (n) => {
+        const num = parseFloat(n) || 0;
+        if (num >= 1000000) return '₱' + (num / 1000000).toFixed(2) + 'M';
+        if (num >= 1000)    return '₱' + (num / 1000).toFixed(1)    + 'K';
+        return '₱' + num.toFixed(2);
+    };
+%>
 
 <div class="main-wrapper"> 
     <div class="sidebar-open nav-item"> 
@@ -51,7 +53,7 @@
             <div class="card finance-card">
                 <div class="finance-card-content">
                     <p class="finance-card-title">Total Collected (YTD)</p>
-                    <h2 class="finance-card-value"> ₱1,012,201.75</h2>
+                    <h2 class="finance-card-value"><%= fmt(stats.ytdCollected) %></h2>
                 </div>
 
                 <div class="finance-card-icon green">
@@ -62,7 +64,7 @@
             <div class="card finance-card">
                 <div class="finance-card-content">
                     <p class="finance-card-title">Total Collected (This Month)</p>
-                    <h2 class="finance-card-value">₱100,100.10</h2>
+                    <h2 class="finance-card-value"><%= fmt(stats.monthlyCollected) %></h2>
                 </div>
 
                 <div class="finance-card-icon green">
@@ -73,7 +75,7 @@
             <div class="card finance-card">
                 <div class="finance-card-content">
                     <p class="finance-card-title">Outstanding Dues</p>
-                    <h2 class="finance-card-value">₱100,100.10</h2>
+                    <h2 class="finance-card-value"><%= fmt(stats.outstandingDues) %></h2>
                 </div>
 
                 <div class="finance-card-icon red">
@@ -87,21 +89,21 @@
             <div class="card stat-card">
                 <div class="stat-icon green"><i class="fa-solid fa-money-bill-trend-up"></i></div>
                 <div class="stat-info">
-                    <span class="stat-value"> - </span> <!-- fmt(stats.totalRevenue) --> 
+                    <span class="stat-value"><%= fmt(stats.totalCollected) %></span>
                     <span class="stat-label">Total Collected</span>
                 </div>
             </div>
             <div class="card stat-card">
                 <div class="stat-icon yellow"><i class="fa-solid fa-hand-holding-dollar"></i></div>
                 <div class="stat-info">
-                    <span class="stat-value"> - </span> <!-- fmt(stats.totalCollectibles) --> 
+                    <span class="stat-value"><%= fmt(stats.totalUncollected) %></span>
                     <span class="stat-label">Total Uncollected</span>
                 </div>
             </div>
             <div class="card stat-card">
                 <div class="stat-icon red"><i class="fa-solid fa-clock-rotate-left"></i></div>
                 <div class="stat-info">
-                    <span class="stat-value"> - </span> <!-- stats.pendingCount -->
+                    <span class="stat-value"><%= stats.pendingCount %></span>
                     <span class="stat-label">Pending Payments</span>
                 </div>
             </div>
@@ -125,66 +127,33 @@
                 </thead>
 
                 <tbody>
-                    <tr>
-                        <td>October 15, 2025</td>
-                        <td>
-                            <strong>Charles Leclerc</strong><br>
-                            <small>10 Sampaguita St.</small>
-                        </td>
-                        <td>Association dues</td>
-                        <td>₱1,000.00</td>
-                        <td>
-                            <span class="payment-status status-paid">Paid</span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>October 15, 2025</td>
-                        <td>
-                            <strong>Charles Leclerc</strong><br>
-                            <small>10 Sampaguita St.</small>
-                        </td>
-                        <td>Association dues</td>
-                        <td>₱1,000.00</td>
-                        <td>
-                            <span class="payment-status status-paid">Paid</span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>October 15, 2025</td>
-                        <td>
-                            <strong>Charles Leclerc</strong><br>
-                            <small>10 Sampaguita St.</small>
-                        </td>
-                        <td>Association dues</td>
-                        <td>₱1,000.00</td>
-                        <td>
-                            <span class="payment-status status-paid">Paid</span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>October 15, 2025</td>
-                        <td>
-                            <strong>Charles Leclerc</strong><br>
-                            <small>10 Sampaguita St.</small>
-                        </td>
-                        <td>Association dues</td>
-                        <td>₱1,000.00</td>
-                        <td>
-                            <span class="payment-status status-paid">Paid</span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>October 15, 2025</td>
-                        <td>
-                            <strong>Charles Leclerc</strong><br>
-                            <small>10 Sampaguita St.</small>
-                        </td>
-                        <td>Association dues</td>
-                        <td>₱1,000.00</td>
-                        <td>
-                            <span class="payment-status status-paid">Paid</span>
-                        </td>
-                    </tr>
+                    <% if (recentTransactions.length === 0) { %>
+                        <tr>
+                            <td colspan="5" style="text-align:center; color:#aaa; padding:24px;">No transactions recorded yet.</td>
+                        </tr>
+                    <% } else { %>
+                        <% recentTransactions.forEach(tx => {
+                            const paid     = parseFloat(tx.amount_paid)     || 0;
+                            const expected = parseFloat(tx.amount_expected)  || 0;
+                            let status = 'Unpaid', cls = 'status-unpaid';
+                            if (paid >= expected && paid > 0) { status = 'Paid';    cls = 'status-paid'; }
+                            else if (paid > 0)                { status = 'Partial'; cls = 'status-partial'; }
+                            const dateFmt = tx.date_paid
+                                ? new Date(tx.date_paid).toLocaleDateString('en-PH', { month: 'long', day: 'numeric', year: 'numeric' })
+                                : '—';
+                        %>
+                        <tr>
+                            <td><%= dateFmt %></td>
+                            <td>
+                                <strong><%= tx.payer_name || '—' %></strong><br>
+                                <small><%= tx.address || '—' %></small>
+                            </td>
+                            <td><%= tx.purpose %></td>
+                            <td>₱<%= paid.toLocaleString('en-PH', { minimumFractionDigits: 2 }) %></td>
+                            <td><span class="payment-status <%= cls %>"><%= status %></span></td>
+                        </tr>
+                        <% }) %>
+                    <% } %>
                 </tbody>
             </table>
         </section>

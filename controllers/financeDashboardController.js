@@ -1,13 +1,20 @@
-// FINANCE DASHBOARD CONTROLLER
-// currently renders with placeholder data.
-// SPRINT 2+: Replace placeholder values with real DB queries.
+const financeDashboardModel = require('../models/financeDashboardModel');
 
-exports.getFinanceDashboard = (req, res) => {
-    // TODO (SPRINT 2+): FETCH RECENT RECORDS FROM DB
-    const finances = []; 
-    res.render('financeDashboard', {
-        title:            'Finance',
-        activePage:       'financeDashboard', 
-        finances, 
-    });
+exports.getFinanceDashboard = async (req, res) => {
+    try {
+        const [stats, recentTransactions] = await Promise.all([
+            financeDashboardModel.getFinanceStats(),
+            financeDashboardModel.getRecentTransactions(),
+        ]);
+        res.render('financeDashboard', {
+            title:            'Finance',
+            activePage:       'financeDashboard',
+            pageCSS:          'finance-dashboard.css',
+            stats,
+            recentTransactions,
+        });
+    } catch (err) {
+        console.error('Finance dashboard error:', err);
+        res.status(500).send('Failed to load finance dashboard');
+    }
 };
