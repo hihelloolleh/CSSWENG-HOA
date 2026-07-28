@@ -37,7 +37,8 @@ const boardMemberRoutes         = require('./routes/boardMemberRoutes');
 const financeDashboardRoutes    = require('./routes/financeDashboardRoutes'); 
 const paymentLedgerRoutes       = require('./routes/paymentLedgerRoutes');
 const paymentRoutes             = require('./routes/paymentRoutes');
-const rateRoutes = require('./routes/rateRoutes');
+const expenseRoutes             = require('./routes/expenseRoutes');
+const rateRoutes                = require('./routes/rateRoutes');
 
 app.use('/',                    indexRoutes);
 app.use('/persons',             personRoutes);
@@ -51,6 +52,7 @@ app.use('/boardMembers',        boardMemberRoutes);
 app.use('/finances',            financeDashboardRoutes);   
 app.use('/payments',            paymentLedgerRoutes);
 app.use('/dues',                paymentRoutes);
+app.use('/expenses',            expenseRoutes);
 app.use('/rates',               rateRoutes);
 
 // ============================================================

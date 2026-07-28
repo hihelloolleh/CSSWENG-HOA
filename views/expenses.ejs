@@ -1,0 +1,99 @@
+<div class="main-wrapper">
+    <div class="sidebar-open nav-item">
+        <i class="fa-solid fa-bars"></i>
+        <span>Open Sidebar</span>
+    </div>
+
+    <header class="topbar">
+        <div class="topbar-left">
+            <h1 class="page-title">Expenses</h1>
+        </div>
+        <div class="topbar-right">
+            <div class="topbar-user">
+                <div class="user-avatar"><i class="fa-solid fa-user"></i></div>
+                <div class="user-info">
+                    <span class="user-name">Village Admin</span>
+                    <span class="user-role">Administrator</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="content">
+        <button class="btn btn-primary back-btn" onclick="window.location.href='/payments';">
+            <i class="ph ph-arrow-left"></i> Back to Payment Ledger
+        </button>
+    
+        <div class="payment-modal">
+            <div class="modal-header">
+                <h1>
+                    <% if (expenseType === 'utilities') { %>Utilities Expense 
+                    <% } else if (expenseType === 'salaries') { %>Employee Salary Expense 
+                    <% } else if (expenseType === 'maintenance') { %>Maintenance Expense 
+                    <% } else if (expenseType === 'cash') { %>Petty Cash Expense 
+                    <% } else if (expenseType === 'food') { %>Food Expense 
+                    <% } else if (expenseType === 'project'){ %>Community Project Expense 
+                    <% } else { %>Other Expense 
+                    <% } %>              
+                </h1>
+            </div>
+
+            <div class="modal-body">
+                <form method="POST" action="/expenses">
+                    <input type="hidden" name="purpose" value="<%= purposeValue %>">
+
+                    <% if (expenseType === 'utilities') { %> 
+                        <div class="form-group">
+                            <label class="required-label">Payer</label>
+                            <div class="resident-search-wrap"> 
+                                <input type="text" id="payer_search" class="search-input" placeholder="Search by name...">  
+                            </div> 
+                        </div>
+                    <% } else if (expenseType === 'salaries') { %>
+                        <div class="form-group">
+                            <label class="required-label">Payer</label>
+                            <div class="resident-search-wrap"> 
+                                <input type="text" id="payer_search" class="search-input" placeholder="Search by name...">  
+                            </div> 
+                        </div>
+                    <% } else if (expenseType === 'maintenance') { %>
+                        <div class="form-group">
+                            <label class="required-label">Payer</label>
+                            <div class="resident-search-wrap"> 
+                                <input type="text" id="payer_search" class="search-input" placeholder="Search by name...">  
+                            </div> 
+                        </div>
+                    <% } else if (expenseType === 'cash') { %>
+                        <div class="form-group">
+                            <label class="required-label">Payer</label>
+                            <div class="resident-search-wrap"> 
+                                <input type="text" id="payer_search" class="search-input" placeholder="Search by name...">  
+                            </div> 
+                        </div>
+                    <% } else if (expenseType === 'food') { %>
+                        <div class="form-group">
+                            <label class="required-label">Payer</label>
+                            <div class="resident-search-wrap"> 
+                                <input type="text" id="payer_search" class="search-input" placeholder="Search by name...">  
+                            </div> 
+                        </div>
+                    <% } else if (expenseType === 'project') { %>
+                        <div class="form-group">
+                            <label class="required-label">Payer</label>
+                            <div class="resident-search-wrap"> 
+                                <input type="text" id="payer_search" class="search-input" placeholder="Search by name...">  
+                            </div> 
+                        </div>
+                    <% } else { %>
+                        <div class="form-group">
+                            <label class="required-label">Payer</label>
+                            <div class="resident-search-wrap"> 
+                                <input type="text" id="payer_search" class="search-input" placeholder="Search by name...">  
+                            </div> 
+                        </div>
+                    <% } %> 
+                </form>
+            </div>
+        </div>
+    </main>
+</div>

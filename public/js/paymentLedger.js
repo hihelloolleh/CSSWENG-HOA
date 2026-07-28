@@ -1,14 +1,14 @@
-// ── Person data (embedded by EJS) ────────────────────────────────────────────
+// Person data (embedded by EJS) 
 const allPersons = JSON.parse(document.getElementById('personData').textContent);
 
-// ── Add Payment modal (purpose → redirect to /dues/:type) ────────────────────
+// Payment modal (purpose -> redirect to /dues/:type)  
 const addModal = document.getElementById('modal');
 
 document.getElementById('openModal').onclick = () => {
     addModal.classList.add('active');
 };
 
-document.querySelector('.cancel').onclick = () => {
+document.getElementById('cancel').onclick = () => {
     addModal.classList.remove('active');
 };
 
@@ -17,6 +17,26 @@ document.getElementById('continue').onclick = () => {
     if (!purpose) { alert('Select a payment purpose.'); return; }
     window.location.href = `/dues/${purpose}`;
 };
+
+// Expense modal (purpose -> redirect to /expenses/:type)  
+const addExpenseModal = document.getElementById('expenseModal');
+
+document.getElementById('openExpenseModal').onclick = () => {
+    addExpenseModal.classList.add('active');
+};
+
+document.getElementById('cancelExpense').onclick = () => {
+    addExpenseModal.classList.remove('active');
+};
+
+document.getElementById('continueExpense').onclick = () => {
+    const purpose = document.getElementById('expensePurpose').value; 
+    if(!purpose) { alert('Select a expense purpose.'); return; }
+
+    console.log("Redirecting to:", `/expenses/${purpose}`);
+    
+    window.location.href = `/expenses/${purpose}`; 
+}
 
 // ── Generic modal close ───────────────────────────────────────────────────────
 function closeModal(id) {
