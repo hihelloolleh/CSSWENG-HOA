@@ -33,15 +33,17 @@
 
         <!-- ACTION BAR -->
         <div class="action-bar">
-            <div class="search-box">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" class="search-input" id="searchInput"
-                    placeholder="Search transactions..."
-                    oninput="filterTable()">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" class="search-input" id="searchInput"
+                        placeholder="Search transactions..."
+                        oninput="filterTable()">
+                </div>
 
                 <!-- PURPOSE FILTER -->
                 <!-- TODO: CHANGE PURPOSE FILTER INTO BUTTONS ON TOP, BASICALLY ANOTHER (SIDEBAR) -->
-                <form id="purposeFilterForm" method="GET" action="/payments" style="display:flex; gap:8px; align-items:center;">
+                <form id="purposeFilterForm" method="GET" action="/payments" style="display:flex; align-items:center;">
                     <select name="purpose" class="form-control" style="width:auto;"
                             onchange="document.getElementById('purposeFilterForm').submit()">
                         <option value="">All Purposes</option>
