@@ -49,6 +49,16 @@
                                 <input type="text" id="payer_search" class="search-input" placeholder="Search by name...">  
                             </div> 
                         </div>
+
+                        <div class="form-group">
+                            <label class="required-label">Utility Type</label>
+                            <select name="utility_type">
+                                <option value="electricity">Electricity</option>
+                                <option value="water">Water</option>
+                                <option value="internet">Internet</option>
+                            </select>
+                        </div>
+
                     <% } else if (expenseType === 'salaries') { %>
                         <div class="form-group">
                             <label class="required-label">Payer</label>
@@ -56,6 +66,14 @@
                                 <input type="text" id="payer_search" class="search-input" placeholder="Search by name...">  
                             </div> 
                         </div>
+
+                        <div class="form-group">
+                            <label class="required-label">Employee</label>
+                            <div class="resident-search-wrap"> 
+                                <input type="text" id="employee_search" class="search-input" placeholder="Search employee by name...">  
+                            </div> 
+                        </div>
+
                     <% } else if (expenseType === 'maintenance') { %>
                         <div class="form-group">
                             <label class="required-label">Payer</label>
@@ -63,12 +81,30 @@
                                 <input type="text" id="payer_search" class="search-input" placeholder="Search by name...">  
                             </div> 
                         </div>
+
+                        <div class="form-group">
+                            <label class="required-label">Maintenance Type</label>
+                            <select name="maintenance_type">
+                                <option value="pool_cleaning">Swimming Pool Cleaning</option>
+                                <option value="basketball_cleaning">Basketball Court Cleaning</option>
+                                <option value="clubhouse_cleaning">Clubhouse Cleaning</option>
+                                <option value="racquet_cleaning">Racquet Cleaning</option>
+                                <option value="gate_maintenance">Gate Maintenance</option>
+                                <option value="lamp_maintenance">Lamp Maintenance</option>
+                            </select>
+                        </div>
+
                     <% } else if (expenseType === 'cash') { %>
                         <div class="form-group">
                             <label class="required-label">Payer</label>
                             <div class="resident-search-wrap"> 
                                 <input type="text" id="payer_search" class="search-input" placeholder="Search by name...">  
                             </div> 
+                        </div>
+
+                        <div class="form-group">
+                            <label class="required-label">Purpose</label>
+                            <input type="text" id="petty_cash_purpose" class="search-input" placeholder="Enter purpose... (eg. Office Supplies)">  
                         </div>
                     <% } else if (expenseType === 'food') { %>
                         <div class="form-group">
@@ -77,12 +113,22 @@
                                 <input type="text" id="payer_search" class="search-input" placeholder="Search by name...">  
                             </div> 
                         </div>
+
+                        <div class="form-group">
+                            <label class="required-label">Purpose</label>
+                            <input type="text" id="food_purpose" class="search-input" placeholder="Enter purpose... (eg. Annual HOA meeting catering)">  
+                        </div>
                     <% } else if (expenseType === 'project') { %>
                         <div class="form-group">
                             <label class="required-label">Payer</label>
                             <div class="resident-search-wrap"> 
                                 <input type="text" id="payer_search" class="search-input" placeholder="Search by name...">  
                             </div> 
+                        </div>
+
+                        <div class="form-group">
+                            <label class="required-label">Purpose</label>
+                            <input type="text" id="project_purpose" class="search-input" placeholder="Enter community project name...">  
                         </div>
                     <% } else { %>
                         <div class="form-group">
@@ -91,7 +137,72 @@
                                 <input type="text" id="payer_search" class="search-input" placeholder="Search by name...">  
                             </div> 
                         </div>
+
+                        <div class="form-group">
+                            <label class="required-label">Purpose</label>
+                            <input type="text" id="general_purpose" class="search-input" placeholder="Enter purpose...">  
+                        </div>
                     <% } %> 
+                        
+                    <div class="form-row">
+                        <% if (expenseType === 'other') { %> 
+                            <div class="form-group">
+                                <label>Expected Amount</label>
+                                <input type="number" step="0.01" id="amount_expected" name="amount_expected"
+                                        class="form-control" readonly placeholder="No expected amount"
+                                        style="background:#f5f5f5;">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="required-label">Amount Paid</label>
+                                <input type="number" step="0.01" name="amount_paid" class="form-control" required>
+                            </div>
+                        <% } else { %>
+                            <div class="form-group">
+                                <label>Expected Amount</label>
+                                <input type="number" step="0.01" id="amount_expected" name="amount_expected"
+                                        class="form-control" readonly placeholder="Auto-filled amount"
+                                        style="background:#f5f5f5;">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="required-label">Amount Paid</label>
+                                <input type="number" step="0.01" name="amount_paid" class="form-control" required>
+                            </div>
+                        
+                        <% } %>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="required-label">Date Paid</label>
+                        <input type="date" name="date_paid" class="form-control" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="required-label">Payment Method</label>
+                            <select name="payment_method" class="form-control" required>
+                                <option value="Cash">Cash</option>
+                                <option value="Check">Check</option>
+                                <option value="Bank Transfer">Bank Transfer</option>
+                                <option value="GCash">GCash</option>
+                                <option value="Maya">Maya</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="required-label">Receipt Number</label>
+                            <input type="text" name="receipt_number" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Remarks</label>
+                        <textarea name="remarks" class="form-control" rows="3" style="width:100%; resize:vertical;"></textarea>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" type="submit">Record Payment</button>
+                    </div>
                 </form>
             </div>
         </div>
