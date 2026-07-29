@@ -5,17 +5,7 @@ const allPersons = JSON.parse(document.getElementById('personData').textContent)
 const addModal = document.getElementById('modal');
 
 document.getElementById('openModal').onclick = () => {
-    addModal.classList.add('active');
-};
-
-document.getElementById('cancel').onclick = () => {
-    addModal.classList.remove('active');
-};
-
-document.getElementById('continue').onclick = () => {
-    const purpose = document.getElementById('purpose').value;
-    if (!purpose) { alert('Select a payment purpose.'); return; }
-    window.location.href = `/dues/${purpose}`;
+    window.location.href = '/dues/association';
 };
 
 // Expense modal (purpose -> redirect to /expenses/:type)  
@@ -43,13 +33,24 @@ function closeModal(id) {
     document.getElementById(id).classList.remove('active');
 }
 
-// ── Client-side table search ──────────────────────────────────────────────────
+// ── Client-side table search + status filter ──────────────────────────────────
+let activeStatusFilter = 'all';
+
+function setStatusFilter(status, btn) {
+    activeStatusFilter = status;
+    document.querySelectorAll('.pay-filter-btn').forEach(b => b.classList.remove('pay-filter-active'));
+    if (btn) btn.classList.add('pay-filter-active');
+    filterTable();
+}
+
 function filterTable() {
     const q     = document.getElementById('searchInput').value.toLowerCase();
     const rows  = document.querySelectorAll('#paymentTable tbody tr');
     let visible = 0;
     rows.forEach(row => {
-        const match = row.textContent.toLowerCase().includes(q);
+        const textMatch   = row.textContent.toLowerCase().includes(q);
+        const statusMatch = activeStatusFilter === 'all' || row.dataset.status === activeStatusFilter;
+        const match = textMatch && statusMatch;
         row.style.display = match ? '' : 'none';
         if (match) visible++;
     });

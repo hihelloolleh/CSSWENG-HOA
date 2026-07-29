@@ -340,6 +340,76 @@ input[type=number] {
   appearance: textfield;  
 }
 
+/* ── Status filter buttons ───────────────────────────────────────────────── */
+.status-filter-bar {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.pay-filter-btn {
+    padding: 6px 16px;
+    border: 1.5px solid #ddd;
+    border-radius: 20px;
+    background: white;
+    font-size: 13px;
+    font-weight: 500;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: 'Poppins', sans-serif;
+}
+
+.pay-filter-btn:hover {
+    border-color: #526F50;
+    color: #526F50;
+}
+
+.pay-filter-btn.pay-filter-active {
+    background: #526F50;
+    border-color: #526F50;
+    color: white;
+}
+
+/* ── Payment type tabs ───────────────────────────────────────────────────── */
+.pay-tab-bar {
+    display: flex;
+    gap: 4px;
+    padding: 16px 24px 0;
+    border-bottom: 2px solid #e0e0e0;
+    flex-wrap: wrap;
+}
+
+.pay-tab-btn {
+    padding: 10px 18px;
+    border: none;
+    border-bottom: 3px solid transparent;
+    background: none;
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+    cursor: pointer;
+    border-radius: 6px 6px 0 0;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    margin-bottom: -2px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.pay-tab-btn:hover {
+    color: #526F50;
+    background: #f0f5f0;
+}
+
+.pay-tab-btn.pay-tab-active {
+    color: #526F50;
+    border-bottom-color: #526F50;
+    background: #f0f5f0;
+}
+
 /* ── Responsive ───────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
     .action-bar {

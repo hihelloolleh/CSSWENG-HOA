@@ -4,6 +4,9 @@ const PaymentController    = require('../controllers/paymentController');
 const paymentLedgerModel   = require('../models/paymentLedgerModel');
 const propertyModel        = require('../models/propertyModel');
 const VehicleModel         = require('../models/vehicleModel');
+const rateModel            = require('../models/rateModel');
+
+const STICKER_CATEGORIES = ['Car', 'Car (More than 6 stickers)', 'Motorcycle', 'Commercial'];
 
 const PURPOSE_MAP = {
     association: 'Association Dues',
@@ -23,12 +26,14 @@ router.get('/:type', async (req, res) => {
         const properties = (type === 'association' || type === 'outstanding')
             ? await propertyModel.selectAllProperties()
             : [];
-        const vehicles   = type === 'vehicle'
+        const vehicles   = (type === 'vehicle' || type === 'association')
             ? await VehicleModel.getAllVehicles()
             : [];
         const residentsByProperty = (type === 'association' || type === 'outstanding')
             ? await paymentLedgerModel.getResidentsByProperty()
             : {};
+        const allRates       = type === 'association' ? await rateModel.getActiveRates() : [];
+        const stickerRates   = allRates.filter(r => STICKER_CATEGORIES.includes(r.rate_category));
 
         res.render('payments', {
             title:       'Payments',
@@ -40,6 +45,7 @@ router.get('/:type', async (req, res) => {
             properties,
             vehicles,
             residentsByProperty,
+            stickerRates,
             preselectedPropertyId: req.query.property_id ? parseInt(req.query.property_id) : null,
         });
     } catch (err) {

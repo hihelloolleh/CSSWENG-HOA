@@ -25,31 +25,72 @@
         </button>
 
         <div class="payment-modal">
-            <div class="modal-header">
-                <h1>
-                    <% if (paymentType === 'association') { %>Association Dues Payment
-                    <% } else if (paymentType === 'vehicle') { %>Vehicle Sticker Payment
-                    <% } else if (paymentType === 'outstanding') { %>Outstanding Balances Payment
-                    <% } else { %>General Payments
-                    <% } %>
-                </h1>
+            <div class="pay-tab-bar">
+                <a href="/dues/association" class="pay-tab-btn <%- paymentType === 'association' ? 'pay-tab-active' : '' %>">
+                    <i class="fa-solid fa-house"></i> Association Dues
+                </a>
+                <a href="/dues/vehicle" class="pay-tab-btn <%- paymentType === 'vehicle' ? 'pay-tab-active' : '' %>">
+                    <i class="fa-solid fa-car"></i> Vehicle Sticker
+                </a>
+                <a href="/dues/outstanding" class="pay-tab-btn <%- paymentType === 'outstanding' ? 'pay-tab-active' : '' %>">
+                    <i class="fa-solid fa-peso-sign"></i> Outstanding Balance
+                </a>
+                <a href="/dues/general" class="pay-tab-btn <%- paymentType === 'general' ? 'pay-tab-active' : '' %>">
+                    <i class="fa-solid fa-receipt"></i> General Payments
+                </a>
             </div>
 
             <div class="modal-body">
                 <form method="POST" action="/payments">
                     <!-- maps URL param to DB enum value -->
-                    <input type="hidden" name="purpose" value="<%= purposeValue %>">
+                    <input type="hidden" id="purpose_field" name="purpose" value="<%= purposeValue %>">
 
                     <% if (paymentType === 'association') { %>
-                        <div class="form-group">
-                            <label class="required-label">Property</label>
-                            <div class="resident-search-wrap">
-                                <input type="text" id="property_search" class="search-input" placeholder="Search by lot number or street..." autocomplete="off">
-                                <ul id="property_dropdown" class="resident-dropdown-list"></ul>
+
+                        <!-- Due Type Toggle -->
+                        <div class="form-group" style="margin-bottom:16px;">
+                            <label>Due Type</label>
+                            <div style="display:flex;gap:8px;margin-top:8px;">
+                                <button type="button" id="btn-assoc-dues" class="btn btn-primary" onclick="setDueType('association')">
+                                    <i class="fa-solid fa-house"></i> Association Dues
+                                </button>
+                                <button type="button" id="btn-vehicle-sticker" class="btn btn-secondary" onclick="setDueType('sticker')">
+                                    <i class="fa-solid fa-car"></i> Vehicle Sticker
+                                </button>
                             </div>
-                            <input type="hidden" id="property_id" name="property_id">
                         </div>
 
+                        <!-- Association Dues: Property -->
+                        <div id="assoc-dues-section">
+                            <div class="form-group">
+                                <label class="required-label">Property</label>
+                                <div class="resident-search-wrap">
+                                    <input type="text" id="property_search" class="search-input" placeholder="Search by lot number or street..." autocomplete="off">
+                                    <ul id="property_dropdown" class="resident-dropdown-list"></ul>
+                                </div>
+                                <input type="hidden" id="property_id" name="property_id">
+                            </div>
+                        </div>
+
+                        <!-- Vehicle Sticker: Vehicle search dropdown -->
+                        <div id="sticker-section" style="display:none;">
+                            <div class="form-group">
+                                <label class="required-label">Vehicle</label>
+                                <div class="resident-search-wrap">
+                                    <input type="text" id="plate_search" class="search-input" placeholder="Search by plate number, make, or model..." autocomplete="off">
+                                    <ul id="plate_dropdown" class="resident-dropdown-list"></ul>
+                                </div>
+                                <input type="hidden" id="assoc_vehicle_id" name="vehicle_ids">
+                                <small id="vehicle_hint" style="color:#888; font-size:12px; margin-top:4px; display:block;">Search to select a vehicle</small>
+                            </div>
+                            <div class="form-group">
+                                <label>Vehicle Type</label>
+                                <input type="text" id="vehicle_type_display" class="form-control" readonly
+                                       style="background:#f5f5f5; cursor:default;" placeholder="Auto-filled from selected vehicle">
+                            </div>
+                        </div>
+
+                        <!-- Common: Payer -->
                         <div class="form-group">
                             <label class="required-label">Homeowner / Payer</label>
                             <div class="resident-search-wrap">
@@ -61,24 +102,35 @@
                             <small id="delinquency_status" style="font-size:12px; margin-top:4px; display:none; font-weight:600;"></small>
                         </div>
 
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Payment Type</label>
-                                <select name="payment_type" id="payment_type" class="form-control">
-                                    <option value="monthly">Monthly</option>
-                                    <option value="annual">Annual</option>
-                                </select>
+                        <!-- Association Dues: Payment Type + Months + Rate Hint -->
+                        <div id="payment-type-section">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Payment Type</label>
+                                    <select name="payment_type" id="payment_type" class="form-control">
+                                        <option value="monthly">Monthly</option>
+                                        <option value="annual">Annual</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" id="months_group">
+                                    <label>Months</label>
+                                    <select name="months" id="months" class="form-control">
+                                        <% for (let m = 1; m <= 11; m++) { %>
+                                            <option value="<%= m %>"><%= m %></option>
+                                        <% } %>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="form-group" id="months_group">
-                                <label>Months</label>
-                                <select name="months" id="months" class="form-control">
-                                    <% for (let m = 1; m <= 11; m++) { %>
-                                        <option value="<%= m %>"><%= m %></option>
-                                    <% } %>
-                                </select>
-                            </div>
+                            <small id="dues_rate_hint" style="color:#888; font-size:12px; margin-top:-8px; margin-bottom:12px; display:block;">Select a property and payment type to see the rate</small>
                         </div>
-                        <small id="dues_rate_hint" style="color:#888; font-size:12px; margin-top:-8px; margin-bottom:12px; display:block;">Select a property and payment type to see the rate</small>
+
+                        <!-- Vehicle Sticker: Rate Hint with /rates link -->
+                        <div id="sticker-rate-section" style="display:none;">
+                            <small id="sticker_rate_assoc_hint" style="color:#888; font-size:12px; margin-bottom:12px; display:block;">
+                                Select a vehicle type to see the rate —
+                                <a href="/rates" target="_blank" style="color:#526F50; font-weight:500;">View Rates <i class="fa-solid fa-external-link-alt" style="font-size:10px;"></i></a>
+                            </small>
+                        </div>
 
                     <% } else if (paymentType === 'vehicle') { %>
                         <div class="form-group">
@@ -258,6 +310,7 @@
 <script id="propertyData"          type="application/json"><%- JSON.stringify(properties)          %></script>
 <script id="vehicleData"           type="application/json"><%- JSON.stringify(vehicles)            %></script>
 <script id="residentsByPropertyData" type="application/json"><%- JSON.stringify(residentsByProperty) %></script>
+<script id="stickerRateData"       type="application/json"><%- JSON.stringify(typeof stickerRates !== 'undefined' ? stickerRates : []) %></script>
 
 <script src="/js/sidebar.js"></script>
 <script>
@@ -268,6 +321,91 @@
     const residentsByProperty   = JSON.parse(document.getElementById('residentsByPropertyData').textContent);
 
     let selectedPropertyId = null;
+    let dueType = 'association';
+    const allStickerRates = JSON.parse(document.getElementById('stickerRateData').textContent);
+
+    // ── Due type toggle (association page only) ───────────────────────────────
+    window.setDueType = function setDueType(type) {
+        dueType = type;
+        const purposeField = document.getElementById('purpose_field');
+        if (purposeField) purposeField.value = type === 'sticker' ? 'Vehicle Sticker' : 'Association Dues';
+
+        const assocSection  = document.getElementById('assoc-dues-section');
+        const stickerSection = document.getElementById('sticker-section');
+        const ptSection      = document.getElementById('payment-type-section');
+        const srSection      = document.getElementById('sticker-rate-section');
+        if (assocSection)   assocSection.style.display   = type === 'association' ? '' : 'none';
+        if (stickerSection) stickerSection.style.display = type === 'sticker'     ? '' : 'none';
+        if (ptSection)      ptSection.style.display      = type === 'association' ? '' : 'none';
+        if (srSection)      srSection.style.display      = type === 'sticker'     ? '' : 'none';
+
+        const btnAssoc   = document.getElementById('btn-assoc-dues');
+        const btnSticker = document.getElementById('btn-vehicle-sticker');
+        if (btnAssoc)   btnAssoc.className   = 'btn ' + (type === 'association' ? 'btn-primary' : 'btn-secondary');
+        if (btnSticker) btnSticker.className = 'btn ' + (type === 'sticker'     ? 'btn-primary' : 'btn-secondary');
+
+        // Reset payer
+        const payerInput = document.getElementById('payer_search');
+        const payerHint  = document.getElementById('payer_hint');
+        const paidBy     = document.getElementById('paid_by');
+        if (payerInput) {
+            payerInput.value       = '';
+            payerInput.placeholder = type === 'sticker' ? 'Search by name...' : 'Select a property first';
+        }
+        if (paidBy)    paidBy.value = '';
+        if (payerHint) payerHint.textContent = type === 'sticker' ? 'Search by name' : 'Select a property first';
+        const statusEl = document.getElementById('delinquency_status');
+        if (statusEl) statusEl.style.display = 'none';
+
+        // Reset property
+        selectedPropertyId = null;
+        const propInput  = document.getElementById('property_search');
+        const propHidden = document.getElementById('property_id');
+        if (propInput)  propInput.value  = '';
+        if (propHidden) propHidden.value = '';
+
+        // Reset vehicle sticker fields
+        const plateSearchEl      = document.getElementById('plate_search');
+        const assocVehicleId     = document.getElementById('assoc_vehicle_id');
+        const vehicleTypeDisplay = document.getElementById('vehicle_type_display');
+        const vehicleHint        = document.getElementById('vehicle_hint');
+        if (plateSearchEl)      plateSearchEl.value      = '';
+        if (assocVehicleId)     assocVehicleId.value     = '';
+        if (vehicleTypeDisplay) vehicleTypeDisplay.value = '';
+        if (vehicleHint)        vehicleHint.textContent  = 'Search to select a vehicle';
+
+        // Clear amount
+        const amtField = document.getElementById('amount_expected');
+        if (amtField) amtField.value = '';
+
+        if (type === 'sticker') {
+            updateStickerFromRate();
+        } else if (typeof updateDuesEstimate === 'function') {
+            updateDuesEstimate();
+        }
+    };
+
+    window.updateStickerFromRate = function updateStickerFromRate(vehicleType) {
+        const hintEl  = document.getElementById('sticker_rate_assoc_hint');
+        const amtEl   = document.getElementById('amount_expected');
+        const ratesLink = '<a href="/rates" target="_blank" style="color:#526F50;font-weight:500;">View Rates <i class="fa-solid fa-external-link-alt" style="font-size:10px;"></i></a>';
+
+        const type = vehicleType || document.getElementById('vehicle_type_display')?.value;
+        if (!type) {
+            if (amtEl)  amtEl.value = '';
+            if (hintEl) hintEl.innerHTML = `Search for a vehicle to see the rate — ${ratesLink}`;
+            return;
+        }
+
+        const rate = allStickerRates.find(r => r.rate_category === type);
+        if (rate) {
+            if (amtEl)  amtEl.value = parseFloat(rate.amount).toFixed(2);
+            if (hintEl) hintEl.innerHTML = `${type} rate: ₱${parseFloat(rate.amount).toLocaleString('en-PH', {minimumFractionDigits:2})} — ${ratesLink}`;
+        } else {
+            if (amtEl)   amtEl.value = '';
+            if (hintEl)  hintEl.innerHTML = `Rate not found for ${type} — ${ratesLink}`;
+        }
+    };
 
     // ── Generic searchable dropdown initializer ───────────────────────────────
     function initSearch(inputId, dropdownId, hiddenId, getItems, labelFn, valueFn, onSelect) {
@@ -456,6 +594,48 @@
         );
     }
 
+    // ── Vehicle search dropdown (association dues → vehicle sticker mode) ────
+    if (document.getElementById('plate_search')) {
+        const plateSearchInput   = document.getElementById('plate_search');
+        const plateDropdown      = document.getElementById('plate_dropdown');
+        const assocVehicleId     = document.getElementById('assoc_vehicle_id');
+        const vehicleTypeDisplay = document.getElementById('vehicle_type_display');
+        const vehicleHint        = document.getElementById('vehicle_hint');
+
+        const vLabel = v => [v.plate_number, v.make, v.model].filter(Boolean).join(' — ') + ` (${v.type})`;
+
+        plateSearchInput.addEventListener('input', function () {
+            const q = this.value.trim().toLowerCase();
+            assocVehicleId.value     = '';
+            vehicleTypeDisplay.value = '';
+            plateDropdown.innerHTML  = '';
+            if (!q) { plateDropdown.style.display = 'none'; return; }
+
+            const matches = allVehicles.filter(v => vLabel(v).toLowerCase().includes(q));
+            if (!matches.length) { plateDropdown.style.display = 'none'; return; }
+
+            matches.forEach(v => {
+                const li = document.createElement('li');
+                li.textContent = vLabel(v);
+                li.addEventListener('mousedown', function (e) {
+                    e.preventDefault();
+                    plateSearchInput.value   = vLabel(v);
+                    assocVehicleId.value     = v.vehicle_id;
+                    vehicleTypeDisplay.value = v.type;
+                    plateDropdown.style.display = 'none';
+                    if (vehicleHint) vehicleHint.textContent = v.homeowners ? `Owner(s): ${v.homeowners}` : 'No residents linked';
+                    updateStickerFromRate(v.type);
+                });
+                plateDropdown.appendChild(li);
+            });
+            plateDropdown.style.display = 'block';
+        });
+
+        plateSearchInput.addEventListener('blur', () => {
+            setTimeout(() => { plateDropdown.style.display = 'none'; }, 150);
+        });
+    }
+
     // ── Association Dues: months toggle + live rate estimate ─────────────────
     if (document.getElementById('payment_type') && document.getElementById('property_search')) {
         const paymentTypeSelect = document.getElementById('payment_type');
@@ -524,14 +704,21 @@
             const dateField        = document.getElementById('date_paid');
             const methodField      = document.getElementById('payment_method');
             const amountPaidField  = document.getElementById('amount_paid');
+            const plateSearchEl    = document.getElementById('plate_search');
+            const assocVehicleId   = document.getElementById('assoc_vehicle_id');
 
             [document.getElementById('property_search'), document.getElementById('payer_search'),
-             receiptField, dateField, methodField, amountPaidField].forEach(clearInvalid);
+             plateSearchEl, receiptField, dateField, methodField, amountPaidField]
+                .filter(Boolean).forEach(clearInvalid);
             submitError.style.display = 'none';
 
             const missing = [];
-            if (!propertyIdField.value)     { missing.push('Property');        markInvalid(document.getElementById('property_search')); }
-            if (!paidByField.value)         { missing.push('Homeowner');       markInvalid(document.getElementById('payer_search')); }
+            if (dueType === 'sticker') {
+                if (!assocVehicleId || !assocVehicleId.value) { missing.push('Vehicle'); markInvalid(plateSearchEl); }
+            } else {
+                if (!propertyIdField.value) { missing.push('Property'); markInvalid(document.getElementById('property_search')); }
+            }
+            if (!paidByField.value)         { missing.push('Payer');          markInvalid(document.getElementById('payer_search')); }
             if (!receiptField.value.trim()) { missing.push('Receipt Number');  markInvalid(receiptField); }
             if (!dateField.value)           { missing.push('Date Paid');       markInvalid(dateField); }
             if (!methodField.value)         { missing.push('Payment Method');  markInvalid(methodField); }
@@ -543,7 +730,6 @@
                 return;
             }
 
-            // AC 6: date paid cannot be in the future
             const today = new Date().toISOString().split('T')[0];
             if (dateField.value > today) {
                 e.preventDefault();
@@ -553,7 +739,6 @@
                 return;
             }
 
-            // Scenario 2: block submission when Amount Paid < Amount Expected; entered info is retained (no navigation occurs)
             const expected = parseFloat(duesAmountField.value) || 0;
             const paid     = parseFloat(amountPaidField.value);
             if (isNaN(paid) || paid < expected) {

@@ -57,12 +57,20 @@
 
             <div>
                 <button class="btn btn-primary" id="openExpenseModal">
-                    <i class="fa-solid fa-plus"></i> Add Expense 
+                    <i class="fa-solid fa-plus"></i> Add Expense
                 </button>
                 <button class="btn btn-primary" id="openModal">
                     <i class="fa-solid fa-plus"></i> Add Payment
                 </button>
             </div>
+        </div>
+
+        <!-- STATUS FILTER -->
+        <div class="status-filter-bar">
+            <button class="pay-filter-btn pay-filter-active" onclick="setStatusFilter('all', this)">All</button>
+            <button class="pay-filter-btn" onclick="setStatusFilter('paid', this)">Paid</button>
+            <button class="pay-filter-btn" onclick="setStatusFilter('partial', this)">Partial</button>
+            <button class="pay-filter-btn" onclick="setStatusFilter('unpaid', this)">Unpaid</button>
         </div>
 
         <!-- PAYMENT COUNTER -->
@@ -110,7 +118,7 @@
                                 ? new Date(pay.date_paid).toLocaleDateString('en-PH', { year:'numeric', month:'short', day:'numeric' })
                                 : '—';
                         %>
-                        <tr>
+                        <tr data-status="<%= status.toLowerCase() %>">
                             <td><%= datePaid %></td>
                             <td><%= pay.payer_name || '—' %></td>
                             <td><span class="purpose-badge"><%= pay.purpose %></span></td>

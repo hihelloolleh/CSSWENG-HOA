@@ -2,6 +2,7 @@ const paymentLedgerModel        = require('../models/paymentLedgerModel');
 const propertyModel             = require('../models/propertyModel');
 const residentModel             = require('../models/residentModel');
 const vehicleModel              = require('../models/vehicleModel');
+const rateModel                 = require('../models/rateModel');
 const stickerRateService        = require('./stickerRateService');
 const associationDuesRateService = require('./associationDuesRateService');
 const { pool }                  = require('../config/db');
@@ -48,15 +49,24 @@ const addPayment = async (data) => {
                 ? data.vehicle_ids
                 : (data.vehicle_ids ? [data.vehicle_ids] : []);
 
-            // amount_expected is never trusted from the client for sticker
-            // payments — it's always computed here from the current Rates table.
-            const resolved = await stickerRateService.resolveStickerRates(vehicleIds, data.paid_by, conn);
-            vehicleRateItems = resolved.items;
-            data.amount_expected = resolved.totalAmount;
+            if (vehicleIds.length > 0) {
+                // Vehicle selected from database (existing /dues/vehicle flow)
+                const resolved = await stickerRateService.resolveStickerRates(vehicleIds, data.paid_by, conn);
+                vehicleRateItems = resolved.items;
+                data.amount_expected = resolved.totalAmount;
+            } else if (data.plate_number && data.vehicle_type) {
+                // Manual plate number entry (from /dues/association sticker toggle)
+                const rate = await rateModel.getRateByCategory(data.vehicle_type, conn);
+                if (!rate) throw new Error(`No rate found for vehicle type: ${data.vehicle_type}`);
+                data.amount_expected = parseFloat(rate.amount);
+                const plateNote = `Plate: ${data.plate_number}`;
+                data.remarks = data.remarks ? `${plateNote} — ${data.remarks}` : plateNote;
+            } else {
+                throw new Error('Please provide a vehicle or enter a plate number and vehicle type.');
+            }
 
-            // AC 3.1
             const amountPaid = parseFloat(data.amount_paid);
-            if (isNaN(amountPaid) || amountPaid < resolved.totalAmount) {
+            if (isNaN(amountPaid) || amountPaid < parseFloat(data.amount_expected)) {
                 throw new Error('Amount Paid cannot be less than the Amount Expected.');
             }
         }
