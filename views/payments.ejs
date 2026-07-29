@@ -384,6 +384,47 @@
         propInput.addEventListener('blur', () => {
             setTimeout(() => { propDropdown.style.display = 'none'; }, 150);
         });
+
+        // ── Pre-select from ?property_id deep-link (residents outstanding dues) ──
+        <% if (typeof preselectedPropertyId !== 'undefined' && preselectedPropertyId) { %>
+        (function () {
+            const _pid  = <%= preselectedPropertyId %>;
+            const _prop = allProperties.find(p => p.property_id === _pid);
+            if (!_prop) return;
+
+            // Fill property field
+            propInput.value    = `Lot ${_prop.lot_number} — ${_prop.street_name}`;
+            propHidden.value   = _prop.property_id;
+            selectedPropertyId = String(_prop.property_id);
+
+            // Fill outstanding balance amount
+            const _bal = parseFloat(_prop.outstandingBalance || 0);
+            const _amt = document.getElementById('amount_expected');
+            if (_amt) _amt.value = _bal.toFixed(2);
+
+            // Update outstanding hint
+            const _hint = document.getElementById('outstanding_hint');
+            if (_hint) {
+                _hint.textContent = _prop.hasDues
+                    ? `Current outstanding balance: ₱${_bal.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`
+                    : 'This property has no recorded outstanding dues.';
+                _hint.style.color = _prop.hasDues ? '#c77b00' : '#888';
+            }
+
+            // Auto-fill payer — use first resident linked to this property
+            const _residents = residentsByProperty[selectedPropertyId] || [];
+            if (_residents.length > 0 && payerInput) {
+                const _first = _residents[0];
+                payerInput.value = _first.full_name;
+                document.getElementById('paid_by').value = _first.person_id;
+            }
+            if (payerHint) {
+                payerHint.textContent = _residents.length
+                    ? `${_residents.length} resident(s) in this property`
+                    : 'No residents linked to this property';
+            }
+        })();
+        <% } %>
     }
 
     // Payer search — filtered to property residents when a property is selected

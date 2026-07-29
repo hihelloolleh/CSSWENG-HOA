@@ -70,6 +70,12 @@
         <!-- ── RESIDENTS SECTION ────────────────────────────────────────────── -->
         <div id="residentsSection">
 
+            <div class="bm-filter-bar">
+                <button class="bm-filter-btn bm-filter-active" data-filter="all"         onclick="filterResidents('all')">All</button>
+                <button class="bm-filter-btn"                  data-filter="good"        onclick="filterResidents('good')">Good Standing</button>
+                <button class="bm-filter-btn"                  data-filter="delinquent"  onclick="filterResidents('delinquent')">Delinquent</button>
+            </div>
+
             <p class="resident-count">
                 Showing <strong id="residentCountNumber"><%= residents.length %></strong> residents
             </p>
@@ -96,7 +102,7 @@
                             </tr>
                         <% } else { %>
                             <% residents.forEach(resident => { %>
-                                <tr>
+                                <tr data-status="<%= resident.isDelinquent ? 'delinquent' : 'good' %>">
                                     <td><strong><%= resident.first_name %> <%= resident.middle_name %> <%= resident.last_name %> <%= resident.suffix %></strong></td>
                                     <td><%= resident.birth_date ? resident.birth_date.toString().substring(0, 10) : '—' %></td>
                                     <td><%= resident.email || '—' %></td>
@@ -118,6 +124,7 @@
                                                 data-phone="<%= resident.contact_num || '' %>"
                                                 data-residentstart="<%= resident.residency_start_date ? resident.residency_start_date.toString().substring(0,10) : '' %>"
                                                 data-residentend="<%= resident.residency_end_date ? resident.residency_end_date.toString().substring(0,10) : '' %>"
+                                                data-delinquent="<%= resident.isDelinquent ? '1' : '0' %>"
                                                 onclick="openViewModal(this)">
                                             View info
                                         </button>
@@ -333,20 +340,29 @@
 <div id="viewModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h2>View Summary</h2>
+            <h2>Resident Summary</h2>
             <button class="modal-close" onclick="closeModal('viewModal')">&times;</button>
         </div>
         <div class="modal-body">
+            <div id="view-status-badge" style="margin-bottom:16px;"></div>
+
             <h3>Personal Information</h3>
             <hr>
             <p><strong>Name:</strong> <span id="view-name">—</span></p>
             <p><strong>Date of Birth:</strong> <span id="view-dob">—</span></p>
             <p><strong>Email:</strong> <span id="view-email">—</span></p>
             <p><strong>Phone:</strong> <span id="view-phone">—</span></p>
+
             <h3 style="margin-top:16px;">Residential Information</h3>
             <hr>
             <p><strong>Residency Start Date:</strong> <span id="view-residency-start">—</span></p>
             <p><strong>Residency End Date:</strong> <span id="view-residency-end">—</span></p>
+
+            <h3 style="margin-top:16px;">Outstanding Dues</h3>
+            <hr>
+            <div id="view-outstanding-section" style="margin-top:10px;">
+                <p style="color:#999;font-size:13px;">Loading...</p>
+            </div>
         </div>
     </div>
 </div>
@@ -497,6 +513,31 @@ function switchTab(tab) {
     if (boardMembersMode) filterBoardMembers('all');
 }
 
+let resCurrentFilter = 'all';
+
+function filterResidents(filter) {
+    resCurrentFilter = filter;
+    document.querySelectorAll('.bm-filter-btn[data-filter]').forEach(btn => {
+        if (btn.closest('#residentsSection')) {
+            btn.classList.toggle('bm-filter-active', btn.dataset.filter === filter);
+        }
+    });
+    applyResidentFilter();
+}
+
+function applyResidentFilter() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    let visible = 0;
+    document.querySelectorAll('#residentTable tbody tr[data-status]').forEach(row => {
+        const matchesFilter = resCurrentFilter === 'all' || row.dataset.status === resCurrentFilter;
+        const matchesSearch = !q || row.textContent.toLowerCase().includes(q);
+        const show = matchesFilter && matchesSearch;
+        row.style.display = show ? '' : 'none';
+        if (show) visible++;
+    });
+    document.getElementById('residentCountNumber').textContent = visible;
+}
+
 function filterTable() {
     const q = document.getElementById('searchInput').value.toLowerCase();
     if (boardMembersMode) {
@@ -510,10 +551,7 @@ function filterTable() {
         });
         document.getElementById('boardMembersCountNumber').textContent = visible;
     } else {
-        document.querySelectorAll('#residentTable tbody tr').forEach(row => {
-            if (row.cells.length === 1) return;
-            row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
-        });
+        applyResidentFilter();
     }
 }
 
@@ -547,12 +585,45 @@ function openEditModal(button) {
 }
 
 function openViewModal(button) {
-    document.getElementById('view-name').textContent           = button.dataset.name || '—';
-    document.getElementById('view-dob').textContent            = button.dataset.dob || '—';
-    document.getElementById('view-email').textContent          = button.dataset.email || '—';
-    document.getElementById('view-phone').textContent          = button.dataset.phone || '—';
+    document.getElementById('view-name').textContent            = button.dataset.name || '—';
+    document.getElementById('view-dob').textContent             = button.dataset.dob  || '—';
+    document.getElementById('view-email').textContent           = button.dataset.email || '—';
+    document.getElementById('view-phone').textContent           = button.dataset.phone || '—';
     document.getElementById('view-residency-start').textContent = button.dataset.residentstart || '—';
-    document.getElementById('view-residency-end').textContent   = button.dataset.residentend || 'Present';
+    document.getElementById('view-residency-end').textContent   = button.dataset.residentend   || 'Present';
+
+    const isDelinquent = button.dataset.delinquent === '1';
+    document.getElementById('view-status-badge').innerHTML = isDelinquent
+        ? '<span class="badge badge-delinquent"><i class="fa-solid fa-triangle-exclamation"></i> Delinquent</span>'
+        : '<span class="badge badge-good"><i class="fa-solid fa-circle-check"></i> Good Standing</span>';
+
+    const outEl = document.getElementById('view-outstanding-section');
+    outEl.innerHTML = '<p style="color:#999;font-size:13px;">Loading...</p>';
+
+    fetch(`/residents/${button.dataset.id}/outstanding`)
+        .then(r => r.json())
+        .then(props => {
+            if (!props.length) {
+                outEl.innerHTML = '<p style="color:#666;font-size:13px;">No outstanding dues.</p>';
+                return;
+            }
+            outEl.innerHTML = props.map(p => `
+                <a href="/dues/outstanding?property_id=${p.property_id}" class="outstanding-item">
+                    <div class="outstanding-item-info">
+                        <span class="outstanding-item-address">Lot ${p.lot_number} ${p.street_name}</span>
+                        <span class="outstanding-item-type">${p.property_type}</span>
+                    </div>
+                    <div class="outstanding-item-amount">
+                        ₱${parseFloat(p.outstandingBalance).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </div>
+                </a>
+            `).join('');
+        })
+        .catch(() => {
+            outEl.innerHTML = '<p style="color:#dc3545;font-size:13px;">Failed to load outstanding dues.</p>';
+        });
+
     document.getElementById('viewModal').classList.add('active');
 }
 
@@ -707,5 +778,12 @@ setTimeout(() => {
 // Auto-activate board members tab if redirected back from a board member action
 if (new URLSearchParams(window.location.search).get('view') === 'boardMembers') {
     switchTab('boardMembers');
+}
+
+// Deep-link: auto-open a resident's view modal when ?view_resident=<id> is in the URL
+const _deepViewId = new URLSearchParams(window.location.search).get('view_resident');
+if (_deepViewId) {
+    const _viewBtn = document.querySelector(`#residentTable button[data-id="${_deepViewId}"][data-name]`);
+    if (_viewBtn) openViewModal(_viewBtn);
 }
 </script>

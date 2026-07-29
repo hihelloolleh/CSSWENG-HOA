@@ -40,6 +40,7 @@ router.get('/:type', async (req, res) => {
             properties,
             vehicles,
             residentsByProperty,
+            preselectedPropertyId: req.query.property_id ? parseInt(req.query.property_id) : null,
         });
     } catch (err) {
         console.error('Payment form error:', err);

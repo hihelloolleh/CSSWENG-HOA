@@ -174,6 +174,17 @@ const getResidentIdByPersonId = async (personId, conn) => {
     return rows[0] || null;
 };
 
+const getDelinquentPropertiesByResidentId = async (residentId) => {
+    const [rows] = await pool.query(`
+        SELECT p.property_id, p.lot_number, p.street_name, p.property_type, p.outstandingBalance
+        FROM Resident_Property rp
+        JOIN Property p ON rp.property_id = p.property_id
+        WHERE rp.resident_id = ? AND p.hasDues = 1 AND p.outstandingBalance > 0
+        ORDER BY p.street_name, p.lot_number
+    `, [residentId]);
+    return rows;
+};
+
 module.exports = {
     selectResidentById,
     selectPersonByResidentId,
@@ -185,5 +196,6 @@ module.exports = {
     findActiveResidentByPersonId,
     setDelinquent,
     getResidentIdByPersonId,
+    getDelinquentPropertiesByResidentId,
 };
 

@@ -441,16 +441,21 @@
             }
 
             listEl.innerHTML = `
-                <table class="data-table">
-                    <thead>
-                        <tr><th>Name</th><th>Type</th></tr>
-                    </thead>
-                    <tbody>
-                        ${residents.map(r =>
-                            `<tr><td>${r.full_name}</td><td>${r.type}</td></tr>`
-                        ).join('')}
-                    </tbody>
-                </table>
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                    ${residents.map(r => `
+                        <a href="/residents?view_resident=${r.resident_id}"
+                           style="display:flex;align-items:center;justify-content:space-between;
+                                  padding:10px 14px;border:1px solid #e0e0e0;border-radius:8px;
+                                  text-decoration:none;color:inherit;background:#fafafa;
+                                  transition:background .15s;"
+                           onmouseover="this.style.background='#f0f4f0'"
+                           onmouseout="this.style.background='#fafafa'">
+                            <span style="font-weight:500;font-size:14px;">${r.full_name}</span>
+                            <span style="font-size:12px;color:#526F50;background:#e8f0e8;
+                                         padding:2px 10px;border-radius:999px;">${r.type}</span>
+                        </a>
+                    `).join('')}
+                </div>
             `;
         } catch (_) {
             document.getElementById('viewResidentsList').innerHTML =

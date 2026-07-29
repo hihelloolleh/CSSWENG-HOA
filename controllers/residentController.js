@@ -79,10 +79,21 @@ const endResidency = async (req, res) => {
     }
 }
 
+const getResidentOutstanding = async (req, res) => {
+    try {
+        const rows = await residentModel.getDelinquentPropertiesByResidentId(req.params.id);
+        res.json(rows);
+    } catch (err) {
+        console.error('getResidentOutstanding error:', err);
+        res.status(500).json({ error: 'Failed to load outstanding balance.' });
+    }
+};
+
 module.exports = {
     getResidents,
     addResident,
-    deleteResident, 
+    deleteResident,
     updateResident,
-    endResidency
+    endResidency,
+    getResidentOutstanding,
 };
