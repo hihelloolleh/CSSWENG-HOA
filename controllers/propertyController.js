@@ -73,7 +73,7 @@ exports.createProperty = async (req, res) => {
         res.redirect('/properties?success=Property+added+successfully.');
     } catch (err) {
         console.error('createProperty error:', err);
-        res.redirect('/properties?error=Failed+to+add+property.');
+        res.redirect(`/properties?error=${encodeURIComponent(err.message)}`);
     }
 };
 
