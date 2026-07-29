@@ -1,0 +1,100 @@
+<%
+    const currency = (n) => {
+        const num = parseFloat(n) || 0;
+        return '₱' + num.toLocaleString('en-PH', { minimumFractionDigits: 2 });
+    };
+
+    const monthsOverdue = (dateStr) => {
+        if (!dateStr) return '—';
+        const last = new Date(dateStr);
+        const now  = new Date();
+        const diff = (now.getFullYear() - last.getFullYear()) * 12
+                   + (now.getMonth() - last.getMonth());
+        return diff > 0 ? diff : 0;
+    };
+
+    const fmtDate = (dateStr) => {
+        if (!dateStr) return '—';
+        return new Date(dateStr).toLocaleDateString('en-PH', {
+            month: 'long', day: 'numeric', year: 'numeric',
+        });
+    };
+%>
+
+<div class="rpt-actions no-print">
+    <a href="/reports" class="rpt-back"><i class="fa-solid fa-arrow-left"></i> Back to Reports</a>
+    <button onclick="window.print()" class="rpt-print-btn">
+        <i class="fa-solid fa-print"></i> Print / Save as PDF
+    </button>
+</div>
+
+<div class="rpt-page">
+
+    <h1 class="rpt-main-title">ASSOCIATION DUES DELINQUENCY REPORT</h1>
+
+    <div class="rpt-meta">
+        <div class="rpt-meta-row">
+            <span class="rpt-meta-label">REPORT NAME:</span>
+            <span>MARCELO GREEN VILLAGE PHASE 5 HOA ASSOC DUES DELINQUENCY REPORT</span>
+        </div>
+        <div class="rpt-meta-row">
+            <span class="rpt-meta-label">REPORT PERIOD:</span>
+            <span>AS OF CURRENT DATE</span>
+        </div>
+        <div class="rpt-meta-row">
+            <span class="rpt-meta-label">REPORT GENERATION DATE</span>
+            <span><%= generatedDate %></span>
+        </div>
+    </div>
+
+    <div class="rpt-summary-box">
+        <div class="rpt-summary-label">SUMMARY</div>
+        <div class="rpt-summary-row">
+            <span class="rpt-summary-key">TOTAL PROPERTIES DELINQUENT</span>
+            <span class="rpt-summary-val">
+                <%= summary.totalDelinquent %> (<%= summary.delinquencyPct %>%)
+            </span>
+            <span class="rpt-summary-breakdown">
+                BREAKDOWN: &nbsp; HOUSE <%= summary.houseCount %> (<%= summary.housePct %>%) &nbsp;&nbsp; LOT <%= summary.lotCount %> (<%= summary.lotPct %>%)
+            </span>
+        </div>
+        <div class="rpt-summary-row">
+            <span class="rpt-summary-key">TOTAL DELINQUENT AMOUNT TO DATE</span>
+            <span class="rpt-summary-val"><%= currency(summary.totalOutstanding) %></span>
+        </div>
+    </div>
+
+    <table class="rpt-table">
+        <thead>
+            <tr>
+                <th>Home Owner Name(s)</th>
+                <th>Address (#, Street)</th>
+                <th>Property Type<br>(House / Lot)</th>
+                <th>Outstanding Balance</th>
+                <th>Months Overdue</th>
+                <th>Last Payment Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if (rows.length === 0) { %>
+            <tr>
+                <td colspan="6" style="text-align:center;padding:24px;color:#999;">
+                    No delinquent properties found.
+                </td>
+            </tr>
+            <% } else { %>
+                <% rows.forEach(row => { %>
+                <tr>
+                    <td><%= row.owner_names %></td>
+                    <td><%= row.lot_number ? 'Lot ' + row.lot_number + ' ' + row.street_name : row.street_name %></td>
+                    <td><%= row.property_type %></td>
+                    <td><%= currency(row.outstandingBalance) %></td>
+                    <td><%= monthsOverdue(row.last_payment_date) %></td>
+                    <td><%= fmtDate(row.last_payment_date) %></td>
+                </tr>
+                <% }) %>
+            <% } %>
+        </tbody>
+    </table>
+
+</div>

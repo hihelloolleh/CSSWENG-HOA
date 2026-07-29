@@ -3,7 +3,7 @@
 // Values: 'dashboard' | 'residents' | 'boardMembers' | 'properties'
 //         | 'employees' | 'vehicles' | 'rates' | 'expenses'
 const page = typeof activePage !== 'undefined' ? activePage : '';
-const financePages = ['financeDashboard', 'paymentLedger', 'payments', 'expenses', 'rates'];
+const financePages = ['financeDashboard', 'paymentLedger', 'payments', 'expenses', 'rates', 'reports'];
 const financeOpen = financePages.includes(page);
 %>
 
@@ -63,6 +63,11 @@ const financeOpen = financePages.includes(page);
                 <a href="/rates" class="nav-item <%= page === 'rates' ? 'active' : '' %>">
                     <i class="fas fa-dollar-sign"></i>
                     <span>Rates</span>
+                </a>
+
+                <a href="/reports" class="nav-item <%= page === 'reports' ? 'active' : '' %>">
+                    <i class="fa-solid fa-file-lines"></i>
+                    <span>Reports</span>
                 </a>
             </div>
         </div>
