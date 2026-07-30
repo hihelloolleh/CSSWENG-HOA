@@ -57,19 +57,19 @@ body {
     font-size: clamp(16px, 2vw, 18px);
 }
 
-.email,
+.username,
 .password {
     margin-bottom: 30px;
 }
 
-.email label,
+.username label,
 .password label {
     display: block;
     font-weight: 600;
     margin-bottom: 10px;
 }
 
-.email input,
+.username input,
 .password input {
     width: 100%;
     padding: 16px;

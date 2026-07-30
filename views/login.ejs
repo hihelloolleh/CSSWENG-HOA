@@ -19,9 +19,9 @@
         <!-- TODO (SPRINT 2+): CHANGE action TO POST /login AND ADD SESSION HANDLING -->
         <form action="/login" method="POST">
 
-            <div class="email">
-                <label>Email</label>
-                <input type="text" name="email" placeholder="Enter your email">
+            <div class="username">
+                <label>Username</label>
+                <input type="text" name="username" placeholder="Enter your username">
             </div>
 
             <div class="password">
@@ -29,19 +29,11 @@
                 <input type="password" name="password" placeholder="Enter your password">
             </div>
 
-            <div class="options">
-                <label>
-                    <input type="checkbox" name="remember">
-                    Remember Me
-                </label>
-                <a href="/forgot-password">Forgot Password?</a>
-            </div>
-
             <!-- TODO (SPRINT 2+): CONVERT TO <button type="submit"> WITH ACTUAL AUTH -->
             <a href="/dashboard" class="signin-button">Sign In</a>
 
             <div class="login-help">
-                Having troubles logging in or do you need to create an account?
+                Having troubles logging in or don't have an account yet?
                 <a href="/hoa-admin">Contact the HOA Admin here.</a>
             </div>
 
