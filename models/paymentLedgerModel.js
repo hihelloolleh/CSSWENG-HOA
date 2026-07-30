@@ -52,20 +52,20 @@ const createPayment = async (data, conn) => {
 };
 
 const updatePayment = async (payment_id, data, conn) => {
+    // paid_by and amount_expected are intentionally excluded — they are set at
+    // creation time and must not be changed after the fact.
     const [result] = await conn.query(`
         UPDATE Payment
-        SET purpose = ?, amount_expected = ?, amount_paid = ?, date_paid = ?,
-            payment_method = ?, receipt_number = ?, remarks = ?, paid_by = ?
+        SET purpose = ?, amount_paid = ?, date_paid = ?,
+            payment_method = ?, receipt_number = ?, remarks = ?
         WHERE payment_id = ?
     `, [
         data.purpose,
-        data.amount_expected  || 0,
         data.amount_paid      || 0,
         data.date_paid        || null,
         data.payment_method,
         data.receipt_number   || null,
         data.remarks          || null,
-        data.paid_by          || null,
         payment_id,
     ]);
     return result.affectedRows;

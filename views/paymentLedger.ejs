@@ -231,6 +231,117 @@
     </div>
 </div>
 
+<!-- VIEW DETAILS MODAL -->
+<div class="modal" id="viewModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Payment Details</h2>
+            <button class="modal-close" onclick="closeModal('viewModal')">&times;</button>
+        </div>
+        <div class="modal-body" id="viewModalBody"></div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal('viewModal')">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal" id="editModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Edit Payment</h2>
+            <button class="modal-close" onclick="closeModal('editModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form method="POST" action="/payments/update">
+                <input type="hidden" name="payment_id" id="edit_payment_id">
+                <input type="hidden" id="edit_payer_id">
+
+                <div class="form-group">
+                    <label>Payer <span style="font-size:11px;color:#999;">(cannot be changed)</span></label>
+                    <input type="text" id="edit_payer_search" class="form-control" readonly
+                           style="background:#f5f5f5; color:#888; cursor:default;">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Purpose <span style="font-size:11px;color:#999;">(cannot be changed)</span></label>
+                        <input type="text" id="edit_purpose" name="purpose" class="form-control" readonly
+                               style="background:#f5f5f5; color:#888; cursor:default;">
+                    </div>
+                    <div class="form-group">
+                        <label>Amount Expected <span style="font-size:11px;color:#999;">(cannot be changed)</span></label>
+                        <input type="text" id="edit_amount_expected" class="form-control" readonly
+                               style="background:#f5f5f5; color:#888; cursor:default;">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Amount Paid (₱)</label>
+                    <input type="number" name="amount_paid" id="edit_amount_paid"
+                           class="form-control" step="0.01" min="0">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Date Paid</label>
+                        <input type="date" name="date_paid" id="edit_date_paid" class="form-control"
+                               max="<%= new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' }) %>">
+                    </div>
+                    <div class="form-group">
+                        <label>Payment Method</label>
+                        <select name="payment_method" id="edit_payment_method" class="form-control">
+                            <option value="Cash">Cash</option>
+                            <option value="GCash">GCash</option>
+                            <option value="Bank Transfer">Bank Transfer</option>
+                            <option value="Check">Check</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Receipt Number</label>
+                    <input type="text" name="receipt_number" id="edit_receipt_number" class="form-control"
+                           placeholder="e.g. OR-12345">
+                </div>
+
+                <div class="form-group">
+                    <label>Remarks</label>
+                    <input type="text" name="remarks" id="edit_remarks" class="form-control"
+                           placeholder="Optional notes">
+                </div>
+
+                <div class="modal-footer" style="padding:0; border:none; margin-top:8px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('editModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- DELETE CONFIRMATION MODAL -->
+<div class="modal" id="deleteModal">
+    <div class="modal-content" style="max-width:420px;">
+        <div class="modal-header">
+            <h2>Delete Payment</h2>
+            <button class="modal-close" onclick="closeModal('deleteModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p style="font-size:14px; color:#444;">
+                Are you sure you want to delete the payment for
+                <strong id="deleteLabel"></strong>?
+                This action cannot be undone.
+            </p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal('deleteModal')">Cancel</button>
+            <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+        </div>
+    </div>
+</div>
+
 <script id="personData" type="application/json"><%- JSON.stringify(persons) %></script>
 <script src="/js/paymentLedger.js"></script>
 <script src="/js/sidebar.js"></script>
