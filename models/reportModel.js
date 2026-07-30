@@ -71,4 +71,66 @@ const getDelinquencyReportRows = async () => {
     return rows;
 };
 
-module.exports = { getDelinquencyReportSummary, getDelinquencyReportRows };
+const getSeniorCitizenRows = async () => {
+    const [rows] = await pool.query(`
+        SELECT
+            per.person_id,
+            CONCAT(
+                per.last_name, ', ', per.first_name,
+                IF(per.middle_name IS NOT NULL AND per.middle_name != '', CONCAT(' ', per.middle_name), ''),
+                IF(per.suffix     IS NOT NULL AND per.suffix     != '', CONCAT(' ', per.suffix),     '')
+            ) AS full_name,
+            per.birth_date,
+            TIMESTAMPDIFF(YEAR, per.birth_date, CURDATE()) AS age,
+            r.isActive,
+            COALESCE(
+                GROUP_CONCAT(
+                    DISTINCT CONCAT('Lot ', p.lot_number, ' ', p.street_name)
+                    ORDER BY p.street_name
+                    SEPARATOR '; '
+                ),
+                '—'
+            ) AS address,
+            CASE
+                WHEN TIMESTAMPDIFF(YEAR, per.birth_date, CURDATE()) >= 60 AND r.isActive = 1 THEN 'active_senior'
+                WHEN TIMESTAMPDIFF(YEAR, per.birth_date, CURDATE()) >= 60 AND r.isActive = 0 THEN 'inactive_senior'
+                ELSE 'turning_60'
+            END AS category
+        FROM Person per
+        JOIN Resident r ON per.person_id = r.person_id
+        LEFT JOIN Resident_Property rp ON r.resident_id = rp.resident_id
+        LEFT JOIN Property p ON rp.property_id = p.property_id
+        WHERE per.birth_date IS NOT NULL
+          AND (
+              TIMESTAMPDIFF(YEAR, per.birth_date, CURDATE()) >= 60
+              OR (
+                  TIMESTAMPDIFF(YEAR, per.birth_date, CURDATE()) < 60
+                  AND DATE_ADD(per.birth_date, INTERVAL 60 YEAR)
+                      BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 1 YEAR)
+              )
+          )
+        GROUP BY per.person_id, per.first_name, per.last_name,
+                 per.middle_name, per.suffix, per.birth_date, r.isActive
+        ORDER BY per.last_name, per.first_name
+    `);
+    return rows;
+};
+
+const getSeniorCitizenSummary = async (rows) => {
+    const active   = rows.filter(r => r.category === 'active_senior');
+    const inactive = rows.filter(r => r.category === 'inactive_senior');
+    const turning  = rows.filter(r => r.category === 'turning_60');
+    return {
+        totalSeniors:   active.length + inactive.length,
+        activeCount:    active.length,
+        inactiveCount:  inactive.length,
+        turningCount:   turning.length,
+    };
+};
+
+module.exports = {
+    getDelinquencyReportSummary,
+    getDelinquencyReportRows,
+    getSeniorCitizenRows,
+    getSeniorCitizenSummary,
+};
