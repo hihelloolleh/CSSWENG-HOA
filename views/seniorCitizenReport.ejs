@@ -163,10 +163,12 @@
 
 </div>
 
-<script id="reportRowsData" type="application/json"><%- JSON.stringify(rows) %></script>
+<script id="reportRowsData"    type="application/json"><%- JSON.stringify(rows)    %></script>
+<script id="reportSummaryData" type="application/json"><%- JSON.stringify(summary) %></script>
 <script>
 function exportCSV() {
-    const rows = JSON.parse(document.getElementById('reportRowsData').textContent);
+    const rows    = JSON.parse(document.getElementById('reportRowsData').textContent);
+    const summary = JSON.parse(document.getElementById('reportSummaryData').textContent);
 
     const esc = val => '"' + String(val ?? '').replace(/"/g, '""') + '"';
 
@@ -184,12 +186,6 @@ function exportCSV() {
         return age;
     };
 
-    const categoryLabel = cat => ({
-        active_senior:   'Active Senior',
-        inactive_senior: 'Inactive Senior',
-        turning_60:      'Turning 60',
-    }[cat] || cat);
-
     const turns60Date = dateStr => {
         if (!dateStr) return '';
         const b = new Date(dateStr);
@@ -197,19 +193,37 @@ function exportCSV() {
         return d.toLocaleDateString('en-PH', { month: 'long', day: 'numeric', year: 'numeric' });
     };
 
-    const headers = ['Name', 'Birth Date', 'Age', 'Category', 'Turns 60 On', 'Address'];
+    const lines = [];
 
-    const lines = [
-        headers.map(esc).join(','),
-        ...rows.map(r => [
-            esc(r.full_name),
-            esc(fmtDate(r.birth_date)),
-            esc(calcAge(r.birth_date)),
-            esc(categoryLabel(r.category)),
-            esc(r.category === 'turning_60' ? turns60Date(r.birth_date) : ''),
-            esc(r.address)
-        ].join(','))
-    ];
+    // Summary section
+    lines.push(esc('SUMMARY'));
+    lines.push([esc('Metric'), esc('Value')].join(','));
+    lines.push([esc('Total Senior Citizens (60+)'),              esc(summary.totalSeniors)].join(','));
+    lines.push([esc('Active Senior Citizens'),                   esc(summary.activeCount)].join(','));
+    lines.push([esc('Inactive Senior Citizens'),                 esc(summary.inactiveCount)].join(','));
+    lines.push([esc('Residents Turning 60 Within the Next Year'), esc(summary.turningCount)].join(','));
+    lines.push('');
+
+    // Active seniors
+    const activeSeniors   = rows.filter(r => r.category === 'active_senior');
+    const inactiveSeniors = rows.filter(r => r.category === 'inactive_senior');
+    const turning60       = rows.filter(r => r.category === 'turning_60');
+
+    const seniorCols = ['Name', 'Birth Date', 'Age', 'Address'].map(esc).join(',');
+
+    lines.push(esc('ACTIVE SENIOR CITIZENS'));
+    lines.push(seniorCols);
+    activeSeniors.forEach(r => lines.push([esc(r.full_name), esc(fmtDate(r.birth_date)), esc(calcAge(r.birth_date)), esc(r.address)].join(',')));
+    lines.push('');
+
+    lines.push(esc('INACTIVE SENIOR CITIZENS'));
+    lines.push(seniorCols);
+    inactiveSeniors.forEach(r => lines.push([esc(r.full_name), esc(fmtDate(r.birth_date)), esc(calcAge(r.birth_date)), esc(r.address)].join(',')));
+    lines.push('');
+
+    lines.push(esc('RESIDENTS TURNING 60 WITHIN THE NEXT YEAR'));
+    lines.push(['Name', 'Birth Date', 'Current Age', 'Turns 60 On', 'Address'].map(esc).join(','));
+    turning60.forEach(r => lines.push([esc(r.full_name), esc(fmtDate(r.birth_date)), esc(calcAge(r.birth_date)), esc(turns60Date(r.birth_date)), esc(r.address)].join(',')));
 
     const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
     const url  = URL.createObjectURL(blob);

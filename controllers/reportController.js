@@ -8,6 +8,23 @@ exports.getReportsHub = async (req, res) => {
     });
 };
 
+exports.getHoaGeneralReport = async (req, res) => {
+    try {
+        const data = await reportModel.getHoaGeneralDetails();
+        res.render('hoaGeneralReport', {
+            layout:    'layouts/report',
+            title:     'HOA General Details Report',
+            ...data,
+            generatedDate: new Date().toLocaleDateString('en-PH', {
+                month: 'long', day: 'numeric', year: 'numeric',
+            }),
+        });
+    } catch (err) {
+        console.error('HOA general report error:', err);
+        res.status(500).send('Failed to generate HOA general details report.');
+    }
+};
+
 exports.getSeniorCitizenReport = async (req, res) => {
     try {
         const rows    = await reportModel.getSeniorCitizenRows();

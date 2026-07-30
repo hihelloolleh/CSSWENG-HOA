@@ -104,10 +104,12 @@
 
 </div>
 
-<script id="reportRowsData" type="application/json"><%- JSON.stringify(rows) %></script>
+<script id="reportRowsData"    type="application/json"><%- JSON.stringify(rows)    %></script>
+<script id="reportSummaryData" type="application/json"><%- JSON.stringify(summary) %></script>
 <script>
 function exportCSV() {
-    const rows = JSON.parse(document.getElementById('reportRowsData').textContent);
+    const rows    = JSON.parse(document.getElementById('reportRowsData').textContent);
+    const summary = JSON.parse(document.getElementById('reportSummaryData').textContent);
 
     const esc = val => '"' + String(val ?? '').replace(/"/g, '""') + '"';
 
@@ -123,19 +125,28 @@ function exportCSV() {
         return new Date(dateStr).toLocaleDateString('en-PH', { month: 'long', day: 'numeric', year: 'numeric' });
     };
 
-    const headers = ['Home Owner Name(s)', 'Address', 'Property Type', 'Outstanding Balance', 'Months Overdue', 'Last Payment Date'];
+    const lines = [];
 
-    const lines = [
-        headers.map(esc).join(','),
-        ...rows.map(r => [
+    // Summary section
+    lines.push(esc('SUMMARY'));
+    lines.push([esc('Metric'), esc('Value'), esc('Detail')].join(','));
+    lines.push([esc('Total Properties Delinquent'), esc(`${summary.totalDelinquent} (${summary.delinquencyPct}%)`), esc(`House: ${summary.houseCount} (${summary.housePct}%), Lot: ${summary.lotCount} (${summary.lotPct}%)`)].join(','));
+    lines.push([esc('Total Delinquent Amount'),     esc(parseFloat(summary.totalOutstanding).toFixed(2)), esc('')].join(','));
+    lines.push('');
+
+    // Data section
+    lines.push(esc('DELINQUENT PROPERTIES'));
+    lines.push(['Home Owner Name(s)', 'Address', 'Property Type', 'Outstanding Balance', 'Months Overdue', 'Last Payment Date'].map(esc).join(','));
+    rows.forEach(r => {
+        lines.push([
             esc(r.owner_names),
             esc(r.lot_number ? 'Lot ' + r.lot_number + ' ' + r.street_name : r.street_name),
             esc(r.property_type),
             esc(parseFloat(r.outstandingBalance || 0).toFixed(2)),
             esc(monthsOverdue(r.last_payment_date)),
             esc(fmtDate(r.last_payment_date))
-        ].join(','))
-    ];
+        ].join(','));
+    });
 
     const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
     const url  = URL.createObjectURL(blob);
