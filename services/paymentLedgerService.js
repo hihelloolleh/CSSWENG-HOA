@@ -65,10 +65,6 @@ const addPayment = async (data) => {
                 throw new Error('Please provide a vehicle or enter a plate number and vehicle type.');
             }
 
-            const amountPaid = parseFloat(data.amount_paid);
-            if (isNaN(amountPaid) || amountPaid < parseFloat(data.amount_expected)) {
-                throw new Error('Amount Paid cannot be less than the Amount Expected.');
-            }
         }
 
         if (data.purpose === 'Association Dues') {
@@ -86,11 +82,6 @@ const addPayment = async (data) => {
             );
             data.amount_expected = associationResult.amount;
 
-            // Scenario 2: block submission if Amount Paid < Amount Expected
-            const amountPaid = parseFloat(data.amount_paid);
-            if (isNaN(amountPaid) || amountPaid < associationResult.amount) {
-                throw new Error('Amount Paid cannot be less than the Amount Expected.');
-            }
         }
 
         const paymentId = await paymentLedgerModel.createPayment(data, conn);
