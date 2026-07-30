@@ -424,12 +424,21 @@
                 _hint.style.color = _prop.hasDues ? '#c77b00' : '#888';
             }
 
-            // Auto-fill payer — prefer homeowner (residents are ordered homeowner-first by the server)
-            const _residents = residentsByProperty[selectedPropertyId] || [];
-            if (_residents.length > 0 && payerInput) {
-                const _homeowner = _residents.find(r => r.resident_type === 'Homeowner') || _residents[0];
-                payerInput.value = _homeowner.full_name;
-                document.getElementById('paid_by').value = _homeowner.person_id;
+            // Auto-fill payer — use the person linked from the residents page if provided,
+            // otherwise fall back to the homeowner.
+            const _residents  = residentsByProperty[selectedPropertyId] || [];
+            const _prePersonId = <%= (typeof preselectedPersonId !== 'undefined' && preselectedPersonId) ? preselectedPersonId : 'null' %>;
+            let _payer = null;
+            if (_prePersonId) {
+                _payer = _residents.find(r => r.person_id === _prePersonId)
+                      || allPersons.find(p => p.person_id === _prePersonId);
+            }
+            if (!_payer) {
+                _payer = _residents.find(r => r.resident_type === 'Homeowner') || _residents[0];
+            }
+            if (_payer && payerInput) {
+                payerInput.value = _payer.full_name;
+                document.getElementById('paid_by').value = _payer.person_id;
             }
             if (payerHint) {
                 payerHint.textContent = _residents.length

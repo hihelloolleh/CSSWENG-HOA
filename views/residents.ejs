@@ -118,6 +118,7 @@
                                     <td>
                                         <button class="btn-icon"
                                                 data-id="<%= resident.resident_id %>"
+                                                data-personid="<%= resident.person_id %>"
                                                 data-name="<%= resident.first_name %> <%= resident.middle_name %> <%= resident.last_name %> <%= resident.suffix %>"
                                                 data-dob="<%= resident.birth_date ? resident.birth_date.toString().substring(0, 10) : '' %>"
                                                 data-email="<%= resident.email || '' %>"
@@ -600,6 +601,7 @@ function openViewModal(button) {
     const outEl = document.getElementById('view-outstanding-section');
     outEl.innerHTML = '<p style="color:#999;font-size:13px;">Loading...</p>';
 
+    const _personId = button.dataset.personid;
     fetch(`/residents/${button.dataset.id}/outstanding`)
         .then(r => r.json())
         .then(props => {
@@ -608,7 +610,7 @@ function openViewModal(button) {
                 return;
             }
             outEl.innerHTML = props.map(p => `
-                <a href="/dues/outstanding?property_id=${p.property_id}" class="outstanding-item">
+                <a href="/dues/outstanding?property_id=${p.property_id}&person_id=${_personId}" class="outstanding-item">
                     <div class="outstanding-item-info">
                         <span class="outstanding-item-address">Lot ${p.lot_number} ${p.street_name}</span>
                         <span class="outstanding-item-type">${p.property_type}</span>
