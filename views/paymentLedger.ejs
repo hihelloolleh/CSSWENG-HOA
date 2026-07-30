@@ -85,7 +85,7 @@
                 <thead>
                     <tr>
                         <th>Date Paid</th>
-                        <th>Payer</th>
+                        <th>Payor</th>
                         <th>Purpose</th>
                         <th>Expected</th>
                         <th>Paid</th>
@@ -131,7 +131,7 @@
                                         title="View Details"
                                         onclick="openViewModal(this)"
                                         data-id="<%= pay.payment_id %>"
-                                        data-payer="<%= pay.payer_name || '' %>"
+                                        data-payor="<%= pay.payer_name || '' %>"
                                         data-purpose="<%= pay.purpose %>"
                                         data-expected="<%= pay.amount_expected %>"
                                         data-paid="<%= pay.amount_paid %>"
@@ -255,11 +255,11 @@
         <div class="modal-body">
             <form method="POST" action="/payments/update">
                 <input type="hidden" name="payment_id" id="edit_payment_id">
-                <input type="hidden" id="edit_payer_id">
+                <input type="hidden" id="edit_payor_id">
 
                 <div class="form-group">
-                    <label>Payer <span style="font-size:11px;color:#999;">(cannot be changed)</span></label>
-                    <input type="text" id="edit_payer_search" class="form-control" readonly
+                    <label>Payor <span style="font-size:11px;color:#999;">(cannot be changed)</span></label>
+                    <input type="text" id="edit_payor_search" class="form-control" readonly
                            style="background:#f5f5f5; color:#888; cursor:default;">
                 </div>
 

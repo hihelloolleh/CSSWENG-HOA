@@ -57,15 +57,15 @@
                             <input type="hidden" id="property_id" name="property_id">
                         </div>
 
-                        <!-- Common: Payer -->
+                        <!-- Common: Payor -->
                         <div class="form-group">
-                            <label class="required-label">Homeowner / Payer</label>
+                            <label class="required-label">Homeowner / Payor</label>
                             <div class="resident-search-wrap">
-                                <input type="text" id="payer_search" class="search-input" placeholder="Select a property first" autocomplete="off">
-                                <ul id="payer_dropdown" class="resident-dropdown-list"></ul>
+                                <input type="text" id="payor_search" class="search-input" placeholder="Select a property first" autocomplete="off">
+                                <ul id="payor_dropdown" class="resident-dropdown-list"></ul>
                             </div>
                             <input type="hidden" id="paid_by" name="paid_by">
-                            <small id="payer_hint" style="color:#888; font-size:12px; margin-top:4px; display:block;">Select a property first</small>
+                            <small id="payor_hint" style="color:#888; font-size:12px; margin-top:4px; display:block;">Select a property first</small>
                             <small id="delinquency_status" style="font-size:12px; margin-top:4px; display:none; font-weight:600;"></small>
                         </div>
 
@@ -93,10 +93,10 @@
 
                     <% } else if (paymentType === 'vehicle') { %>
                         <div class="form-group">
-                            <label class="required-label">Vehicle Owner / Payer</label>
+                            <label class="required-label">Vehicle Owner / Payor</label>
                             <div class="resident-search-wrap">
-                                <input type="text" id="payer_search" class="search-input" placeholder="Search by name..." autocomplete="off">
-                                <ul id="payer_dropdown" class="resident-dropdown-list"></ul>
+                                <input type="text" id="payor_search" class="search-input" placeholder="Search by name..." autocomplete="off">
+                                <ul id="payor_dropdown" class="resident-dropdown-list"></ul>
                             </div>
                             <input type="hidden" id="paid_by" name="paid_by">
                         </div>
@@ -109,7 +109,7 @@
                             </div>
                             <div id="vehicle_chips" style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;"></div>
                             <div id="vehicle_ids_inputs"><!-- hidden vehicle_ids inputs injected here by JS --></div>
-                            <small id="sticker_rate_hint" style="color:#888; font-size:12px; margin-top:4px; display:block;">Select a payer and at least one vehicle to see the sticker rate</small>
+                            <small id="sticker_rate_hint" style="color:#888; font-size:12px; margin-top:4px; display:block;">Select a  payor and at least one vehicle to see the sticker rate</small>
                         </div>
 
                     <% } else if (paymentType === 'outstanding') { %>
@@ -124,13 +124,13 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="required-label">Payer</label>
+                            <label class="required-label">Payor</label>
                             <div class="resident-search-wrap">
-                                <input type="text" id="payer_search" class="search-input" placeholder="Select a property first" autocomplete="off" required>
-                                <ul id="payer_dropdown" class="resident-dropdown-list"></ul>
+                                <input type="text" id="payor_search" class="search-input" placeholder="Select a property first" autocomplete="off" required>
+                                <ul id="payor_dropdown" class="resident-dropdown-list"></ul>
                             </div>
                             <input type="hidden" id="paid_by" name="paid_by">
-                            <small id="payer_hint" style="color:#888; font-size:12px; margin-top:4px; display:block;">Select a property first</small>
+                            <small id="payor_hint" style="color:#888; font-size:12px; margin-top:4px; display:block;">Select a property first</small>
                         </div>
 
                         <div class="form-row">
@@ -198,10 +198,10 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="required-label">Payer</label>
+                            <label class="required-label">Payor</label>
                             <div class="resident-search-wrap">
-                                <input type="text" id="payer_search" name="payer_name_text" class="search-input" placeholder="Search by name..." autocomplete="off" required> 
-                                <ul id="payer_dropdown" class="resident-dropdown-list"></ul>
+                                <input type="text" id="payor_search" name="payor_name_text" class="search-input" placeholder="Search by name..." autocomplete="off" required> 
+                                <ul id="payor_dropdown" class="resident-dropdown-list"></ul>
                             </div>
                             <input type="hidden" id="paid_by" name="paid_by">
                         </div>
@@ -320,13 +320,13 @@
 
     // ── Wire up dropdowns based on payment type ───────────────────────────────
 
-    // Property search — on select, reset payer and lock it to that property's residents
+    // Property search — on select, reset payor and lock it to that property's residents
     if (document.getElementById('property_search')) {
         const propInput    = document.getElementById('property_search');
         const propDropdown = document.getElementById('property_dropdown');
         const propHidden   = document.getElementById('property_id');
-        const payerInput   = document.getElementById('payer_search');
-        const payerHint    = document.getElementById('payer_hint');
+        const payorInput   = document.getElementById('payor_search');
+        const payorHint    = document.getElementById('payor_hint');
 
         propInput.addEventListener('input', function () {
             const q = this.value.trim().toLowerCase();
@@ -334,11 +334,11 @@
             selectedPropertyId = null;
             propDropdown.innerHTML = '';
 
-            // Reset payer when property changes
-            if (payerInput) {
-                payerInput.value = '';
+            // Reset payor when property changes
+            if (payorInput) {
+                payorInput.value = '';
                 document.getElementById('paid_by').value = '';
-                if (payerHint) payerHint.textContent = 'Select a property first';
+                if (payorHint) payorHint.textContent = 'Select a property first';
             }
 
             if (!q) { propDropdown.style.display = 'none'; return; }
@@ -372,13 +372,13 @@
                         outstandingHintEl.style.color = prop.hasDues ? '#c77b00' : '#888';
                     }
 
-                    // Reset payer and update hint
-                    if (payerInput) {
-                        payerInput.value = '';
+                    // Reset payor and update hint
+                    if (payorInput) {
+                        payorInput.value = '';
                         document.getElementById('paid_by').value = '';
                         const residents = residentsByProperty[selectedPropertyId] || [];
-                        if (payerHint) {
-                            payerHint.textContent = residents.length
+                        if (payorHint) {
+                            payorHint.textContent = residents.length
                                 ? `${residents.length} resident(s) in this property`
                                 : 'No residents linked to this property';
                         }
@@ -424,24 +424,24 @@
                 _hint.style.color = _prop.hasDues ? '#c77b00' : '#888';
             }
 
-            // Auto-fill payer — use the person linked from the residents page if provided,
+            // Auto-fill payor — use the person linked from the residents page if provided,
             // otherwise fall back to the homeowner.
             const _residents  = residentsByProperty[selectedPropertyId] || [];
             const _prePersonId = <%= (typeof preselectedPersonId !== 'undefined' && preselectedPersonId) ? preselectedPersonId : 'null' %>;
-            let _payer = null;
+            let _payor = null;
             if (_prePersonId) {
-                _payer = _residents.find(r => r.person_id === _prePersonId)
+                _payor = _residents.find(r => r.person_id === _prePersonId)
                       || allPersons.find(p => p.person_id === _prePersonId);
             }
-            if (!_payer) {
-                _payer = _residents.find(r => r.resident_type === 'Homeowner') || _residents[0];
+            if (!_payor) {
+                _payor = _residents.find(r => r.resident_type === 'Homeowner') || _residents[0];
             }
-            if (_payer && payerInput) {
-                payerInput.value = _payer.full_name;
-                document.getElementById('paid_by').value = _payer.person_id;
+            if (_payor && payorInput) {
+                payorInput.value = _payor.full_name;
+                document.getElementById('paid_by').value = _payor.person_id;
             }
-            if (payerHint) {
-                payerHint.textContent = _residents.length
+            if (payorHint) {
+                payorHint.textContent = _residents.length
                     ? `${_residents.length} resident(s) in this property`
                     : 'No residents linked to this property';
             }
@@ -449,12 +449,12 @@
         <% } %>
     }
 
-    // Payer search — filtered to property residents when a property is selected
-    if (document.getElementById('payer_search')) {
+    // Payor search — filtered to property residents when a property is selected
+    if (document.getElementById('payor_search')) {
         const isAssociationForm = document.getElementById('property_search') && document.getElementById('payment_type');
 
         initSearch(
-            'payer_search', 'payer_dropdown', 'paid_by',
+            'payor_search', 'payor_dropdown', 'paid_by',
             () => selectedPropertyId
                 ? (residentsByProperty[selectedPropertyId] || [])
                 : allPersons,
@@ -547,14 +547,14 @@
             const methodField      = document.getElementById('payment_method');
             const amountPaidField  = document.getElementById('amount_paid');
 
-            [document.getElementById('property_search'), document.getElementById('payer_search'),
+            [document.getElementById('property_search'), document.getElementById('payor_search'),
              receiptField, dateField, methodField, amountPaidField]
                 .filter(Boolean).forEach(clearInvalid);
             submitError.style.display = 'none';
 
             const missing = [];
             if (!propertyIdField.value) { missing.push('Property'); markInvalid(document.getElementById('property_search')); }
-            if (!paidByField.value)     { missing.push('Payer');    markInvalid(document.getElementById('payer_search')); }
+            if (!paidByField.value)     { missing.push('Payor');    markInvalid(document.getElementById('payor_search')); }
             if (!receiptField.value.trim()) { missing.push('Receipt Number');  markInvalid(receiptField); }
             if (!dateField.value)           { missing.push('Date Paid');       markInvalid(dateField); }
             if (!methodField.value)         { missing.push('Payment Method');  markInvalid(methodField); }
@@ -664,7 +664,7 @@
 
             if (selectedVehicleIds.length === 0) {
                 if (amountField) amountField.value = '';
-                if (stickerHint) { stickerHint.textContent = 'Select a payer and at least one vehicle to see the sticker rate'; stickerHint.style.color = '#888'; }
+                if (stickerHint) { stickerHint.textContent = 'Select a payor and at least one vehicle to see the sticker rate'; stickerHint.style.color = '#888'; }
                 return;
             }
 
@@ -696,10 +696,10 @@
             }
         }
 
-        // Recompute whenever payer changes (dropdown selection uses mousedown, so listen after it settles)
-        const vehiclePayerSearch = document.getElementById('payer_search');
-        if (vehiclePayerSearch) {
-            vehiclePayerSearch.addEventListener('blur', () => setTimeout(updateStickerEstimate, 200));
+        // Recompute whenever payor changes (dropdown selection uses mousedown, so listen after it settles)
+        const vehiclePayorSearch = document.getElementById('payor_search');
+        if (vehiclePayorSearch) {
+            vehiclePayorSearch.addEventListener('blur', () => setTimeout(updateStickerEstimate, 200));
         }
 
         // ── Submit-time validation (AC 3.1 / AC 3.3) ───────────────────────
@@ -721,7 +721,7 @@
             submitError.style.display = 'none';
 
             const missing = [];
-            if (!paidByField.value)                       { missing.push('Resident'); markInvalid(document.getElementById('payer_search')); }
+            if (!paidByField.value)                       { missing.push('Resident'); markInvalid(document.getElementById('payor_search')); }
             if (selectedVehicleIds.length === 0)           { missing.push('Vehicle');  markInvalid(vehicleSearchInput); }
             if (!receiptField.value.trim())                { missing.push('Receipt Number'); markInvalid(receiptField); }
             if (!dateField.value)                          { missing.push('Date Paid'); markInvalid(dateField); }
