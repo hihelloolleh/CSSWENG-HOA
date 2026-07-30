@@ -1,7 +1,8 @@
-const express              = require('express');
-const router               = express.Router();
-const ExpenseController    = require('../controllers/expenseController');
-const paymentLedgerModel   = require('../models/paymentLedgerModel');
+const express = require('express');
+const router = express.Router();
+const expenseController = require('../controllers/expenseController');
+
+const paymentLedgerModel = require('../models/paymentLedgerModel');
 
 const PURPOSE_MAP = {
     utilities: 'Utilities',
@@ -13,24 +14,33 @@ const PURPOSE_MAP = {
     other: 'Other',
 };
 
-router.get('/', ExpenseController.getExpenseDashboard);
+router.get('/', expenseController.getExpenseDashboard);
 
 router.get('/:type', async (req, res) => {
     const type = req.params.type;
     if (!PURPOSE_MAP[type]) return res.redirect('/expenses');
 
     try {
+
+        const persons = await paymentLedgerModel.getAllPersons();
+
         res.render('expenses', {
             title:       'Expenses',
             activePage:  'expenses',
             pageCSS:     'expenses.css',
             expenseType: type,
             purposeValue: PURPOSE_MAP[type],
+            persons: persons
         });
-    } catch (err) {
+    }
+    catch (err) {
         console.error('Expense form error:', err);
         res.status(500).send('Failed to load expense form.');
     }
 });
+
+router.post('/', expenseController.createExpense);
+router.post('/update/:id', expenseController.updateExpense);
+router.post('/delete/:id', expenseController.deleteExpense);
 
 module.exports = router;
