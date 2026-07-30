@@ -60,20 +60,53 @@ const getPropertyStatus = async () => {
 
 const getDelinquents = async () => {
     const [rows] = await pool.query(`
-        SELECT
-            CONCAT(per.first_name, ' ', per.last_name)                                        AS full_name,
-            per.contact_num,
-            pay.purpose,
-            (pay.amount_expected - pay.amount_paid)                                            AS balance,
-            GROUP_CONCAT(DISTINCT CONCAT('Lot ', prop.lot_number, ' ', prop.street_name)
-                         ORDER BY prop.lot_number SEPARATOR ', ')                              AS address
-        FROM Payment pay
-        JOIN Person per ON pay.paid_by = per.person_id
-        LEFT JOIN Resident res ON per.person_id = res.person_id AND res.residency_end_date IS NULL
-        LEFT JOIN Resident_Property rp ON res.resident_id = rp.resident_id
-        LEFT JOIN Property prop        ON rp.property_id  = prop.property_id
-        WHERE pay.amount_paid < pay.amount_expected
-        GROUP BY pay.payment_id, per.person_id
+        (
+            /* ── Outstanding Balance ──────────────────────────────────────────────
+               Source of truth is Property.outstandingBalance, NOT payment rows.
+               One row per property; show the homeowner. */
+            SELECT
+                CONCAT(ho.first_name, ' ', ho.last_name) AS full_name,
+                ho.contact_num,
+                'Outstanding Balance'                     AS purpose,
+                prop.outstandingBalance                   AS balance
+            FROM Property prop
+            JOIN (
+                SELECT p.property_id, MIN(ho_p.person_id) AS person_id
+                FROM Property p
+                JOIN Resident_Property rp_h ON p.property_id    = rp_h.property_id  AND rp_h.type = 'Homeowner'
+                JOIN Resident          r_h  ON rp_h.resident_id = r_h.resident_id   AND r_h.residency_end_date IS NULL
+                JOIN Person            ho_p ON r_h.person_id    = ho_p.person_id
+                GROUP BY p.property_id
+            ) prop_owner ON prop.property_id = prop_owner.property_id
+            JOIN Person ho ON prop_owner.person_id = ho.person_id
+            WHERE prop.outstandingBalance > 0
+        )
+        UNION ALL
+        (
+            /* ── Other payment types (Assoc Dues, Vehicle Sticker, General) ───────
+               Group all residents of each property together; show the homeowner. */
+            SELECT
+                CONCAT(ho.first_name, ' ', ho.last_name)                                          AS full_name,
+                ho.contact_num,
+                GROUP_CONCAT(DISTINCT pay.purpose ORDER BY pay.purpose SEPARATOR ', ')             AS purpose,
+                SUM(pay.amount_expected - pay.amount_paid)                                         AS balance
+            FROM (
+                SELECT p.property_id, MIN(ho_p.person_id) AS person_id
+                FROM Property p
+                JOIN Resident_Property rp_h ON p.property_id    = rp_h.property_id  AND rp_h.type = 'Homeowner'
+                JOIN Resident          r_h  ON rp_h.resident_id = r_h.resident_id   AND r_h.residency_end_date IS NULL
+                JOIN Person            ho_p ON r_h.person_id    = ho_p.person_id
+                GROUP BY p.property_id
+            ) prop_owner
+            JOIN Person            ho     ON prop_owner.person_id    = ho.person_id
+            JOIN Resident_Property rp_any ON prop_owner.property_id  = rp_any.property_id
+            JOIN Resident          r_any  ON rp_any.resident_id      = r_any.resident_id AND r_any.residency_end_date IS NULL
+            JOIN Person            p_any  ON r_any.person_id         = p_any.person_id
+            JOIN Payment pay ON pay.paid_by = p_any.person_id
+                             AND pay.amount_paid < pay.amount_expected
+                             AND pay.purpose <> 'Outstanding Balance'
+            GROUP BY prop_owner.property_id
+        )
         ORDER BY balance DESC
         LIMIT 8
     `);
