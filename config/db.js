@@ -223,6 +223,23 @@ const createTables = async() => {
             ('Lot (Annual Payment)', 2200.00);
         `;
 
+        const createExpensesTable = `
+            CREATE TABLE IF NOT EXISTS expenses (
+                expense_id INT AUTO_INCREMENT PRIMARY KEY,
+                category ENUM('utilities', 'employee salaries', 'maintenance', 'petty cash', 'food', 'community project', 'other') NOT NULL,
+                payer_id INT NOT NULL,
+                payer_type ENUM('Resident', 'Board Member', 'Employee') NOT NULL,
+                amount_expected DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+                amount_paid DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+                date_paid DATE NOT NULL,
+                payment_method VARCHAR(50) NOT NULL,
+                receipt_number VARCHAR(100),
+                remarks TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            );
+        `;
+
         //Executes the SQL queries
 
         await pool.query(createPersonTable);
@@ -266,6 +283,9 @@ const createTables = async() => {
 
         await pool.query(createPaymentVehicleTable);
         console.log("Successfully created Payment_Vehicle table!")
+
+        await pool.query(createExpensesTable);
+        console.log("Successfully created Expenses table!")
 
         // Add any columns that were introduced after the tables were first created.
         // INFORMATION_SCHEMA check avoids errors on fresh installs where the column
