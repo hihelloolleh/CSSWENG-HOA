@@ -186,15 +186,12 @@
                         </div>
                         
                         <div id="add_resident_tags" style="display: flex; flex-wrap: wrap; gap: 8px; min-height: 44px; padding: 10px; border: 1px dashed #ccc; border-radius: 4px;"></div>
-                        
+
                         <div id="add_hidden_inputs"></div>
                     </div>
-                        
-                        <div id="add_resident_tags" style="display: flex; flex-wrap: wrap; gap: 8px; min-height: 44px; padding: 10px; border: 1px dashed #ccc; border-radius: 4px;"></div>
-                        
-                        <div id="add_hidden_inputs"></div>
-                    </div>
-                    
+
+                    <div id="addVehicleError" class="modal-form-error" style="display:none;"></div>
+
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" onclick="closeAddModal()">Cancel</button>
                         <button type="submit" class="btn btn-primary">Save Vehicle</button>
@@ -286,6 +283,8 @@
                     </select>
                 </div>
                 
+                <div id="editVehicleError" class="modal-form-error" style="display:none;"></div>
+
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" onclick="document.getElementById('editVehicleModal').classList.remove('active')">Cancel</button>
                     <button type="submit" class="btn btn-primary">Update Vehicle</button>
@@ -521,36 +520,92 @@
         setTimeout(() => { banner.style.display = 'none'; }, 4000);
     }
 
-    // Show banner for add/delete redirects (they still use full-page POST)
-    document.addEventListener('DOMContentLoaded', () => {
-        const urlParams  = new URLSearchParams(window.location.search);
-        const errorMsg   = urlParams.get('error');
-        const successMsg = urlParams.get('success');
-        if (successMsg || errorMsg) {
-            showVehicleBanner(!!successMsg, successMsg || errorMsg);
-            window.history.replaceState({}, document.title, '/vehicles');
-        }
-    });
+    function showModalError(id, msg) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${msg}`;
+        el.style.display = 'flex';
+    }
 
-    // Edit form: submit via fetch so the page never navigates away
-    document.getElementById('editVehicleForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const body = new URLSearchParams(new FormData(this));
-        try {
-            const res  = await fetch(this.action, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: body.toString()
-            });
-            const data = await res.json();
-            document.getElementById('editVehicleModal').classList.remove('active');
-            showVehicleBanner(data.success, data.message);
-            if (data.success) {
-                setTimeout(() => location.reload(), 1500);
-            }
-        } catch (err) {
-            showVehicleBanner(false, 'An unexpected error occurred. Please try again.');
+    function clearModalError(id) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.textContent = '';
+        el.style.display = 'none';
+    }
+
+    function validateStickerYear(value) {
+        if (!value) return null;
+        const yr = parseInt(value, 10);
+        if (!/^\d{4}$/.test(String(value).trim()) || yr < 1990 || yr > 2099) {
+            return 'Sticker year must be a valid 4-digit year between 1990 and 2099.';
         }
+        return null;
+    }
+
+    function postForm(url, formOrData) {
+        const body = new URLSearchParams(formOrData instanceof HTMLFormElement ? new FormData(formOrData) : formOrData);
+        return fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: body.toString()
+        }).then(r => r.json());
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // ── Add form ──────────────────────────────────────────────────────────
+        document.getElementById('vehicleForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            clearModalError('addVehicleError');
+
+            const yrErr = validateStickerYear(this.querySelector('[name="sticker_year"]').value);
+            if (yrErr) { showModalError('addVehicleError', yrErr); return; }
+
+            postForm(this.action, this)
+                .then(data => {
+                    if (data.success) {
+                        closeAddModal();
+                        showVehicleBanner(true, data.message);
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        showModalError('addVehicleError', data.message);
+                    }
+                })
+                .catch(() => showModalError('addVehicleError', 'An unexpected error occurred. Please try again.'));
+        });
+
+        // ── Edit form ─────────────────────────────────────────────────────────
+        document.getElementById('editVehicleForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            clearModalError('editVehicleError');
+
+            const yrErr = validateStickerYear(document.getElementById('edit_sticker_year').value);
+            if (yrErr) { showModalError('editVehicleError', yrErr); return; }
+
+            postForm(this.action, this)
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('editVehicleModal').classList.remove('active');
+                        showVehicleBanner(true, data.message);
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        showModalError('editVehicleError', data.message);
+                    }
+                })
+                .catch(() => showModalError('editVehicleError', 'An unexpected error occurred. Please try again.'));
+        });
+
+        // ── Delete form ───────────────────────────────────────────────────────
+        document.getElementById('deleteVehicleForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            postForm(this.action, {})
+                .then(data => {
+                    document.getElementById('deleteVehicleModal').classList.remove('active');
+                    showVehicleBanner(data.success, data.message);
+                    if (data.success) setTimeout(() => location.reload(), 1500);
+                })
+                .catch(() => showVehicleBanner(false, 'An unexpected error occurred. Please try again.'));
+        });
     });
 </script>
 

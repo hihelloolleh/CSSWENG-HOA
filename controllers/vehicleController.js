@@ -69,11 +69,7 @@ exports.registerVehicle = async (req, res) =>{
         resident_ids = [];
     }
     
-    // initial validation 
-    if (!plate_number) {
-        return res.status(400).send("Plate number is required.");
-    }
-
+    // initial validation
     if (!type || !plate_number || !make || !model || !color || resident_ids.length === 0) {
         return res.status(400).json({ success: false, message: "Type, Plate number, Make, Model, Color, and Residents are required." });
     }
