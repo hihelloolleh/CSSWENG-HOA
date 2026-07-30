@@ -24,6 +24,8 @@ router.get('/:type', async (req, res) => {
 
         const persons = await paymentLedgerModel.getAllPersons();
 
+        console.log("People fetched from DB:", persons);
+
         res.render('expenses', {
             title:       'Expenses',
             activePage:  'expenses',
@@ -35,7 +37,15 @@ router.get('/:type', async (req, res) => {
     }
     catch (err) {
         console.error('Expense form error:', err);
-        res.status(500).send('Failed to load expense form.');
+        
+        res.render('expenses', {
+            title:       'Expenses',
+            activePage:  'expenses',
+            pageCSS:     'expenses.css',
+            expenseType: type,
+            purposeValue: PURPOSE_MAP[type],
+            persons: [] 
+        });
     }
 });
 
