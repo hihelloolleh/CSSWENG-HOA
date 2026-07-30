@@ -23,9 +23,14 @@
 
 <div class="rpt-actions no-print">
     <a href="/reports" class="rpt-back"><i class="fa-solid fa-arrow-left"></i> Back to Reports</a>
-    <button onclick="window.print()" class="rpt-print-btn">
-        <i class="fa-solid fa-print"></i> Print / Save as PDF
-    </button>
+    <div style="display:flex; gap:10px;">
+        <button onclick="exportCSV()" class="rpt-print-btn" style="background:#4a7c59;">
+            <i class="fa-solid fa-file-csv"></i> Export CSV
+        </button>
+        <button onclick="window.print()" class="rpt-print-btn">
+            <i class="fa-solid fa-print"></i> Print / Save as PDF
+        </button>
+    </div>
 </div>
 
 <div class="rpt-page">
@@ -98,3 +103,46 @@
     </table>
 
 </div>
+
+<script id="reportRowsData" type="application/json"><%- JSON.stringify(rows) %></script>
+<script>
+function exportCSV() {
+    const rows = JSON.parse(document.getElementById('reportRowsData').textContent);
+
+    const esc = val => '"' + String(val ?? '').replace(/"/g, '""') + '"';
+
+    const monthsOverdue = dateStr => {
+        if (!dateStr) return 0;
+        const last = new Date(dateStr), now = new Date();
+        const diff = (now.getFullYear() - last.getFullYear()) * 12 + (now.getMonth() - last.getMonth());
+        return diff > 0 ? diff : 0;
+    };
+
+    const fmtDate = dateStr => {
+        if (!dateStr) return '';
+        return new Date(dateStr).toLocaleDateString('en-PH', { month: 'long', day: 'numeric', year: 'numeric' });
+    };
+
+    const headers = ['Home Owner Name(s)', 'Address', 'Property Type', 'Outstanding Balance', 'Months Overdue', 'Last Payment Date'];
+
+    const lines = [
+        headers.map(esc).join(','),
+        ...rows.map(r => [
+            esc(r.owner_names),
+            esc(r.lot_number ? 'Lot ' + r.lot_number + ' ' + r.street_name : r.street_name),
+            esc(r.property_type),
+            esc(parseFloat(r.outstandingBalance || 0).toFixed(2)),
+            esc(monthsOverdue(r.last_payment_date)),
+            esc(fmtDate(r.last_payment_date))
+        ].join(','))
+    ];
+
+    const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = 'delinquency_report.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+</script>
