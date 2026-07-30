@@ -128,68 +128,6 @@ const getSeniorCitizenSummary = async (rows) => {
     };
 };
 
-const getHoaGeneralDetails = async () => {
-    const [[propStats]] = await pool.query(`
-        SELECT
-            COUNT(*)                                                  AS total_properties,
-            COUNT(CASE WHEN property_type = 'House' THEN 1 END)      AS house_count,
-            COUNT(CASE WHEN property_type = 'Lot'   THEN 1 END)      AS lot_count,
-            COUNT(CASE WHEN hasDues = 1              THEN 1 END)      AS delinquent_count
-        FROM Property
-    `);
-
-    const [[residentStats]] = await pool.query(`
-        SELECT
-            COUNT(DISTINCT r.resident_id)                                                          AS total_active,
-            COUNT(DISTINCT CASE WHEN rp.type = 'Homeowner' THEN r.resident_id END)                AS homeowner_count,
-            COUNT(DISTINCT CASE WHEN rp.type = 'Tenant'    THEN r.resident_id END)                AS tenant_count
-        FROM Resident r
-        LEFT JOIN Resident_Property rp ON r.resident_id = rp.resident_id
-        WHERE r.isActive = 1 AND r.deleteFlag = 0
-    `);
-
-    const [boardMembers] = await pool.query(`
-        SELECT
-            bm.position,
-            bm.board_start_date,
-            CONCAT(p.last_name, ', ', p.first_name) AS full_name,
-            p.contact_num,
-            p.email
-        FROM Board_Member bm
-        JOIN Resident r ON bm.resident_id = r.resident_id
-        JOIN Person   p ON r.person_id    = p.person_id
-        WHERE bm.board_end_date IS NULL
-        ORDER BY bm.position, p.last_name
-    `);
-
-    const [employees] = await pool.query(`
-        SELECT
-            e.position,
-            CONCAT(p.last_name, ', ', p.first_name) AS full_name,
-            p.contact_num,
-            p.email
-        FROM Employee e
-        JOIN Person p ON e.person_id = p.person_id
-        ORDER BY e.position, p.last_name
-    `);
-
-    return {
-        properties: {
-            total:      propStats.total_properties,
-            houseCount: propStats.house_count,
-            lotCount:   propStats.lot_count,
-            delinquent: propStats.delinquent_count,
-        },
-        residents: {
-            totalActive:    residentStats.total_active,
-            homeownerCount: residentStats.homeowner_count,
-            tenantCount:    residentStats.tenant_count,
-        },
-        boardMembers,
-        employees,
-    };
-};
-
 const getVillageGeneralReport = async (fromDate, toDate) => {
     const [[propStats]] = await pool.query(`
         SELECT
@@ -270,6 +208,5 @@ module.exports = {
     getDelinquencyReportRows,
     getSeniorCitizenRows,
     getSeniorCitizenSummary,
-    getHoaGeneralDetails,
     getVillageGeneralReport,
 };

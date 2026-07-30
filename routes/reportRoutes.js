@@ -5,7 +5,6 @@ const reportController = require('../controllers/reportController');
 router.get('/',                 reportController.getReportsHub);
 router.get('/delinquency',      reportController.getDelinquencyReport);
 router.get('/senior-citizens',  reportController.getSeniorCitizenReport);
-router.get('/hoa-general',      reportController.getHoaGeneralReport);
 router.get('/village-general',  reportController.getVillageGeneralReport);
 
 module.exports = router;
