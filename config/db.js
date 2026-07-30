@@ -227,8 +227,10 @@ const createTables = async() => {
             CREATE TABLE IF NOT EXISTS expenses (
                 expense_id INT AUTO_INCREMENT PRIMARY KEY,
                 category ENUM('utilities', 'employee salaries', 'maintenance', 'petty cash', 'food', 'community project', 'other') NOT NULL,
-                payer_id INT NOT NULL,
-                payer_type ENUM('Resident', 'Board Member', 'Employee') NOT NULL,
+                
+                payor_id INT NOT NULL,
+                payor_type ENUM('Resident', 'Board Member', 'Employee') NOT NULL,
+
                 amount_expected DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
                 amount_paid DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
                 date_paid DATE NOT NULL,
