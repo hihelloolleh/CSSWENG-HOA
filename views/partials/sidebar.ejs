@@ -69,8 +69,20 @@ const financeOpen = financePages.includes(page);
                     <i class="fa-solid fa-file-lines"></i>
                     <span>Reports</span>
                 </a>
+
+                <a href="/accounts" class="nav-item <%= activePage === 'accountManagement' ? 'active' : '' %>">
+                    <i class="ph ph-users"></i>
+                    <span>Account Management</span>
+                </a>
+
+                <a href="/generate-reports" class="nav-item <%= activePage === 'generateReports' ? 'active' : '' %>">
+                    <i class="ph ph-file-text"></i>
+                    <span>Generate Reports</span>
+                </a>
             </div>
         </div>
+
+        
         
     </nav>
 
