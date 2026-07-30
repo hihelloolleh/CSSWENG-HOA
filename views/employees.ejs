@@ -36,7 +36,8 @@
                     type="text"
                     id="searchInput"
                     class="search-input"
-                    placeholder="Search by name, position, or email...">
+                    placeholder="Search by name, position, or email..."
+                    oninput="filterTable()">
             </div>
 
             <button class="btn btn-primary" onclick="openAddModal()">
@@ -111,34 +112,55 @@
             <h2 id="modalTitle">Add Employee</h2>
             <button class="modal-close" onclick="closeModal('employeeModal')">&times;</button>
         </div>
-        <form id="employeeForm" action="/employees" method="POST">
+        <form id="employeeForm" action="/employees" method="POST" onsubmit="return validateEmployeeForm()">
             <input type="hidden" id="employeeId" name="employeeId">
             <div class="modal-body">
+
+                <!-- Personal Information -->
+                <p class="form-section-title">Personal Information</p>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>First Name *</label>
-                        <input type="text" id="firstNameInput" name="first_name" required>
+                        <label>First Name <span class="required-star">*</span></label>
+                        <input type="text" id="firstNameInput" name="first_name"
+                               placeholder="e.g. Juan"
+                               oninput="sanitizeName(this)" onblur="formatName(this)" required>
+                        <span class="field-error-msg" id="firstNameError"></span>
                     </div>
                     <div class="form-group">
                         <label>Middle Name</label>
-                        <input type="text" id="middleNameInput" name="middle_name">
+                        <input type="text" id="middleNameInput" name="middle_name"
+                               placeholder="e.g. Santos"
+                               oninput="sanitizeName(this)" onblur="formatName(this)">
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Last Name *</label>
-                        <input type="text" id="lastNameInput" name="last_name" required>
+                        <label>Last Name <span class="required-star">*</span></label>
+                        <input type="text" id="lastNameInput" name="last_name"
+                               placeholder="e.g. Dela Cruz"
+                               oninput="sanitizeName(this)" onblur="formatName(this)" required>
+                        <span class="field-error-msg" id="lastNameError"></span>
                     </div>
                     <div class="form-group">
                         <label>Suffix</label>
-                        <input type="text" id="suffixInput" name="suffix">
+                        <select id="suffixInput" name="suffix">
+                            <option value="">None</option>
+                            <option value="Jr.">Jr.</option>
+                            <option value="Sr.">Sr.</option>
+                            <option value="II">II</option>
+                            <option value="III">III</option>
+                            <option value="IV">IV</option>
+                        </select>
                     </div>
                 </div>
+
+                <!-- Employment Details -->
+                <p class="form-section-title">Employment Details</p>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Position *</label>
+                        <label>Position <span class="required-star">*</span></label>
                         <select id="positionInput" name="position" required>
-                            <option value="">Select Position</option>
+                            <option value="">Select position...</option>
                             <option value="Security Guard">Security Guard</option>
                             <option value="Maintenance">Maintenance</option>
                             <option value="Bookkeeper">Bookkeeper</option>
@@ -147,20 +169,30 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Salary *</label>
-                        <input type="number" id="salaryInput" name="salary" required>
+                        <label>Monthly Salary <span class="required-star">*</span></label>
+                        <div class="input-prefix-wrap">
+                            <span class="input-prefix">&#8369;</span>
+                            <input type="number" id="salaryInput" name="salary"
+                                   placeholder="0.00" min="0" step="0.01" required>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Contact Information -->
+                <p class="form-section-title">Contact Information</p>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" id="emailInput" name="email">
+                        <label>Email Address</label>
+                        <input type="email" id="emailInput" name="email"
+                               placeholder="e.g. juan@email.com">
                     </div>
                     <div class="form-group">
-                        <label>Phone</label>
-                        <input type="tel" id="phoneInput" name="contact_num">
+                        <label>Phone Number</label>
+                        <input type="tel" id="phoneInput" name="contact_num"
+                               placeholder="e.g. 09XX XXX XXXX">
                     </div>
                 </div>
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" onclick="closeModal('employeeModal')">Cancel</button>
@@ -207,7 +239,7 @@
         document.getElementById('firstNameInput').value    = btn.dataset.firstname;
         document.getElementById('middleNameInput').value   = btn.dataset.middlename;
         document.getElementById('lastNameInput').value     = btn.dataset.lastname;
-        document.getElementById('suffixInput').value       = btn.dataset.suffix;
+        document.getElementById('suffixInput').value       = btn.dataset.suffix || '';
         document.getElementById('positionInput').value     = btn.dataset.position;
         document.getElementById('salaryInput').value       = btn.dataset.salary;
         document.getElementById('emailInput').value        = btn.dataset.email;
@@ -241,6 +273,53 @@
             if (row.cells.length === 1) return;
             row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
         });
+    }
+
+    // ── Name field validation ────────────────────────────────────────────────
+    function sanitizeName(input) {
+        const before = input.value;
+        const after  = before.replace(/[0-9]/g, '');
+        if (after !== before) {
+            input.value = after;
+            showFieldError(input, 'Numbers are not allowed in name fields.');
+        } else {
+            clearFieldError(input);
+        }
+    }
+
+    function formatName(input) {
+        if (!input.value.trim()) return;
+        input.value = input.value.trim()
+            .replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
+        clearFieldError(input);
+    }
+
+    function showFieldError(input, msg) {
+        input.classList.add('input-error');
+        const errEl = document.getElementById(input.id.replace('Input', '') + 'Error');
+        if (errEl) errEl.textContent = msg;
+    }
+
+    function clearFieldError(input) {
+        input.classList.remove('input-error');
+        const errEl = document.getElementById(input.id.replace('Input', '') + 'Error');
+        if (errEl) errEl.textContent = '';
+    }
+
+    function validateEmployeeForm() {
+        const nameFields = [
+            { el: document.getElementById('firstNameInput'),  errId: 'firstNameError' },
+            { el: document.getElementById('lastNameInput'),   errId: 'lastNameError'  },
+        ];
+        let valid = true;
+        nameFields.forEach(({ el, errId }) => {
+            if (/[0-9]/.test(el.value)) {
+                el.classList.add('input-error');
+                document.getElementById(errId).textContent = 'Numbers are not allowed in name fields.';
+                valid = false;
+            }
+        });
+        return valid;
     }
 
     setTimeout(() => {

@@ -378,4 +378,86 @@ body{
 .form-group select:focus {
     outline: none;
     border-color: #526F50;
+    box-shadow: 0 0 0 3px rgba(82, 111, 80, 0.12);
+}
+
+/* ── Two-column form row ───────────────────────────────────────────────────── */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 16px;
+}
+
+/* ── Section title ─────────────────────────────────────────────────────────── */
+.form-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #526F50;
+    margin: 20px 0 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #e8f0e7;
+}
+
+.form-section-title:first-child {
+    margin-top: 0;
+}
+
+/* ── Salary prefix ─────────────────────────────────────────────────────────── */
+.input-prefix-wrap {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-prefix-wrap:focus-within {
+    border-color: #526F50;
+    box-shadow: 0 0 0 3px rgba(82, 111, 80, 0.12);
+}
+
+.input-prefix {
+    padding: 10px 12px;
+    background: #f4f4f4;
+    color: #555;
+    font-size: 14px;
+    font-weight: 600;
+    border-right: 1px solid #ddd;
+    user-select: none;
+}
+
+.input-prefix-wrap input {
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    flex: 1;
+}
+
+.input-prefix-wrap input:focus {
+    outline: none;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* ── Required star ─────────────────────────────────────────────────────────── */
+.required-star {
+    color: #dc3545;
+    margin-left: 2px;
+}
+
+/* ── Inline field error ────────────────────────────────────────────────────── */
+.field-error-msg {
+    display: block;
+    font-size: 11px;
+    color: #dc3545;
+    margin-top: 4px;
+    min-height: 16px;
+}
+
+.input-error {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.12) !important;
 }
