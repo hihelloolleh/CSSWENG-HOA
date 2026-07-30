@@ -33,8 +33,13 @@ exports.getVillageGeneralReport = async (req, res) => {
         const defaultFrom = `${today.getFullYear()}-01-01`;
         const defaultTo   = today.toISOString().slice(0, 10);
 
-        const fromDate = req.query.from || defaultFrom;
-        const toDate   = req.query.to   || defaultTo;
+        let fromDate = req.query.from || defaultFrom;
+        let toDate   = req.query.to   || defaultTo;
+
+        // Clamp both dates to today and ensure from <= to
+        if (toDate   > defaultTo) toDate   = defaultTo;
+        if (fromDate > defaultTo) fromDate = defaultTo;
+        if (fromDate > toDate)    fromDate = toDate;
 
         const fmtQueryDate = d => new Date(d + 'T00:00:00').toLocaleDateString('en-PH', {
             month: 'long', day: 'numeric', year: 'numeric',

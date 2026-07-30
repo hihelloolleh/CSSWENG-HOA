@@ -18,16 +18,55 @@
 </div>
 
 <div class="rpt-filter-bar no-print">
-    <form method="GET" action="/reports/village-general">
+    <form id="dateFilterForm" method="GET" action="/reports/village-general">
         <label>Report Period:</label>
-        <input type="date" name="from" value="<%= fromDate %>" class="rpt-date-input">
+        <input type="date" id="filterFrom" name="from" value="<%= fromDate %>" class="rpt-date-input">
         <span>to</span>
-        <input type="date" name="to" value="<%= toDate %>" class="rpt-date-input">
+        <input type="date" id="filterTo" name="to" value="<%= toDate %>" class="rpt-date-input">
         <button type="submit" class="rpt-apply-btn">
             <i class="fa-solid fa-rotate-right"></i> Apply
         </button>
+        <span id="dateError" style="color:#c00;font-size:12px;display:none;"></span>
     </form>
 </div>
+<script>
+(function () {
+    const today = new Date().toISOString().slice(0, 10);
+    const fromEl = document.getElementById('filterFrom');
+    const toEl   = document.getElementById('filterTo');
+    const errEl  = document.getElementById('dateError');
+
+    fromEl.max = today;
+    toEl.max   = today;
+
+    function showErr(msg) {
+        errEl.textContent = msg;
+        errEl.style.display = 'inline';
+    }
+    function clearErr() {
+        errEl.style.display = 'none';
+    }
+
+    fromEl.addEventListener('change', function () {
+        toEl.min = this.value;
+        clearErr();
+    });
+
+    toEl.addEventListener('change', function () {
+        fromEl.max = this.value < today ? this.value : today;
+        clearErr();
+    });
+
+    document.getElementById('dateFilterForm').addEventListener('submit', function (e) {
+        const from = fromEl.value;
+        const to   = toEl.value;
+        if (!from || !to) { e.preventDefault(); showErr('Both dates are required.'); return; }
+        if (from > today || to > today) { e.preventDefault(); showErr('Dates cannot be in the future.'); return; }
+        if (from > to) { e.preventDefault(); showErr('"From" date must be on or before the "To" date.'); return; }
+        clearErr();
+    });
+})();
+</script>
 
 <div class="rpt-page">
 
