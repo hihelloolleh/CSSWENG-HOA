@@ -27,6 +27,8 @@
     </header>
 
     <main class="content">
+        <div id="vehicleAlert" class="alert" style="display:none;"></div>
+
         <div class="search-bar">
             <div class="search-box">
                 <i class="fa-solid fa-magnifying-glass"></i>
@@ -34,7 +36,7 @@
                 placeholder="Search by plate, owner, or type ...">
             </div>
 
-            <button class="btn btn-primary" onclick="document.getElementById('vehicleModal').classList.add('active')">
+            <button class="btn btn-primary" onclick="openAddModal()">
                 <i class="fa-solid fa-plus"></i> Add Vehicle
             </button>
         </div>
@@ -103,14 +105,14 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2>Add New Vehicle</h2>
-                <button class="modal-close" onclick="document.getElementById('vehicleModal').classList.remove('active')">&times;</button>
+                <button class="modal-close" onclick="closeAddModal()">&times;</button>
             </div>
             <div class="modal-body">
                 <form id="vehicleForm" action="/vehicles/register" method="POST">
                     
                     <div class="form-group">
                         <label class="required-label">Vehicle Type</label>
-                        <select id="edit_type" name="type" class="form-control" style="width: 100%; padding: 8px;" required>
+                        <select id="add_type" name="type" class="form-control" style="width: 100%; padding: 8px;" required>
                             <option value="">Select Vehicle Type</option>
                             <option value="Car">Car</option>
                             <option value="Motorcycle">Motorcycle</option>
@@ -179,7 +181,7 @@
                     </div>
                     
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('vehicleModal').classList.remove('active')">Cancel</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeAddModal()">Cancel</button>
                         <button type="submit" class="btn btn-primary">Save Vehicle</button>
                     </div>
                 </form>
@@ -218,7 +220,7 @@
                     <label>Owners</label>
                     <div style="display: flex; gap: 10px; margin-bottom: 10px;">
                         <div style="position: relative; flex: 1;">
-                            <input type="text" id="edit_resident_search" class="form-control" placeholder="Search resident name..." autocomplete="off" style="width: 100%; padding: 8px;" required>
+                            <input type="text" id="edit_resident_search" class="form-control" placeholder="Search resident name..." autocomplete="off" style="width: 100%; padding: 8px;">
                             
                             <ul id="edit_dropdown_list" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #ccc; border-radius: 4px; z-index: 1000; max-height: 150px; overflow-y: auto; list-style: none; padding: 0; margin: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></ul>
                             
@@ -470,32 +472,38 @@
     });
 </script>
 
-<script> // to hide add modal and reset form
-    function closeAddModal(){
-        document.getElementById('vehicleModal').classList.remove('active');
-        
+<script>
+    function openAddModal() {
         document.getElementById('vehicleForm').reset();
-        
         document.getElementById('add_resident_tags').innerHTML = '';
         document.getElementById('add_hidden_inputs').innerHTML = '';
-    }   
+        document.getElementById('vehicleModal').classList.add('active');
+    }
+
+    function closeAddModal() {
+        document.getElementById('vehicleModal').classList.remove('active');
+        document.getElementById('vehicleForm').reset();
+        document.getElementById('add_resident_tags').innerHTML = '';
+        document.getElementById('add_hidden_inputs').innerHTML = '';
+    }
 </script>
 
-<script> // popups
+<script>
     document.addEventListener('DOMContentLoaded', () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const errorMessage = urlParams.get('error');
-        const successMessage = urlParams.get('success');
+        const urlParams   = new URLSearchParams(window.location.search);
+        const errorMsg    = urlParams.get('error');
+        const successMsg  = urlParams.get('success');
 
-        if (errorMessage){
-            alert(errorMessage);
-            
-            window.history.replaceState({}, document.title, '/vehicles');
-        }
+        if (successMsg || errorMsg) {
+            const banner = document.getElementById('vehicleAlert');
+            const isSuccess = !!successMsg;
+            banner.className = 'alert ' + (isSuccess ? 'alert-success' : 'alert-error');
+            banner.innerHTML = `<i class="fa-solid ${isSuccess ? 'fa-circle-check' : 'fa-circle-exclamation'}"></i> ${isSuccess ? successMsg : errorMsg}`;
+            banner.style.display = 'flex';
 
-        if (successMessage){
-            alert(successMessage);
             window.history.replaceState({}, document.title, '/vehicles');
+
+            setTimeout(() => { banner.style.display = 'none'; }, 4000);
         }
     });
 </script>
