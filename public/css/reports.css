@@ -43,6 +43,7 @@
 .report-card-icon.green  { background: #dcfce7; color: #16a34a; }
 .report-card-icon.yellow { background: #fef9c3; color: #ca8a04; }
 .report-card-icon.purple { background: #ede9fe; color: #7c3aed; }
+.report-card-icon.teal   { background: #ccfbf1; color: #0f766e; }
 
 .report-card-info {
     flex: 1;
@@ -233,6 +234,71 @@ body {
 .rpt-table td:nth-child(4) {
     text-align: right;
 }
+
+/* ── Village General Report - override nth-child alignment for vgr-table ──── */
+.vgr-table td { text-align: left; }
+
+/* ── Village General Report - filter bar ──────────────────────────────────── */
+.rpt-filter-bar {
+    display: flex;
+    align-items: center;
+    padding: 12px 40px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.rpt-filter-bar form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.rpt-filter-bar label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+}
+
+.rpt-filter-bar span {
+    font-size: 13px;
+    color: #888;
+}
+
+.rpt-date-input {
+    padding: 7px 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: 'Poppins', sans-serif;
+    color: #333;
+    background: #fff;
+    outline: none;
+    cursor: pointer;
+}
+
+.rpt-date-input:focus {
+    border-color: #526F50;
+    box-shadow: 0 0 0 3px rgba(82, 111, 80, 0.12);
+}
+
+.rpt-apply-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #526F50;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    transition: background .15s;
+}
+
+.rpt-apply-btn:hover { background: #3d5439; }
 
 /* ── Print styles ──────────────────────────────────────────────────────────── */
 
