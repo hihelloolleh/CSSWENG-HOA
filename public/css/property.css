@@ -522,3 +522,34 @@ body{
     background: #f0f4f0;
     color: #526F50;
 }
+
+/* ── Property filter buttons ──────────────────────────────────────── */
+.prop-filter-bar {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.prop-filter-btn {
+    background: none;
+    border: 1px solid #d0d0d0;
+    border-radius: 999px;
+    padding: 5px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'Poppins', sans-serif;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.prop-filter-btn:hover {
+    border-color: #526F50;
+    color: #526F50;
+}
+
+.prop-filter-btn.prop-filter-active {
+    background: #526F50;
+    border-color: #526F50;
+    color: #fff;
+}

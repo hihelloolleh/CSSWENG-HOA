@@ -54,6 +54,12 @@
             </button>
         </div>
 
+        <div class="prop-filter-bar">
+            <button class="prop-filter-btn prop-filter-active" onclick="setDuesFilter('all', this)">All</button>
+            <button class="prop-filter-btn" onclick="setDuesFilter('settled', this)">Settled</button>
+            <button class="prop-filter-btn" onclick="setDuesFilter('dues', this)">Has Dues</button>
+        </div>
+
         <p class="property-count" id="propertyCount">
             Showing <strong><%= properties.length %></strong> propert<%= properties.length === 1 ? 'y' : 'ies' %>
         </p>
@@ -78,7 +84,7 @@
                         </tr>
                     <% } else { %>
                         <% properties.forEach(p => { %>
-                            <tr>
+                            <tr data-dues="<%= p.hasDues ? 'dues' : 'settled' %>">
                                 <td><%= p.lot_number || '—' %></td>
                                 <td><strong><%= p.street_name %></strong></td>
                                 <td><%= p.property_type %></td>
@@ -490,16 +496,27 @@
         });
     };
 
-    // ── Search filter with live counter ─────────────────────────────────────
+    // ── Search + dues filter ─────────────────────────────────────────────────
+    let activeDuesFilter = 'all';
+
+    function setDuesFilter(filter, btn) {
+        activeDuesFilter = filter;
+        document.querySelectorAll('.prop-filter-btn').forEach(b => b.classList.remove('prop-filter-active'));
+        btn.classList.add('prop-filter-active');
+        filterTable();
+    }
+
     function filterTable() {
         const q = document.getElementById('searchInput').value.toLowerCase();
         let visible = 0;
 
         document.querySelectorAll('#propertyTable tbody tr').forEach(row => {
             if (row.cells.length === 1 && row.cells[0].classList.contains('empty-state')) return;
-            const match = row.textContent.toLowerCase().includes(q);
-            row.style.display = match ? '' : 'none';
-            if (match) visible++;
+            const textMatch = row.textContent.toLowerCase().includes(q);
+            const duesMatch = activeDuesFilter === 'all' || row.dataset.dues === activeDuesFilter;
+            const show = textMatch && duesMatch;
+            row.style.display = show ? '' : 'none';
+            if (show) visible++;
         });
 
         const countEl = document.getElementById('propertyCount');
