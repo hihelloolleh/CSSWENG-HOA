@@ -513,21 +513,43 @@
 </script>
 
 <script>
+    function showVehicleBanner(isSuccess, message) {
+        const banner = document.getElementById('vehicleAlert');
+        banner.className = 'alert ' + (isSuccess ? 'alert-success' : 'alert-error');
+        banner.innerHTML = `<i class="fa-solid ${isSuccess ? 'fa-circle-check' : 'fa-circle-exclamation'}"></i> ${message}`;
+        banner.style.display = 'flex';
+        setTimeout(() => { banner.style.display = 'none'; }, 4000);
+    }
+
+    // Show banner for add/delete redirects (they still use full-page POST)
     document.addEventListener('DOMContentLoaded', () => {
-        const urlParams   = new URLSearchParams(window.location.search);
-        const errorMsg    = urlParams.get('error');
-        const successMsg  = urlParams.get('success');
-
+        const urlParams  = new URLSearchParams(window.location.search);
+        const errorMsg   = urlParams.get('error');
+        const successMsg = urlParams.get('success');
         if (successMsg || errorMsg) {
-            const banner = document.getElementById('vehicleAlert');
-            const isSuccess = !!successMsg;
-            banner.className = 'alert ' + (isSuccess ? 'alert-success' : 'alert-error');
-            banner.innerHTML = `<i class="fa-solid ${isSuccess ? 'fa-circle-check' : 'fa-circle-exclamation'}"></i> ${isSuccess ? successMsg : errorMsg}`;
-            banner.style.display = 'flex';
-
+            showVehicleBanner(!!successMsg, successMsg || errorMsg);
             window.history.replaceState({}, document.title, '/vehicles');
+        }
+    });
 
-            setTimeout(() => { banner.style.display = 'none'; }, 4000);
+    // Edit form: submit via fetch so the page never navigates away
+    document.getElementById('editVehicleForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const body = new URLSearchParams(new FormData(this));
+        try {
+            const res  = await fetch(this.action, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: body.toString()
+            });
+            const data = await res.json();
+            document.getElementById('editVehicleModal').classList.remove('active');
+            showVehicleBanner(data.success, data.message);
+            if (data.success) {
+                setTimeout(() => location.reload(), 1500);
+            }
+        } catch (err) {
+            showVehicleBanner(false, 'An unexpected error occurred. Please try again.');
         }
     });
 </script>
