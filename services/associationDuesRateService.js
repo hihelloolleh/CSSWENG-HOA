@@ -41,7 +41,8 @@ const resolveAssociationDuesRate = async (propertyId, paymentType, months, conn 
     }
 
     const unitRate = parseFloat(rate.amount);
-    const amount   = isAnnual ? unitRate : unitRate * monthsCount;
+    const raw      = isAnnual ? unitRate : unitRate * monthsCount;
+    const amount   = Math.round(raw * 100) / 100;
 
     return {
         property,

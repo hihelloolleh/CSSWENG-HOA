@@ -93,20 +93,22 @@ const getResidentsByProperty = async () => {
     const [rows] = await pool.query(`
         SELECT rp.property_id, r.resident_id, p.person_id,
                CONCAT(p.first_name, ' ', p.last_name) AS full_name,
-               r.isDelinquent
+               r.isDelinquent,
+               rp.type AS resident_type
         FROM Resident_Property rp
         JOIN Resident r  ON rp.resident_id = r.resident_id
         JOIN Person   p  ON r.person_id    = p.person_id
-        ORDER BY p.last_name, p.first_name
+        ORDER BY FIELD(rp.type, 'Homeowner', 'Tenant'), p.last_name, p.first_name
     `);
     const map = {};
     for (const row of rows) {
         if (!map[row.property_id]) map[row.property_id] = [];
         map[row.property_id].push({
-            person_id: row.person_id,
-            resident_id: row.resident_id,
-            full_name: row.full_name,
-            isDelinquent: !!row.isDelinquent,
+            person_id:     row.person_id,
+            resident_id:   row.resident_id,
+            full_name:     row.full_name,
+            isDelinquent:  !!row.isDelinquent,
+            resident_type: row.resident_type,
         });
     }
     return map;

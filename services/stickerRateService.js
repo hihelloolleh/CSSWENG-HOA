@@ -92,7 +92,7 @@ const resolveStickerRates = async (vehicleIds, personId, conn = pool) => {
         totalAmount += parseFloat(rate.amount);
     }
 
-    return { residentId, year, items, totalAmount };
+    return { residentId, year, items, totalAmount: Math.round(totalAmount * 100) / 100 };
 };
 
 module.exports = { resolveStickerRates };
