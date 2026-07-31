@@ -23,9 +23,9 @@ app.use(express.static(path.join(__dirname, 'public')));   // serves /public
 
 // ============================================================
 // ROUTES
-// ADD NEW ROUTE FILES HERE AS NEW PAGES ARE CREATED
 // ============================================================
 const indexRoutes               = require('./routes/index');
+const accountRoutes             = require('./routes/accountRoutes');        
 const personRoutes              = require('./routes/personRoutes');
 const propertyRoutes            = require('./routes/propertyRoutes');
 const propertyOwnerRoutes       = require('./routes/propertyOwnerRoutes');
@@ -40,8 +40,10 @@ const paymentRoutes             = require('./routes/paymentRoutes');
 const expenseRoutes             = require('./routes/expenseRoutes');
 const rateRoutes                = require('./routes/rateRoutes');
 const reportRoutes              = require('./routes/reportRoutes');
+const generateReportRoutes      = require('./routes/generateReportRoutes');
 
 app.use('/',                    indexRoutes);
+app.use('/accounts',            accountRoutes);          
 app.use('/persons',             personRoutes);
 app.use('/properties',          propertyRoutes);
 app.use('/property-owners',     propertyOwnerRoutes);
@@ -56,6 +58,7 @@ app.use('/dues',                paymentRoutes);
 app.use('/expenses',            expenseRoutes);
 app.use('/rates',               rateRoutes);
 app.use('/reports',             reportRoutes);
+app.use('/generate-reports',    generateReportRoutes);
 
 // ============================================================
 // DATABSE SETUP AND CONNECTION
