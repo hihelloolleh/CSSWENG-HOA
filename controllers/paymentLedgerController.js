@@ -1,5 +1,6 @@
 const paymentLedgerModel   = require('../models/paymentLedgerModel');
 const paymentLedgerService = require('../services/paymentLedgerService');
+const expenseModel = require('../models/expenseModel');
 
 const getPayments = async (req, res) => {
     try {
@@ -8,6 +9,7 @@ const getPayments = async (req, res) => {
             ? await paymentLedgerModel.getPaymentsByPurpose(purpose)
             : await paymentLedgerModel.getAllPayments();
         const persons = await paymentLedgerModel.getAllPersons();
+        const expenses = await expenseModel.getAllExpenses();
 
         res.render('paymentLedger', {
             title:         'Payment Ledger',
@@ -15,10 +17,12 @@ const getPayments = async (req, res) => {
             pageCSS:       'payment-ledger.css',
             payments,
             persons,
+            expenses,
             filterPurpose: purpose || '',
             success:       req.query.success || null,
             error:         req.query.error   || null,
         });
+
     } catch (err) {
         console.error('getPayments error:', err);
         res.status(500).send('Failed to load payments.');
@@ -39,7 +43,6 @@ const createPayment = async (req, res) => {
         
         if (purposeStr.includes('general')) {
             
-            // Map the raw HTML values to professional ledger labels
             const subtypeMap = {
                 'basketball_rental': 'Basketball Court Rental',
                 'racquet_rental': 'Racquet Court Rental',

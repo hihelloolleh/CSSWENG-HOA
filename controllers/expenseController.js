@@ -18,6 +18,16 @@ const getExpenseDashboard = async (req, res) => {
 
 const createExpense = async (req, res) => {
     try {
+        // if employee salary expense, the name of the employee is appended to the remarks part
+        if (req.body.employee_name) {
+            const salaryNote = `Salary paid to: ${req.body.employee_name}`;
+            
+            // append other remarks that were typed in
+            req.body.remarks = req.body.remarks 
+                ? `${salaryNote} | ${req.body.remarks}` 
+                : salaryNote;
+        }
+
         const { 
             purpose, payor_id, payor_type, 
             amount_expected, amount_paid, 
@@ -43,7 +53,7 @@ const createExpense = async (req, res) => {
             date_paid: date_paid,
             payment_method: payment_method,
             receipt_number: receipt_number,
-            remarks: remarks
+            remarks: req.body.remarks
         });
         
         res.redirect('/payments?success=Expense+recorded+successfully');

@@ -107,6 +107,43 @@ body {
     gap: 8px;
 }
 
+/* ── Tab bar ───────────────────────────────────────────────────────────── */
+.tab-bar {
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid #e0e0e0;
+    gap: 4px;
+    margin-bottom: 20px;
+    margin-top: 10px;
+}
+
+.tab-btn {
+    background: none;
+    border: none;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Poppins', sans-serif;
+    color: #888;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.15s, border-color 0.15s;
+}
+
+.tab-btn:hover {
+    color: #526F50;
+}
+
+.tab-btn.tab-active {
+    color: #526F50;
+    border-bottom-color: #526F50;
+    font-weight: 600;
+}
+
 .btn-primary {
     background: #526F50;
     color: white;

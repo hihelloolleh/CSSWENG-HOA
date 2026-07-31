@@ -7,13 +7,7 @@ const ExpenseModel = {
                 e.*,
                 CONCAT(p.first_name, ' ', p.last_name) AS payor_name
             FROM expenses e
-            LEFT JOIN Resident r ON e.payor_id = r.resident_id AND e.payor_type = 'Resident'
-            LEFT JOIN Board_Member bm ON e.payor_id = bm.board_id AND e.payor_type = 'Board Member'
-            LEFT JOIN Employee emp ON e.payor_id = emp.employee_id AND e.payor_type = 'Employee'
-            LEFT JOIN Person p ON 
-                p.person_id = r.person_id OR 
-                p.person_id = bm.resident_id OR 
-                p.person_id = emp.person_id
+            LEFT JOIN Person p ON e.payor_id = p.person_id
             ORDER BY e.date_paid DESC, e.created_at DESC;
         `;
         const [rows] = await pool.query(query);
