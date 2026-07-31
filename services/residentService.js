@@ -69,7 +69,7 @@ const updateResident = async(data) => {
         }
 
         await personModel.updatePerson(data, existingResident.person_id, conn);
-        await residentModel.updateResident(data.residency_start_date, conn);
+        await residentModel.updateResident(data.residency_start_date, data.resident_id, conn);
 
         // Manual delinquent toggle from the edit form
         if (data.isDelinquent !== undefined) {

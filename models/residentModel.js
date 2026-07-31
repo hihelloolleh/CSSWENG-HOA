@@ -57,7 +57,8 @@ const getAllResidents = async() => {
         FROM Resident
         JOIN Person
             ON Resident.person_id = Person.person_id
-        WHERE deleteFlag = 0`
+        WHERE deleteFlag = 0
+        ORDER BY Resident.isActive DESC`
     );
 
     return rows;
@@ -142,7 +143,7 @@ const deactivateResident = async(resident_id, end_date, conn) => {
  * @param {*} data - Resident data to update
  * @returns - The number of rows updated
  */
-const updateResident = async(start_date, conn) => {
+const updateResident = async(start_date, resident_id, conn) => {
 
     const [result] = await conn.query(`
         UPDATE Resident
@@ -150,7 +151,7 @@ const updateResident = async(start_date, conn) => {
         WHERE resident_id = ?`,
         [
             start_date,
-            data.resident_id
+            resident_id
         ]
     );
 
