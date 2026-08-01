@@ -3,7 +3,7 @@
 // Values: 'dashboard' | 'residents' | 'boardMembers' | 'properties'
 //         | 'employees' | 'vehicles' | 'rates' | 'expenses'
 const page = typeof activePage !== 'undefined' ? activePage : '';
-const financePages = ['financeDashboard', 'paymentLedger', 'payments', 'expenses', 'rates', 'reports'];
+const financePages = ['financeDashboard', 'paymentLedger', 'payments', 'expenses', 'rates'  ];
 const financeOpen = financePages.includes(page);
 %>
 
@@ -42,6 +42,24 @@ const financeOpen = financePages.includes(page);
             <i class="fa-solid fa-car"></i>
             <span>Vehicles</span>
         </a>
+
+        <a href="/reports" class="nav-item <%= page === 'reports' ? 'active' : '' %>">
+            <i class="fa-solid fa-file-lines"></i>
+            <span>Reports</span>
+        </a>
+
+        <a href="/accounts" class="nav-item <%= activePage === 'accountManagement' ? 'active' : '' %>">
+            <i class="ph ph-users"></i>
+            <span>Account Management</span>
+        </a>
+
+        <!-- 2nd reports page -->
+        <!-- 
+        <a href="/generate-reports" class="nav-item <%= activePage === 'generateReports' ? 'active' : '' %>">
+            <i class="ph ph-file-text"></i>
+            <span>Generate Reports</span>
+        </a> -->
+        
         <div class="main-tab <%= financeOpen ? 'open' : '' %>">
             <div class="nav-item finance-toggle">
                 <i class="fa-solid fa-building-columns"></i>
@@ -64,26 +82,8 @@ const financeOpen = financePages.includes(page);
                     <i class="fas fa-dollar-sign"></i>
                     <span>Rates</span>
                 </a>
-
-                <a href="/reports" class="nav-item <%= page === 'reports' ? 'active' : '' %>">
-                    <i class="fa-solid fa-file-lines"></i>
-                    <span>Reports</span>
-                </a>
-
-                <a href="/accounts" class="nav-item <%= activePage === 'accountManagement' ? 'active' : '' %>">
-                    <i class="ph ph-users"></i>
-                    <span>Account Management</span>
-                </a>
-
-                <a href="/generate-reports" class="nav-item <%= activePage === 'generateReports' ? 'active' : '' %>">
-                    <i class="ph ph-file-text"></i>
-                    <span>Generate Reports</span>
-                </a>
             </div>
         </div>
-
-        
-        
     </nav>
 
     <div class="sidebar-footer">
