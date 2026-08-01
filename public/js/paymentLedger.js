@@ -12,7 +12,7 @@ document.getElementById('openModal').onclick = () => {
 const addExpenseModal = document.getElementById('expenseModal');
 
 document.getElementById('openExpenseModal').onclick = () => {
-    addExpenseModal.classList.add('active');
+     window.location.href = '/expenses/utilities';
 };
 
 document.getElementById('cancelExpense').onclick = () => {

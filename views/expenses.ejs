@@ -25,6 +25,27 @@
         </button>
     
         <div class="payment-modal">
+            <div class="pay-tab-bar">
+                <a href="/expenses/utilities" class="pay-tab-btn <%- expenseType === 'utilities' ? 'pay-tab-active' : '' %>">
+                    <i class="fa-solid fa-house"></i> Utilities 
+                </a>
+                <a href="/expenses/salaries" class="pay-tab-btn <%- expenseType === 'vehicle' ? 'pay-tab-active' : '' %>">
+                    <i class="fa-solid fa-car"></i> Employee Salary
+                </a>
+                <a href="/expenses/maintenance" class="pay-tab-btn <%- expenseType === 'maintenance' ? 'pay-tab-active' : '' %>">
+                    <i class="fa-solid fa-car"></i> Maintenance
+                </a>
+                <a href="/expenses/cash" class="pay-tab-btn <%- expenseType === 'cash' ? 'pay-tab-active' : '' %>">
+                    <i class="fa-solid fa-car"></i> Petty Cash
+                </a>
+                <a href="/expenses/food" class="pay-tab-btn <%- expenseType === 'food' ? 'pay-tab-active' : '' %>">
+                    <i class="fa-solid fa-car"></i> Food
+                </a>
+                <a href="/expenses/project" class="pay-tab-btn <%- expenseType === 'project' ? 'pay-tab-active' : '' %>">
+                    <i class="fa-solid fa-car"></i> Community Project
+                </a>
+            </div>
+            
             <div class="modal-header">
                 <h1>
                     <% if (expenseType === 'utilities') { %>Utilities Expense 
