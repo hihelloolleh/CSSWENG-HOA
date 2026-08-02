@@ -236,6 +236,7 @@ const createTables = async() => {
                 password_hash VARCHAR(255) NOT NULL,
                 email VARCHAR(255) NOT NULL,
                 contact_num VARCHAR(100),
+                last_login TIMESTAMP NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
             );
@@ -360,6 +361,9 @@ const createTables = async() => {
             { table: 'Property', column: 'hasDues',             definition: 'BOOLEAN NOT NULL DEFAULT 0',         after: 'street_name'  },
             { table: 'Property', column: 'outstandingBalance',  definition: 'DECIMAL(10,2) NOT NULL DEFAULT 0.00',after: 'hasDues'      },
             { table: 'Vehicle',  column: 'hasSticker',          definition: 'BOOLEAN NOT NULL DEFAULT 0',         after: 'sticker_year' },
+            { table: 'BoardMemberAccount', column: 'isActive',   definition: 'BOOLEAN DEFAULT 1',                  after: 'board_member_id' },
+            { table: 'BoardMemberAccount', column: 'last_login', definition: 'TIMESTAMP NULL',                     after: 'isActive'     },
+            { table: 'Admin',   column: 'last_login',            definition: 'TIMESTAMP NULL',                     after: 'contact_num'  },
         ];
 
         for (const { table, column, definition, after } of missingColumns) {
