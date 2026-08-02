@@ -73,10 +73,10 @@ const AccountController = {
 
     resetAdminPassword: async (req, res) => {
         try {
-            const { current_password, new_password, confirm_password } = req.body;
+            const { new_password, confirm_password } = req.body;
             const admin_id = req.params.id;
 
-            if (!current_password || !new_password || !confirm_password) {
+            if (!new_password || !confirm_password) {
                 throw new Error('All password fields are required.');
             }
 
@@ -88,7 +88,7 @@ const AccountController = {
                 throw new Error('Passwords do not match.');
             }
 
-            await AccountService.updateAdminPassword(admin_id, current_password, new_password);
+            await AccountService.adminResetPassword(admin_id, new_password);
 
             res.redirect('/accounts?success=Admin+password+updated+successfully.');
         } catch (err) {
@@ -158,10 +158,10 @@ const AccountController = {
 
     resetBoardMemberPassword: async (req, res) => {
         try {
-            const { current_password, new_password, confirm_password } = req.body;
+            const { new_password, confirm_password } = req.body;
             const account_id = req.params.id;
 
-            if (!current_password || !new_password || !confirm_password) {
+            if (!new_password || !confirm_password) {
                 throw new Error('All password fields are required.');
             }
 
@@ -173,7 +173,7 @@ const AccountController = {
                 throw new Error('Passwords do not match.');
             }
 
-            await AccountService.updateBoardMemberPassword(account_id, current_password, new_password);
+            await AccountService.adminResetBoardMemberPassword(account_id, new_password);
 
             res.redirect('/accounts?success=Board+member+password+updated+successfully.');
         } catch (err) {
