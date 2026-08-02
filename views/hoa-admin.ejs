@@ -2,7 +2,8 @@
      HOA ADMIN CONTACT VIEW
      Layout: views/layouts/auth.ejs (no sidebar)
      Route:  GET /hoa-admin  (routes/index.js)
-     SPRINT 2+: Make email/phone editable only when logged in as admin.
+     Pulls live contact info from the Admin table, kept in sync
+     with the "Update Contact Info" form on Account Management.
      ============================================================ -->
 <link rel="stylesheet" href="/css/hoa-admin.css">
 
@@ -14,13 +15,12 @@
 
         <div class="email">
             <label>Email:</label>
-            <!-- TODO (SPRINT 2+): PULL FROM DB / ENV CONFIG -->
-            <span>mgvphasev@gmail.com</span>
+            <span><%= adminContact.email || 'Not yet configured' %></span>
         </div>
 
         <div class="phone">
             <label>Phone:</label>
-            <span>0975 984 4413</span>
+            <span><%= adminContact.contact_num || 'Not yet configured' %></span>
         </div>
     </div>
 
