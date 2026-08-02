@@ -48,10 +48,12 @@ const financeOpen = financePages.includes(page);
             <span>Reports</span>
         </a>
 
+        <% if (typeof currentUser !== 'undefined' && currentUser && currentUser.accountType === 'admin') { %>
         <a href="/accounts" class="nav-item <%= activePage === 'accountManagement' ? 'active' : '' %>">
             <i class="ph ph-users"></i>
             <span>Account Management</span>
         </a>
+        <% } %>
 
         <!-- 2nd reports page -->
         <!-- 
@@ -87,7 +89,7 @@ const financeOpen = financePages.includes(page);
     </nav>
 
     <div class="sidebar-footer">
-        <a href="/login" class="nav-item logout">
+        <a href="/logout" class="nav-item logout">
             <i class="fa-solid fa-right-from-bracket"></i>
             <span>Log Out</span>
         </a>
