@@ -105,10 +105,23 @@ const AccountService = {
         return await AccountModel.updateAdminPassword(admin_id, passwordHash);
     },
 
+    // Used when an Admin is resetting ANOTHER account's password from the
+    // Account Management page — the admin is authorized by role (checked via
+    // requireAdmin middleware), so no knowledge of that account's current
+    // password is required or expected.
+    adminResetPassword: async (admin_id, newPassword) => {
+        const admin = await AccountModel.getAdminById(admin_id);
+        if (!admin) {
+            throw new Error('Admin not found.');
+        }
+        const passwordHash = await bcrypt.hash(newPassword, SALT_ROUNDS);
+        return await AccountModel.updateAdminPassword(admin_id, passwordHash);
+    },
+
     deleteAdmin: async (admin_id) => {
         const admins = await AccountModel.getAllAdmins();
-        if (admins.length <= 1) {
-            throw new Error('Cannot delete the last admin account.');
+        if (admins.length <= 2) {
+            throw new Error('Cannot delete — at least 2 admin accounts must remain at all times.');
         }
 
         return await AccountModel.deleteAdmin(admin_id);
@@ -174,6 +187,16 @@ const AccountService = {
             throw new Error('Current password is incorrect.');
         }
 
+        const passwordHash = await bcrypt.hash(newPassword, SALT_ROUNDS);
+        return await AccountModel.updateBoardMemberPassword(account_id, passwordHash);
+    },
+
+    // Admin-initiated reset for a board member account — see adminResetPassword above.
+    adminResetBoardMemberPassword: async (account_id, newPassword) => {
+        const account = await AccountModel.getBoardMemberAccountById(account_id);
+        if (!account) {
+            throw new Error('Board member account not found.');
+        }
         const passwordHash = await bcrypt.hash(newPassword, SALT_ROUNDS);
         return await AccountModel.updateBoardMemberPassword(account_id, passwordHash);
     },
