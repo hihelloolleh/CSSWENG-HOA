@@ -270,6 +270,32 @@ const getFinancialsReport = async (fromDate, toDate) => {
     return { collections, expenses, totalCollections, totalExpenses, endingBalance, monthly };
 };
 
+const getVehicleStickerBreakdown = async () => {
+    const [rows] = await pool.query(`
+        SELECT type, COUNT(*) as count 
+        FROM Vehicle 
+        WHERE status = 'Active'
+        GROUP BY type
+    `);
+    return rows;
+};
+
+const getVehicleStickerReport = async (fromDate, toDate) => {
+    const [rows] = await pool.query(`
+        SELECT 
+            date_paid, 
+            amount_paid, 
+            payment_method, 
+            receipt_number, 
+            remarks 
+        FROM Payment 
+        WHERE purpose = 'Vehicle Sticker' 
+          AND date_paid BETWEEN ? AND ? 
+        ORDER BY date_paid ASC
+    `, [fromDate, toDate]);
+    return rows;
+};
+
 module.exports = {
     getDelinquencyReportSummary,
     getDelinquencyReportRows,
@@ -277,4 +303,6 @@ module.exports = {
     getSeniorCitizenSummary,
     getVillageGeneralReport,
     getFinancialsReport,
+    getVehicleStickerBreakdown,
+    getVehicleStickerReport
 };

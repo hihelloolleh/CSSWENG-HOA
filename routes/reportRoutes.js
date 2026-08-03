@@ -7,5 +7,6 @@ router.get('/delinquency',      reportController.getDelinquencyReport);
 router.get('/senior-citizens',  reportController.getSeniorCitizenReport);
 router.get('/village-general',  reportController.getVillageGeneralReport);
 router.get('/financials',       reportController.getFinancialsReport);
+router.get('/vehicle-stickers', reportController.getVehicleStickerReport);
 
 module.exports = router;

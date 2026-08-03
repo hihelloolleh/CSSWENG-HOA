@@ -122,3 +122,43 @@ exports.getDelinquencyReport = async (req, res) => {
         res.status(500).send('Failed to generate delinquency report.');
     }
 };
+
+exports.getVehicleStickerReport = async (req, res) => {
+    try {
+        const today = new Date();
+        
+        const [rows, breakdownRows] = await Promise.all([
+            reportModel.getVehicleStickerReport('2000-01-01', today.toISOString().slice(0, 10)),
+            reportModel.getVehicleStickerBreakdown()
+        ]);
+        
+        const breakdown = {};
+        breakdownRows.forEach(row => {
+            const vehicleType = (row.type || 'Unknown').toUpperCase();
+            breakdown[vehicleType] = row.count;
+        });
+
+        const summary = {
+            totalCount: rows.length,
+            totalEarnings: rows.reduce((sum, r) => sum + parseFloat(r.amount_paid || 0), 0),
+            cars: breakdown['CAR'] || breakdown['CARS'] || 0,
+            motorcycles: breakdown['MOTORCYCLE'] || breakdown['MOTORCYCLES'] || 0,
+            ebikes: breakdown['E-BIKE'] || breakdown['EBIKE'] || breakdown['E-BIKES'] || 0,
+            commercial: breakdown['COMMERCIAL'] || 0
+        };
+
+        res.render('vehicleStickerReport', {
+            layout:          'layouts/report',
+            title:           'Vehicle Sticker Sales Report',
+            summary,
+            rows,
+            generatedDate:   today.toLocaleDateString('en-PH', {
+                month: 'numeric', day: 'numeric', year: 'numeric',
+            }),
+        });
+    }
+    catch (err) {
+        console.error('Vehicle sticker report error:', err);
+        res.status(500).send('Failed to generate vehicle sticker report.');
+    }
+};
