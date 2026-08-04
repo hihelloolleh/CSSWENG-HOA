@@ -52,13 +52,23 @@ const getAllResidents = async() => {
             Person.contact_num,
             Resident.residency_start_date,
             Resident.residency_end_date,
-            Resident.isActive,
-            Resident.isDelinquent
+            Resident.isDelinquent,
+            CASE
+                WHEN Resident.residency_end_date IS NULL
+                  OR Resident.residency_end_date > CURDATE() THEN 1
+                ELSE 0
+            END AS isActive
         FROM Resident
         JOIN Person
             ON Resident.person_id = Person.person_id
         WHERE deleteFlag = 0
-        ORDER BY Resident.isActive DESC`
+        ORDER BY
+            CASE
+                WHEN Resident.residency_end_date IS NULL
+                  OR Resident.residency_end_date > CURDATE() THEN 0
+                ELSE 1
+            END ASC,
+            Person.last_name ASC`
     );
 
     return rows;
@@ -143,21 +153,26 @@ const deactivateResident = async(resident_id, end_date, conn) => {
  * @param {*} data - Resident data to update
  * @returns - The number of rows updated
  */
-const updateResident = async(start_date, resident_id, conn) => {
+const updateResident = async(start_date, end_date, resident_id, conn) => {
 
     const [result] = await conn.query(`
         UPDATE Resident
-        SET residency_start_date = ?
+        SET residency_start_date = ?, residency_end_date = ?
         WHERE resident_id = ?`,
-        [
-            start_date,
-            resident_id
-        ]
+        [start_date, end_date || null, resident_id]
     );
 
     return result.affectedRows;
 };
 
+
+const reactivateResident = async (resident_id, new_start_date, conn) => {
+    const [result] = await conn.query(
+        `UPDATE Resident SET residency_start_date = ?, residency_end_date = NULL, isActive = 1 WHERE resident_id = ?`,
+        [new_start_date, resident_id]
+    );
+    return result.affectedRows;
+};
 
 const updateResidentEndDate = async (resident_id, end_date, conn) => {
     const [result] = await conn.query(
@@ -202,6 +217,7 @@ module.exports = {
     deleteResident,
     updateResident,
     updateResidentEndDate,
+    reactivateResident,
     deactivateResident,
     findActiveResidentByPersonId,
     setDelinquent,

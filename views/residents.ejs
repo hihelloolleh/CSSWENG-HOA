@@ -71,9 +71,14 @@
         <div id="residentsSection">
 
             <div class="bm-filter-bar">
-                <button class="bm-filter-btn bm-filter-active" data-filter="all"         onclick="filterResidents('all')">All</button>
-                <button class="bm-filter-btn"                  data-filter="good"        onclick="filterResidents('good')">Good Standing</button>
-                <button class="bm-filter-btn"                  data-filter="delinquent"  onclick="filterResidents('delinquent')">Delinquent</button>
+                <button class="bm-filter-btn bm-filter-active" data-filter-active="all"      onclick="filterResidentsActive('all')">All</button>
+                <button class="bm-filter-btn"                  data-filter-active="active"   onclick="filterResidentsActive('active')">Active</button>
+                <button class="bm-filter-btn"                  data-filter-active="inactive" onclick="filterResidentsActive('inactive')">Inactive</button>
+            </div>
+            <div class="bm-filter-bar">
+                <button class="bm-filter-btn bm-filter-active" data-filter-dues="all"         onclick="filterResidentsDues('all')">All</button>
+                <button class="bm-filter-btn"                  data-filter-dues="good"        onclick="filterResidentsDues('good')">Good Standing</button>
+                <button class="bm-filter-btn"                  data-filter-dues="delinquent"  onclick="filterResidentsDues('delinquent')">Delinquent</button>
             </div>
 
             <p class="resident-count">
@@ -102,7 +107,8 @@
                             </tr>
                         <% } else { %>
                             <% residents.forEach(resident => { %>
-                                <tr data-status="<%= resident.isDelinquent ? 'delinquent' : 'good' %>">
+                                <tr data-status="<%= resident.isDelinquent ? 'delinquent' : 'good' %>"
+                                    data-active="<%= resident.isActive ? 'active' : 'inactive' %>">
                                     <td><strong><%= resident.first_name %> <%= resident.middle_name %> <%= resident.last_name %> <%= resident.suffix %></strong></td>
                                     <td><%= resident.birth_date ? resident.birth_date.toString().substring(0, 10) : '—' %></td>
                                     <td><%= resident.email || '—' %></td>
@@ -150,6 +156,13 @@
                                                     data-id="<%= resident.resident_id %>"
                                                     onclick="openEndResidencyModal(this.dataset.id)">
                                                 End residency
+                                            </button>
+                                        <% } else { %>
+                                            <button class="btn-icon"
+                                                    data-id="<%= resident.resident_id %>"
+                                                    data-name="<%= resident.first_name %> <%= resident.last_name %>"
+                                                    onclick="openReactivateModal(this)">
+                                                Reactivate
                                             </button>
                                         <% } %>
                                         <button class="btn-icon btn-icon-danger"
@@ -304,6 +317,12 @@
                                 <input type="date" id="residency-start-date" name="residency_start_date">
                             </div>
                         </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Residency End Date <span style="color:#888; font-weight:400; font-size:12px;">(leave blank if ongoing)</span></label>
+                                <input type="date" id="residency-end-date-active" name="residency_end_date">
+                            </div>
+                        </div>
                         <div class="form-group" id="delinquentGroup" style="display:none;">
                             <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
                                 <input type="checkbox" id="isDelinquent" name="isDelinquent" value="1">
@@ -406,6 +425,28 @@
     </div>
 </div>
 
+<div id="reactivateModal" class="modal">
+    <div class="modal-content" style="max-width:450px;">
+        <div class="modal-header">
+            <h2>Reactivate Resident</h2>
+            <button class="modal-close" onclick="closeModal('reactivateModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p>Reactivate <strong id="reactivateName"></strong>?</p>
+            <p style="color:#555; font-size:13px; margin-top:8px;">
+                Their residency start date will be set to today: <strong id="reactivateDate"></strong>.
+                The previous end date will be cleared.
+            </p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('reactivateModal')">Cancel</button>
+            <form id="reactivateForm" method="POST">
+                <button type="submit" class="btn btn-primary">Reactivate</button>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- ══════════════════════════════════════════════════════════════════════════
      BOARD MEMBER MODALS
 ══════════════════════════════════════════════════════════════════════════ -->
@@ -500,7 +541,7 @@
 </div>
 
 <!-- Resident data for board member search dropdown -->
-<script id="residentData" type="application/json"><%- JSON.stringify(residents.map(r => ({ resident_id: r.resident_id, full_name: r.first_name + ' ' + r.last_name }))) %></script>
+<script id="residentData" type="application/json"><%- JSON.stringify(residents.filter(r => r.isActive).map(r => ({ resident_id: r.resident_id, full_name: r.first_name + ' ' + r.last_name }))) %></script>
 
 <script src="/js/sidebar.js"></script>
 <script>
@@ -531,14 +572,21 @@ function switchTab(tab) {
     if (boardMembersMode) filterBoardMembers('all');
 }
 
-let resCurrentFilter = 'all';
+let resActiveFilter = 'all';
+let resDuesFilter   = 'all';
 
-function filterResidents(filter) {
-    resCurrentFilter = filter;
-    document.querySelectorAll('.bm-filter-btn[data-filter]').forEach(btn => {
-        if (btn.closest('#residentsSection')) {
-            btn.classList.toggle('bm-filter-active', btn.dataset.filter === filter);
-        }
+function filterResidentsActive(filter) {
+    resActiveFilter = filter;
+    document.querySelectorAll('.bm-filter-btn[data-filter-active]').forEach(btn => {
+        btn.classList.toggle('bm-filter-active', btn.dataset.filterActive === filter);
+    });
+    applyResidentFilter();
+}
+
+function filterResidentsDues(filter) {
+    resDuesFilter = filter;
+    document.querySelectorAll('.bm-filter-btn[data-filter-dues]').forEach(btn => {
+        btn.classList.toggle('bm-filter-active', btn.dataset.filterDues === filter);
     });
     applyResidentFilter();
 }
@@ -547,9 +595,10 @@ function applyResidentFilter() {
     const q = document.getElementById('searchInput').value.toLowerCase();
     let visible = 0;
     document.querySelectorAll('#residentTable tbody tr[data-status]').forEach(row => {
-        const matchesFilter = resCurrentFilter === 'all' || row.dataset.status === resCurrentFilter;
+        const matchesActive = resActiveFilter === 'all' || row.dataset.active === resActiveFilter;
+        const matchesDues   = resDuesFilter   === 'all' || row.dataset.status === resDuesFilter;
         const matchesSearch = !q || row.textContent.toLowerCase().includes(q);
-        const show = matchesFilter && matchesSearch;
+        const show = matchesActive && matchesDues && matchesSearch;
         row.style.display = show ? '' : 'none';
         if (show) visible++;
     });
@@ -595,7 +644,7 @@ function openEditModal(button) {
     document.getElementById('resident_id').value = button.dataset.id;
 
     if (isActive) {
-        // Active resident: edit personal info and start date
+        // Active resident: edit personal info, start date, and optional end date
         document.getElementById('modalTitle').textContent = 'Edit Resident';
         document.getElementById('submitBtn').textContent  = 'Save Changes';
         document.getElementById('residentForm').action    = '/residents/' + button.dataset.id + '/update';
@@ -607,18 +656,23 @@ function openEditModal(button) {
         lastNameEl.required   = true;
         phoneEl.required      = true;
         startDateEl.required  = true;
-        document.getElementById('residency-end-date-edit').required = false;
 
-        document.getElementById('firstName').value             = button.dataset.firstname;
-        document.getElementById('lastName').value              = button.dataset.lastname;
-        document.getElementById('middleName').value            = button.dataset.middlename;
-        document.getElementById('suffix').value                = button.dataset.suffix;
-        document.getElementById('dob').value                   = button.dataset.dob;
-        document.getElementById('email').value                 = button.dataset.email;
-        document.getElementById('phoneNumber').value           = button.dataset.phone;
-        document.getElementById('residency-start-date').value  = button.dataset.residentstart;
-        document.getElementById('delinquentGroup').style.display = '';
-        document.getElementById('isDelinquent').checked        = button.dataset.delinquent === '1';
+        // Only submit the active end-date input; disable the inactive-only one
+        document.getElementById('residency-end-date-active').disabled = false;
+        document.getElementById('residency-end-date-edit').disabled   = true;
+        document.getElementById('residency-end-date-edit').required   = false;
+
+        document.getElementById('firstName').value                    = button.dataset.firstname;
+        document.getElementById('lastName').value                     = button.dataset.lastname;
+        document.getElementById('middleName').value                   = button.dataset.middlename;
+        document.getElementById('suffix').value                       = button.dataset.suffix;
+        document.getElementById('dob').value                          = button.dataset.dob;
+        document.getElementById('email').value                        = button.dataset.email;
+        document.getElementById('phoneNumber').value                  = button.dataset.phone;
+        document.getElementById('residency-start-date').value         = button.dataset.residentstart;
+        document.getElementById('residency-end-date-active').value    = button.dataset.residentend;
+        document.getElementById('delinquentGroup').style.display      = '';
+        document.getElementById('isDelinquent').checked               = button.dataset.delinquent === '1';
     } else {
         // Ended resident: only allow editing the residency end date
         document.getElementById('modalTitle').textContent = 'Edit Residency End Date';
@@ -632,9 +686,13 @@ function openEditModal(button) {
         lastNameEl.required   = false;
         phoneEl.required      = false;
         startDateEl.required  = false;
-        document.getElementById('residency-end-date-edit').required = true;
-        document.getElementById('residency-end-date-edit').value    = button.dataset.residentend;
-        document.getElementById('delinquentGroup').style.display    = 'none';
+
+        // Only submit the inactive end-date input; disable the active-section one
+        document.getElementById('residency-end-date-active').disabled = true;
+        document.getElementById('residency-end-date-edit').disabled   = false;
+        document.getElementById('residency-end-date-edit').required   = true;
+        document.getElementById('residency-end-date-edit').value      = button.dataset.residentend;
+        document.getElementById('delinquentGroup').style.display      = 'none';
     }
 
     document.getElementById('residentModal').classList.add('active');
@@ -687,6 +745,14 @@ function openViewModal(button) {
 function openEndResidencyModal(id) {
     document.getElementById('endResidencyForm').action = '/residents/' + id + '/endResidency';
     document.getElementById('endResidencyModal').classList.add('active');
+}
+
+function openReactivateModal(button) {
+    const today = new Date().toLocaleDateString('en-PH', { month: 'long', day: 'numeric', year: 'numeric' });
+    document.getElementById('reactivateName').textContent = button.dataset.name;
+    document.getElementById('reactivateDate').textContent = today;
+    document.getElementById('reactivateForm').action      = '/residents/' + button.dataset.id + '/reactivate';
+    document.getElementById('reactivateModal').classList.add('active');
 }
 
 function confirmDeleteResident(id, name) {
@@ -822,7 +888,7 @@ function closeModal(id) {
 }
 
 window.onclick = function (event) {
-    ['residentModal','deleteResidentModal','viewModal','endResidencyModal',
+    ['residentModal','deleteResidentModal','viewModal','endResidencyModal','reactivateModal',
      'bmModal','endTermModal','deleteBMModal'].forEach(id => {
         if (event.target === document.getElementById(id)) closeModal(id);
     });

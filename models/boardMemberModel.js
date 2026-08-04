@@ -5,6 +5,8 @@ const selectAllResidents = async () => {
         SELECT r.resident_id, CONCAT(p.first_name, ' ', p.last_name) AS full_name
         FROM Resident r
         JOIN Person p ON r.person_id = p.person_id
+        WHERE r.deleteFlag = 0
+          AND (r.residency_end_date IS NULL OR r.residency_end_date > CURDATE())
         ORDER BY p.last_name ASC
     `);
     return rows;
@@ -77,6 +79,14 @@ const endTermBoardMember = async (board_id, end_date, conn) => {
     return result.affectedRows;
 };
 
+const endActiveBoardMembershipByResidentId = async (resident_id, end_date, conn) => {
+    const [result] = await conn.query(
+        `UPDATE Board_Member SET board_end_date = ? WHERE resident_id = ? AND board_end_date IS NULL`,
+        [end_date, resident_id]
+    );
+    return result.affectedRows;
+};
+
 const deleteBoardMember = async (board_id) => {
     const [result] = await pool.query(
         `DELETE FROM Board_Member WHERE board_id = ?`,
@@ -93,5 +103,6 @@ module.exports = {
     addBoardMember,
     updateBoardMember,
     endTermBoardMember,
+    endActiveBoardMembershipByResidentId,
     deleteBoardMember,
 };

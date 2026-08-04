@@ -79,6 +79,16 @@ const endResidency = async (req, res) => {
     }
 }
 
+const reactivateResident = async (req, res) => {
+    try {
+        await residentService.reactivateResident(req.params.id);
+        res.redirect('/residents?success=Resident+reactivated+successfully.');
+    } catch (err) {
+        console.error('Reactivate resident error:', err);
+        res.redirect('/residents?error=Failed+to+reactivate+resident.');
+    }
+};
+
 const updateResidentEndDate = async (req, res) => {
     try {
         await residentService.updateResidentEndDate(req.params.id, req.body.residency_end_date);
@@ -105,6 +115,7 @@ module.exports = {
     deleteResident,
     updateResident,
     updateResidentEndDate,
+    reactivateResident,
     endResidency,
     getResidentOutstanding,
 };

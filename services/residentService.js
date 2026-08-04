@@ -69,7 +69,12 @@ const updateResident = async(data) => {
         }
 
         await personModel.updatePerson(data, existingResident.person_id, conn);
-        await residentModel.updateResident(data.residency_start_date, data.resident_id, conn);
+        await residentModel.updateResident(
+            data.residency_start_date,
+            data.residency_end_date || null,
+            data.resident_id,
+            conn
+        );
 
         // Manual delinquent toggle from the edit form
         if (data.isDelinquent !== undefined) {
@@ -93,9 +98,10 @@ const endResidency = async(resident_id, end_date) => {
      try {
         await conn.beginTransaction();
 
-         //endResidency
+        // End residency and any active board membership
         await residentModel.deactivateResident(resident_id, end_date, conn);
-         //delete property relationships
+        await boardMemberModel.endActiveBoardMembershipByResidentId(resident_id, end_date, conn);
+        // Delete property relationships
         const properties = await propertyModel.selectPropertiesByResidentId(resident_id, conn);
         
         for (const p of properties) {
@@ -110,6 +116,21 @@ const endResidency = async(resident_id, end_date) => {
         conn.release();
     }
 }
+
+const reactivateResident = async (resident_id) => {
+    const conn = await pool.getConnection();
+    try {
+        await conn.beginTransaction();
+        const today = new Date().toISOString().slice(0, 10);
+        await residentModel.reactivateResident(resident_id, today, conn);
+        await conn.commit();
+    } catch (err) {
+        await conn.rollback();
+        throw err;
+    } finally {
+        conn.release();
+    }
+};
 
 const updateResidentEndDate = async (resident_id, end_date) => {
     const conn = await pool.getConnection();
@@ -164,6 +185,7 @@ module.exports = {
     addResident,
     updateResident,
     updateResidentEndDate,
+    reactivateResident,
     deleteResident,
     endResidency,
 }

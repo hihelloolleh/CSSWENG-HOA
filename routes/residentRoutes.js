@@ -9,5 +9,6 @@ router.post('/:id/delete',         residentController.deleteResident);
 router.post('/:id/update',         residentController.updateResident);
 router.post('/:id/endResidency',      residentController.endResidency);
 router.post('/:id/updateEndDate',     residentController.updateResidentEndDate);
+router.post('/:id/reactivate',        residentController.reactivateResident);
 
 module.exports = router;
