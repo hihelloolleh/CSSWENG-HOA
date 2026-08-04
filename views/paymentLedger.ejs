@@ -63,13 +63,19 @@
             </div>
 
             <div>
-                <button class="btn btn-primary" id="openExpenseModal">
+                <button class="btn btn-primary" id="openExpenseModal" style="display:none;">
                     <i class="fa-solid fa-plus"></i> Add Expense
                 </button>
                 <button class="btn btn-primary" id="openModal">
                     <i class="fa-solid fa-plus"></i> Add Payment
                 </button>
             </div>
+        </div>
+
+        <!-- TRANSPARENCY NOTE -->
+        <div class="transparency-notice">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>For the purpose of transparency and security, settled payments and expenses cannot be edited afterwards. Please double-check all information before adding a payment.</span>
         </div>
 
         <!-- PAYMENTS -->
@@ -144,14 +150,16 @@
                                             data-remarks="<%= pay.remarks || '' %>">
                                         <i class="fa-solid fa-eye"></i>
                                     </button>
-                                    <button class="btn-icon" title="Edit" onclick="openEditModal(this)"
-                                            data-id="<%= pay.payment_id %>" data-purpose="<%= pay.purpose %>"
-                                            data-expected="<%= pay.amount_expected %>" data-paid="<%= pay.amount_paid %>"
-                                            data-date="<%= pay.date_paid || '' %>" data-method="<%= pay.payment_method %>"
-                                            data-receipt="<%= pay.receipt_number || '' %>" data-remarks="<%= pay.remarks || '' %>"
-                                            data-paidby="<%= pay.paid_by || '' %>">
-                                        <i class="fa-solid fa-pen"></i>
+                                    <% if (status !== 'Paid') { %>
+                                    <button class="btn-icon btn-icon-settle" title="Settle Payment" onclick="openSettleModal(this)"
+                                            data-id="<%= pay.payment_id %>" data-payor="<%= pay.payer_name || '' %>"
+                                            data-purpose="<%= pay.purpose %>" data-expected="<%= pay.amount_expected %>"
+                                            data-paid="<%= pay.amount_paid %>" data-date="<%= pay.date_paid || '' %>"
+                                            data-method="<%= pay.payment_method %>" data-receipt="<%= pay.receipt_number || '' %>"
+                                            data-remarks="<%= pay.remarks || '' %>" data-paidby="<%= pay.paid_by || '' %>">
+                                        Settle
                                     </button>
+                                    <% } %>
                                     <button class="btn-icon btn-icon-danger" title="Delete" onclick="confirmDelete(this.dataset.id, this.dataset.label)"
                                             data-id="<%= pay.payment_id %>" data-label="<%= pay.payer_name || pay.purpose %>">
                                         <i class="fa-solid fa-trash"></i>
@@ -306,6 +314,12 @@
             <button class="modal-close" onclick="closeModal('editModal')">&times;</button>
         </div>
         <div class="modal-body">
+            <!-- Settle context banner — shown only in settle mode -->
+            <div id="settleInfo" style="display:none; background:#fff7e6; border:1px solid #fbbf24; border-radius:6px; padding:10px 14px; margin-bottom:14px; font-size:13px; line-height:1.6;">
+                <strong>Settling payment</strong><br>
+                <span id="settleInfoText"></span>
+            </div>
+
             <form method="POST" action="/payments/update">
                 <input type="hidden" name="payment_id" id="edit_payment_id">
                 <input type="hidden" id="edit_payor_id">

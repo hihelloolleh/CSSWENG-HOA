@@ -291,6 +291,19 @@ body {
     background: #f8d7da;
 }
 
+.btn-icon-settle {
+    color: #4a7c59;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid #4a7c59;
+    padding: 4px 10px;
+}
+
+.btn-icon-settle:hover {
+    background: #4a7c59;
+    color: #fff;
+}
+
 .empty-state {
     text-align: center;
     padding: 40px;
@@ -556,6 +569,27 @@ body {
 
 .pay-filter-btn:hover {
     border-color: #526F50;
+    color: #526F50;
+}
+
+/* ── Transparency notice ─────────────────────────────────────────────────────── */
+.transparency-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: #f0f5f0;
+    border: 1px solid #b8d4b8;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: #3d553b;
+}
+
+.transparency-notice i {
+    flex-shrink: 0;
+    margin-top: 1px;
+    font-size: 15px;
     color: #526F50;
 }
 

@@ -12,7 +12,7 @@ document.getElementById('openModal').onclick = () => {
 const addExpenseModal = document.getElementById('expenseModal');
 
 document.getElementById('openExpenseModal').onclick = () => {
-     window.location.href = '/expenses/utilities';
+    window.location.href = '/expenses/utilities';
 };
 
 document.getElementById('cancelExpense').onclick = () => {
@@ -132,6 +132,9 @@ function openViewModal(btn) {
 function openEditModal(btn) {
     const d = btn.dataset;
 
+    document.querySelector('#editModal .modal-header h2').textContent = 'Edit Payment';
+    document.getElementById('settleInfo').style.display = 'none';
+
     document.getElementById('edit_payment_id').value      = d.id;
     document.getElementById('edit_purpose').value         = d.purpose;
     document.getElementById('edit_amount_expected').value = d.expected;
@@ -142,8 +145,47 @@ function openEditModal(btn) {
     document.getElementById('edit_date_paid').value       = d.date ? d.date.slice(0, 10) : '';
 
     const person = allPersons.find(p => String(p.person_id) === String(d.paidby));
-    document.getElementById('edit_payer_search').value = person ? person.full_name : '';
-    document.getElementById('edit_payer_id').value     = d.paidby || '';
+    document.getElementById('edit_payor_search').value = person ? person.full_name : '';
+    document.getElementById('edit_payor_id').value     = d.paidby || '';
+
+    document.getElementById('editModal').classList.add('active');
+}
+
+// ── Settle modal ──────────────────────────────────────────────────────────────
+function openSettleModal(btn) {
+    const d        = btn.dataset;
+    const expected = parseFloat(d.expected) || 0;
+    const prevPaid = parseFloat(d.paid)     || 0;
+    const remaining = expected - prevPaid;
+    const fmt = n => n.toLocaleString('en-PH', { minimumFractionDigits: 2 });
+
+    document.querySelector('#editModal .modal-header h2').textContent = 'Settle Payment';
+
+    document.getElementById('edit_payment_id').value      = d.id;
+    document.getElementById('edit_purpose').value         = d.purpose;
+    document.getElementById('edit_amount_expected').value = remaining;
+    document.getElementById('edit_amount_paid').value     = remaining;
+    document.getElementById('edit_payment_method').value  = d.method;
+    document.getElementById('edit_receipt_number').value  = d.receipt || '';
+    document.getElementById('edit_remarks').value         = d.remarks || '';
+    document.getElementById('edit_date_paid').value       = '';       // clear — admin enters settlement date
+
+    const person = allPersons.find(p => String(p.person_id) === String(d.paidby));
+    document.getElementById('edit_payor_search').value = person ? person.full_name : (d.payor || '');
+    document.getElementById('edit_payor_id').value     = d.paidby || '';
+
+    // Show banner with remaining balance context
+    const settleInfo = document.getElementById('settleInfo');
+    if (prevPaid > 0) {
+        document.getElementById('settleInfoText').innerHTML =
+            `Previously paid: <strong>&#8369;${fmt(prevPaid)}</strong> of <strong>&#8369;${fmt(expected)}</strong> expected. ` +
+            `Remaining: <strong>&#8369;${fmt(remaining)}</strong>`;
+        settleInfo.style.display = 'block';
+    } else {
+        document.getElementById('settleInfoText').innerHTML =
+            `Amount expected: <strong>&#8369;${fmt(expected)}</strong>`;
+        settleInfo.style.display = 'block';
+    }
 
     document.getElementById('editModal').classList.add('active');
 }
