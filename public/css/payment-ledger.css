@@ -292,16 +292,13 @@ body {
 }
 
 .btn-icon-settle {
-    color: #4a7c59;
-    font-size: 13px;
-    font-weight: 600;
-    border: 1px solid #4a7c59;
-    padding: 4px 10px;
+    color: #526F50;
+    font-size: 14px;
+    font-weight: 500;
 }
 
 .btn-icon-settle:hover {
-    background: #4a7c59;
-    color: #fff;
+    background: #e8e8e8;
 }
 
 .empty-state {
