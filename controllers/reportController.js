@@ -123,6 +123,34 @@ exports.getDelinquencyReport = async (req, res) => {
     }
 };
 
+exports.getResidentsGeneralReport = async (req, res) => {
+    try {
+        const { residents, vehicles } = await reportModel.getResidentsGeneralReport();
+
+        const activeCount   = residents.filter(r => r.isActive).length;
+        const summary = {
+            totalResidents:    residents.length,
+            activeResidents:   activeCount,
+            inactiveResidents: residents.length - activeCount,
+            totalVehicles:     vehicles.length,
+        };
+
+        res.render('residentsGeneralReport', {
+            layout:        'layouts/report',
+            title:         'Residents General Report',
+            residents,
+            vehicles,
+            summary,
+            generatedDate: new Date().toLocaleDateString('en-PH', {
+                month: 'long', day: 'numeric', year: 'numeric',
+            }),
+        });
+    } catch (err) {
+        console.error('Residents general report error:', err);
+        res.status(500).send('Failed to generate residents general report.');
+    }
+};
+
 exports.getVehicleStickerReport = async (req, res) => {
     try {
         const today = new Date();

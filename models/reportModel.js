@@ -296,6 +296,78 @@ const getVehicleStickerReport = async (fromDate, toDate) => {
     return rows;
 };
 
+const getResidentsGeneralReport = async () => {
+    const [residents] = await pool.query(`
+        SELECT
+            r.resident_id,
+            CONCAT(
+                per.last_name, ', ', per.first_name,
+                IF(per.middle_name IS NOT NULL AND per.middle_name != '', CONCAT(' ', per.middle_name), ''),
+                IF(per.suffix     IS NOT NULL AND per.suffix     != '', CONCAT(' ', per.suffix),     '')
+            )                                                        AS full_name,
+            CASE
+                WHEN r.residency_end_date IS NULL OR r.residency_end_date > CURDATE() THEN 1
+                ELSE 0
+            END                                                      AS isActive,
+            per.birth_date,
+            per.contact_num,
+            per.email,
+            r.residency_start_date,
+            r.residency_end_date,
+            r.isDelinquent,
+            COALESCE(
+                GROUP_CONCAT(DISTINCT rp.type ORDER BY rp.type SEPARATOR ', '),
+                '—'
+            )                                                        AS resident_type,
+            COALESCE(
+                GROUP_CONCAT(
+                    DISTINCT CONCAT('Lot ', p.lot_number, ' ', p.street_name)
+                    ORDER BY p.street_name
+                    SEPARATOR '; '
+                ),
+                '—'
+            )                                                        AS address
+        FROM Resident r
+        JOIN Person per              ON r.person_id   = per.person_id
+        LEFT JOIN Resident_Property rp ON r.resident_id = rp.resident_id
+        LEFT JOIN Property p          ON rp.property_id = p.property_id
+        WHERE r.deleteFlag = 0
+        GROUP BY
+            r.resident_id, per.first_name, per.last_name, per.middle_name, per.suffix,
+            per.birth_date, per.contact_num, per.email,
+            r.residency_start_date, r.residency_end_date, r.isDelinquent
+        ORDER BY
+            CASE WHEN r.residency_end_date IS NULL OR r.residency_end_date > CURDATE() THEN 0 ELSE 1 END,
+            per.last_name, per.first_name
+    `);
+
+    const [vehicles] = await pool.query(`
+        SELECT
+            r.resident_id,
+            CONCAT(per.last_name, ', ', per.first_name)              AS resident_name,
+            CASE
+                WHEN r.residency_end_date IS NULL OR r.residency_end_date > CURDATE() THEN 1
+                ELSE 0
+            END                                                      AS residentIsActive,
+            v.vehicle_id,
+            v.type,
+            v.plate_number,
+            v.make,
+            v.model,
+            v.color,
+            v.sticker_year,
+            v.hasSticker
+        FROM Resident r
+        JOIN Person per           ON r.person_id   = per.person_id
+        JOIN Resident_Vehicle rv  ON r.resident_id = rv.resident_id
+        JOIN Vehicle v            ON rv.vehicle_id  = v.vehicle_id
+        WHERE r.deleteFlag = 0
+        ORDER BY per.last_name, per.first_name, v.sticker_year DESC
+    `);
+
+    return { residents, vehicles };
+};
+
 module.exports = {
     getDelinquencyReportSummary,
     getDelinquencyReportRows,
@@ -304,5 +376,6 @@ module.exports = {
     getVillageGeneralReport,
     getFinancialsReport,
     getVehicleStickerBreakdown,
-    getVehicleStickerReport
+    getVehicleStickerReport,
+    getResidentsGeneralReport,
 };
