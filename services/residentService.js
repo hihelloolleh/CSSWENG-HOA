@@ -111,6 +111,20 @@ const endResidency = async(resident_id, end_date) => {
     }
 }
 
+const updateResidentEndDate = async (resident_id, end_date) => {
+    const conn = await pool.getConnection();
+    try {
+        await conn.beginTransaction();
+        await residentModel.updateResidentEndDate(resident_id, end_date, conn);
+        await conn.commit();
+    } catch (err) {
+        await conn.rollback();
+        throw err;
+    } finally {
+        conn.release();
+    }
+};
+
 const deleteResident = async(resident_id) => {
     const conn = await pool.getConnection();
 
@@ -147,8 +161,9 @@ const deleteResident = async(resident_id) => {
 }
 
 module.exports = {
-    addResident, 
+    addResident,
     updateResident,
+    updateResidentEndDate,
     deleteResident,
-    endResidency
+    endResidency,
 }

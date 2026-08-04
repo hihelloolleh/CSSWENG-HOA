@@ -79,6 +79,16 @@ const endResidency = async (req, res) => {
     }
 }
 
+const updateResidentEndDate = async (req, res) => {
+    try {
+        await residentService.updateResidentEndDate(req.params.id, req.body.residency_end_date);
+        res.redirect('/residents?success=Residency+end+date+updated+successfully.');
+    } catch (err) {
+        console.error('Update end date error:', err);
+        res.redirect('/residents?error=Failed+to+update+residency+end+date.');
+    }
+};
+
 const getResidentOutstanding = async (req, res) => {
     try {
         const rows = await residentModel.getDelinquentPropertiesByResidentId(req.params.id);
@@ -94,6 +104,7 @@ module.exports = {
     addResident,
     deleteResident,
     updateResident,
+    updateResidentEndDate,
     endResidency,
     getResidentOutstanding,
 };

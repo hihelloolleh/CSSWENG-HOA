@@ -7,6 +7,7 @@ router.get('/:id/outstanding',     residentController.getResidentOutstanding);
 router.post('/',                   residentController.addResident);
 router.post('/:id/delete',         residentController.deleteResident);
 router.post('/:id/update',         residentController.updateResident);
-router.post('/:id/endResidency',   residentController.endResidency);
+router.post('/:id/endResidency',      residentController.endResidency);
+router.post('/:id/updateEndDate',     residentController.updateResidentEndDate);
 
 module.exports = router;

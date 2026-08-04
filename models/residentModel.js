@@ -159,6 +159,14 @@ const updateResident = async(start_date, resident_id, conn) => {
 };
 
 
+const updateResidentEndDate = async (resident_id, end_date, conn) => {
+    const [result] = await conn.query(
+        `UPDATE Resident SET residency_end_date = ? WHERE resident_id = ?`,
+        [end_date, resident_id]
+    );
+    return result.affectedRows;
+};
+
 const setDelinquent = async (residentId, value, conn) => {
     await conn.query(
         `UPDATE Resident SET isDelinquent = ? WHERE resident_id = ?`,
@@ -193,6 +201,7 @@ module.exports = {
     addResident,
     deleteResident,
     updateResident,
+    updateResidentEndDate,
     deactivateResident,
     findActiveResidentByPersonId,
     setDelinquent,
