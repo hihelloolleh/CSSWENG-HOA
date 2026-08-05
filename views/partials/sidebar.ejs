@@ -50,7 +50,7 @@ const financeOpen = financePages.includes(page);
 
         <% if (typeof currentUser !== 'undefined' && currentUser && currentUser.accountType === 'admin') { %>
         <a href="/accounts" class="nav-item <%= activePage === 'accountManagement' ? 'active' : '' %>">
-            <i class="ph ph-users"></i>
+            <i class="fa-solid fa-user-group" style="font-size: 13px;"></i>
             <span>Account Management</span>
         </a>
         <% } %>

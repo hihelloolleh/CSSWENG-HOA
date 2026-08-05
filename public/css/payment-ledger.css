@@ -568,6 +568,10 @@ body {
     color: #526F50;
 }
 
+.tab-btn i {
+    font-size: 18px; 
+}
+
 /* ── Transparency notice ─────────────────────────────────────────────────────── */
 .transparency-notice {
     display: flex;
