@@ -121,56 +121,68 @@
                                             <span class="badge badge-good">Good Standing</span>
                                         <% } %>
                                     </td>
-                                    <td>
-                                        <button class="btn-icon"
-                                                data-id="<%= resident.resident_id %>"
-                                                data-personid="<%= resident.person_id %>"
-                                                data-name="<%= resident.first_name %> <%= resident.middle_name %> <%= resident.last_name %> <%= resident.suffix %>"
-                                                data-dob="<%= resident.birth_date ? resident.birth_date.toString().substring(0, 10) : '' %>"
-                                                data-email="<%= resident.email || '' %>"
-                                                data-phone="<%= resident.contact_num || '' %>"
-                                                data-residentstart="<%= resident.residency_start_date ? resident.residency_start_date.toString().substring(0,10) : '' %>"
-                                                data-residentend="<%= resident.residency_end_date ? resident.residency_end_date.toString().substring(0,10) : '' %>"
-                                                data-delinquent="<%= resident.isDelinquent ? '1' : '0' %>"
-                                                onclick="openViewModal(this)">
-                                            View info
-                                        </button>
-                                        <button class="btn-icon"
-                                                data-id="<%= resident.resident_id %>"
-                                                data-firstname="<%= resident.first_name %>"
-                                                data-lastname="<%= resident.last_name %>"
-                                                data-middlename="<%= resident.middle_name %>"
-                                                data-suffix="<%= resident.suffix %>"
-                                                data-dob="<%= resident.birth_date ? resident.birth_date.toString().substring(0, 10) : '' %>"
-                                                data-email="<%= resident.email || '' %>"
-                                                data-phone="<%= resident.contact_num || '' %>"
-                                                data-residentstart="<%= resident.residency_start_date ? resident.residency_start_date.toString().substring(0,10) : '' %>"
-                                                data-residentend="<%= resident.residency_end_date ? resident.residency_end_date.toString().substring(0,10) : '' %>"
-                                                data-isactive="<%= resident.isActive ? '1' : '0' %>"
-                                                data-delinquent="<%= resident.isDelinquent ? '1' : '0' %>"
-                                                onclick="openEditModal(this)">
-                                            <i class="fa-solid fa-edit"></i>
-                                        </button>
-                                        <% if (resident.isActive) { %>
-                                            <button class="btn-icon"
-                                                    data-id="<%= resident.resident_id %>"
-                                                    onclick="openEndResidencyModal(this.dataset.id)">
-                                                End residency
+                                    <td class="actions-cell">
+                                        <div class="action-menu">
+                                            <button class="action-trigger" onclick="toggleActionMenu(event)"> 
+                                                <i class="ph ph-dots-three-outline"></i>
                                             </button>
-                                        <% } else { %>
-                                            <button class="btn-icon"
+                                            <div class="action-dropdown">
+                                                <button class="btn-icon"
                                                     data-id="<%= resident.resident_id %>"
-                                                    data-name="<%= resident.first_name %> <%= resident.last_name %>"
-                                                    onclick="openReactivateModal(this)">
-                                                Reactivate
-                                            </button>
-                                        <% } %>
-                                        <button class="btn-icon btn-icon-danger"
-                                                data-id="<%= resident.resident_id %>"
-                                                data-name="<%= resident.first_name %> <%= resident.last_name %>"
-                                                onclick="confirmDeleteResident(this.dataset.id, this.dataset.name)">
-                                            <i class="fa-solid fa-trash"></i>
-                                        </button>
+                                                    data-personid="<%= resident.person_id %>"
+                                                    data-name="<%= resident.first_name %> <%= resident.middle_name %> <%= resident.last_name %> <%= resident.suffix %>"
+                                                    data-dob="<%= resident.birth_date ? resident.birth_date.toString().substring(0, 10) : '' %>"
+                                                    data-email="<%= resident.email || '' %>"
+                                                    data-phone="<%= resident.contact_num || '' %>"
+                                                    data-residentstart="<%= resident.residency_start_date ? resident.residency_start_date.toString().substring(0,10) : '' %>"
+                                                    data-residentend="<%= resident.residency_end_date ? resident.residency_end_date.toString().substring(0,10) : '' %>"
+                                                    data-delinquent="<%= resident.isDelinquent ? '1' : '0' %>"
+                                                    onclick="openViewModal(this)">
+                                                    <i class="ph ph-address-book"></i>
+                                                    View Details
+                                                </button>
+                                                <button class="btn-icon"
+                                                        data-id="<%= resident.resident_id %>"
+                                                        data-firstname="<%= resident.first_name %>"
+                                                        data-lastname="<%= resident.last_name %>"
+                                                        data-middlename="<%= resident.middle_name %>"
+                                                        data-suffix="<%= resident.suffix %>"
+                                                        data-dob="<%= resident.birth_date ? resident.birth_date.toString().substring(0, 10) : '' %>"
+                                                        data-email="<%= resident.email || '' %>"
+                                                        data-phone="<%= resident.contact_num || '' %>"
+                                                        data-residentstart="<%= resident.residency_start_date ? resident.residency_start_date.toString().substring(0,10) : '' %>"
+                                                        data-residentend="<%= resident.residency_end_date ? resident.residency_end_date.toString().substring(0,10) : '' %>"
+                                                        data-isactive="<%= resident.isActive ? '1' : '0' %>"
+                                                        data-delinquent="<%= resident.isDelinquent ? '1' : '0' %>"
+                                                        onclick="openEditModal(this)">
+                                                    <i class="ph ph-pencil-line"></i>
+                                                    Edit
+                                                </button>
+                                                <% if (resident.isActive) { %>
+                                                    <button class="btn-icon"
+                                                            data-id="<%= resident.resident_id %>"
+                                                            onclick="openEndResidencyModal(this.dataset.id)">
+                                                    <i class="ph ph-user-minus"></i>
+                                                    End residency
+                                                    </button>
+                                                <% } else { %>
+                                                    <button class="btn-icon"
+                                                            data-id="<%= resident.resident_id %>"
+                                                            data-name="<%= resident.first_name %> <%= resident.last_name %>"
+                                                            onclick="openReactivateModal(this)">
+                                                        <i class="ph ph-user-plus"></i>
+                                                        Reactivate
+                                                    </button>
+                                                <% } %>
+                                                <button class="btn-icon btn-icon-danger"
+                                                        data-id="<%= resident.resident_id %>"
+                                                        data-name="<%= resident.first_name %> <%= resident.last_name %>"
+                                                        onclick="confirmDeleteResident(this.dataset.id, this.dataset.name)">
+                                                    <i class="ph ph-trash"></i>
+                                                    Delete 
+                                                </button>
+                                            </div>
+                                        </div>
                                     </td>
                                 </tr>
                             <% }) %>
@@ -621,6 +633,23 @@ function filterTable() {
         applyResidentFilter();
     }
 }
+
+function toggleActionMenu(event) {
+    event.stopPropagation();
+
+    const menu = event.currentTarget.parentElement;
+
+    document.querySelectorAll(".action-menu.open").forEach(m => {
+        if (m !== menu) m.classList.remove("open");
+    });
+
+    menu.classList.toggle("open");
+}
+
+document.addEventListener("click", () => {
+    document.querySelectorAll(".action-menu.open")
+        .forEach(m => m.classList.remove("open"));
+});
 
 // ── Resident modals ──────────────────────────────────────────────────────────
 function openAddModal() {
