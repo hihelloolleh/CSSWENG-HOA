@@ -74,26 +74,33 @@
                                 <td><span class="badge position-badge"><%= emp.position %></span></td>
                                 <td><%= emp.email || '—' %></td>
                                 <td><%= emp.contact_num || '—' %></td>
-                                <td>
-                                    <button class="btn-icon"
-                                            onclick="openEditModal(this)"
-                                            data-id="<%= emp.employee_id %>"
-                                            data-firstname="<%= emp.first_name %>"
-                                            data-middlename="<%= emp.middle_name || '' %>"
-                                            data-lastname="<%= emp.last_name %>"
-                                            data-suffix="<%= emp.suffix || '' %>"
-                                            data-position="<%= emp.position %>"
-                                            data-salary="<%= emp.salary %>"
-                                            data-email="<%= emp.email || '' %>"
-                                            data-phone="<%= emp.contact_num || '' %>">
-                                        <i class="fa-solid fa-pen"></i>
+                                <td class="action-menu">
+                                    <button class="action-trigger" onclick="toggleActionMenu(event)">
+                                        <i class="ph ph-dots-three-outline"></i>
                                     </button>
-                                    <button class="btn-icon btn-icon-danger"
-                                            onclick="confirmDelete(this.dataset.id, this.dataset.name)"
-                                            data-id="<%= emp.employee_id %>"
-                                            data-name="<%= emp.first_name %> <%= emp.last_name %>">
-                                        <i class="fa-solid fa-trash"></i>
-                                    </button>
+                                    <div class="action-dropdown"> 
+                                        <button class="btn-icon"
+                                                onclick="openEditModal(this)"
+                                                data-id="<%= emp.employee_id %>"
+                                                data-firstname="<%= emp.first_name %>"
+                                                data-middlename="<%= emp.middle_name || '' %>"
+                                                data-lastname="<%= emp.last_name %>"
+                                                data-suffix="<%= emp.suffix || '' %>"
+                                                data-position="<%= emp.position %>"
+                                                data-salary="<%= emp.salary %>"
+                                                data-email="<%= emp.email || '' %>"
+                                                data-phone="<%= emp.contact_num || '' %>">
+                                            <i class="ph ph-pencil-line"></i>
+                                            Edit 
+                                        </button>
+                                        <button class="btn-icon btn-icon-danger"
+                                                onclick="confirmDelete(this.dataset.id, this.dataset.name)"
+                                                data-id="<%= emp.employee_id %>"
+                                                data-name="<%= emp.first_name %> <%= emp.last_name %>">
+                                            <i class="ph ph-trash"></i>
+                                            Delete
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         <% }) %>
@@ -222,6 +229,23 @@
 
 <script src="/js/sidebar.js"></script>
 <script>
+    function toggleActionMenu(event) {
+        event.stopPropagation();
+
+        const menu = event.currentTarget.parentElement;
+
+        document.querySelectorAll(".action-menu.open").forEach(m => {
+            if (m !== menu) m.classList.remove("open");
+        });
+
+        menu.classList.toggle("open");
+    }
+
+    document.addEventListener("click", () => {
+        document.querySelectorAll(".action-menu.open")
+            .forEach(m => m.classList.remove("open"));
+    });
+
     function openAddModal() {
         document.getElementById('modalTitle').textContent  = 'Add Employee';
         document.getElementById('submitBtn').textContent   = 'Add Employee';

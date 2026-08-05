@@ -156,14 +156,14 @@
                                                         data-delinquent="<%= resident.isDelinquent ? '1' : '0' %>"
                                                         onclick="openEditModal(this)">
                                                     <i class="ph ph-pencil-line"></i>
-                                                    Edit
+                                                    Edit Details 
                                                 </button>
                                                 <% if (resident.isActive) { %>
                                                     <button class="btn-icon"
                                                             data-id="<%= resident.resident_id %>"
                                                             onclick="openEndResidencyModal(this.dataset.id)">
                                                     <i class="ph ph-user-minus"></i>
-                                                    End residency
+                                                    End Residency
                                                     </button>
                                                 <% } else { %>
                                                     <button class="btn-icon"
@@ -171,7 +171,7 @@
                                                             data-name="<%= resident.first_name %> <%= resident.last_name %>"
                                                             onclick="openReactivateModal(this)">
                                                         <i class="ph ph-user-plus"></i>
-                                                        Reactivate
+                                                        Reactivate 
                                                     </button>
                                                 <% } %>
                                                 <button class="btn-icon btn-icon-danger"
@@ -196,9 +196,9 @@
         <div id="boardMembersSection" style="display:none;">
 
             <div class="bm-filter-bar">
-                <button class="bm-filter-btn bm-filter-active" data-filter="all"      onclick="filterBoardMembers('all')">All</button>
-                <button class="bm-filter-btn"                  data-filter="active"   onclick="filterBoardMembers('active')">Active</button>
-                <button class="bm-filter-btn"                  data-filter="inactive" onclick="filterBoardMembers('inactive')">Inactive</button>
+                <button class="bm-filter-btn bm-filter-active" data-filter="all" onclick="filterBoardMembers('all')">All</button>
+                <button class="bm-filter-btn" data-filter="active" onclick="filterBoardMembers('active')">Active</button>
+                <button class="bm-filter-btn" data-filter="inactive" onclick="filterBoardMembers('inactive')">Inactive</button>
             </div>
 
             <p class="boardMember-count">
@@ -239,30 +239,40 @@
                                     <td><%= bm.board_start_date ? bm.board_start_date.toString().substring(0,10) : '—' %></td>
                                     <td><%= bm.board_end_date ? bm.board_end_date.toString().substring(0,10) : 'Present' %></td>
                                     <td>
-                                        <button class="btn-icon"
-                                            onclick="openBMEditModal(this)"
-                                            data-id="<%= bm.board_id %>"
-                                            data-position="<%= bm.position %>"
-                                            data-start="<%= bm.board_start_date ? bm.board_start_date.toString().substring(0,10) : '' %>"
-                                            data-end="<%= bm.board_end_date ? bm.board_end_date.toString().substring(0,10) : '' %>"
-                                            data-name="<%= bm.first_name %> <%= bm.last_name %>">
-                                            <i class="fa-solid fa-pen"></i>
-                                        </button>
-                                        <% if (!bm.board_end_date) { %>
-                                            <button class="btn-icon"
-                                                onclick="openEndTermModal(this)"
-                                                data-id="<%= bm.board_id %>"
-                                                data-start="<%= bm.board_start_date ? bm.board_start_date.toString().substring(0,10) : '' %>"
-                                                data-name="<%= bm.first_name %> <%= bm.last_name %>">
-                                                End term
+                                        <div class="action-menu">
+                                            <button class="action-trigger" onclick="toggleActionMenu(event)"> 
+                                                <i class="ph ph-dots-three-outline"></i>
                                             </button>
-                                        <% } %>
-                                        <button class="btn-icon btn-icon-danger"
-                                            onclick="confirmDeleteBM(this.dataset.id, this.dataset.name)"
-                                            data-id="<%= bm.board_id %>"
-                                            data-name="<%= bm.first_name %> <%= bm.last_name %>">
-                                            <i class="fa-solid fa-trash"></i>
-                                        </button>
+                                            <div class="action-dropdown">
+                                                <button class="btn-icon"
+                                                    onclick="openBMEditModal(this)"
+                                                    data-id="<%= bm.board_id %>"
+                                                    data-position="<%= bm.position %>"
+                                                    data-start="<%= bm.board_start_date ? bm.board_start_date.toString().substring(0,10) : '' %>"
+                                                    data-end="<%= bm.board_end_date ? bm.board_end_date.toString().substring(0,10) : '' %>"
+                                                    data-name="<%= bm.first_name %> <%= bm.last_name %>">
+                                                <i class="ph ph-pencil-line"></i>
+                                                Edit Details
+                                                </button>
+                                                <% if (!bm.board_end_date) { %>
+                                                    <button class="btn-icon"
+                                                        onclick="openEndTermModal(this)"
+                                                        data-id="<%= bm.board_id %>"
+                                                        data-start="<%= bm.board_start_date ? bm.board_start_date.toString().substring(0,10) : '' %>"
+                                                        data-name="<%= bm.first_name %> <%= bm.last_name %>">
+                                                <i class="ph ph-user-minus"></i>
+                                                End Term
+                                                    </button>
+                                                <% } %>
+                                                <button class="btn-icon btn-icon-danger"
+                                                    onclick="confirmDeleteBM(this.dataset.id, this.dataset.name)"
+                                                    data-id="<%= bm.board_id %>"
+                                                    data-name="<%= bm.first_name %> <%= bm.last_name %>">
+                                                <i class="ph ph-trash"></i>
+                                                Delete 
+                                                </button>
+                                            </div> 
+                                        </div>
                                     </td>
                                 </tr>
                             <% }) %>

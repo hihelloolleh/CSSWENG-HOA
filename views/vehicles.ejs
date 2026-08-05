@@ -87,17 +87,24 @@
                                     <% } %>
                                 </td>
                                 <td><%= vehicle.homeowners || 'Unassigned' %></td>
-                                <td style="display: flex; gap: 10px;">
-                                    <button type="button" class="btn-icon" onclick="openEditModal('<%= vehicle.vehicle_id %>', '<%= vehicle.type %>', '<%= vehicle.plate_number %>', '<%= vehicle.make %>', '<%= vehicle.model %>', '<%= vehicle.color %>', '<%= vehicle.sticker_year %>', '<%= vehicle.resident_ids || "" %>', '<%= vehicle.raw_status %>')">
-                                        <i class="fa-solid fa-edit"></i>
+                                <td class="action-menu">
+                                    <button class="action-trigger" onclick="toggleActionMenu(event)">
+                                        <i class="ph ph-dots-three-outline"></i>
                                     </button>
+                                    <div class="action-dropdown">
+                                        <button type="button" class="btn-icon" onclick="openEditModal('<%= vehicle.vehicle_id %>', '<%= vehicle.type %>', '<%= vehicle.plate_number %>', '<%= vehicle.make %>', '<%= vehicle.model %>', '<%= vehicle.color %>', '<%= vehicle.sticker_year %>', '<%= vehicle.resident_ids || "" %>', '<%= vehicle.raw_status %>')">
+                                            <i class="ph ph-pencil-line"></i>
+                                            Edit 
+                                        </button>
 
-                                    <button class="btn-icon btn-icon-danger"
-                                            onclick="confirmDelete(this.dataset.id, this.dataset.label)"
-                                            data-id="<%= vehicle.vehicle_id %>"
-                                            data-label="<%= vehicle.plate_number || vehicle.make + ' ' + vehicle.model %>">
-                                        <i class="fa-solid fa-trash"></i>
-                                    </button>
+                                        <button class="btn-icon btn-icon-danger"
+                                                onclick="confirmDelete(this.dataset.id, this.dataset.label)"
+                                                data-id="<%= vehicle.vehicle_id %>"
+                                                data-label="<%= vehicle.plate_number || vehicle.make + ' ' + vehicle.model %>">
+                                            <i class="ph ph-trash"></i>
+                                            Delete 
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         <% }) %>
@@ -319,6 +326,23 @@
 </script>
 
 <script>
+    function toggleActionMenu(event) {
+        event.stopPropagation();
+
+        const menu = event.currentTarget.parentElement;
+
+        document.querySelectorAll(".action-menu.open").forEach(m => {
+            if (m !== menu) m.classList.remove("open");
+        });
+
+        menu.classList.toggle("open");
+    }
+
+    document.addEventListener("click", () => {
+        document.querySelectorAll(".action-menu.open")
+            .forEach(m => m.classList.remove("open"));
+    });
+
     function confirmDelete(id, label) {
         document.getElementById('deleteVehicleName').textContent = label;
         document.getElementById('deleteVehicleForm').action = '/vehicles/delete/' + id;

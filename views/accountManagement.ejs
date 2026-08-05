@@ -96,18 +96,27 @@
                                     <td><%= admin.email %></td>
                                     <td><%= admin.contact_num || '—' %></td>
                                     <td><%= new Date(admin.created_at).toLocaleDateString() %></td>
-                                    <td style="text-align:center;">
-                                        <button class="btn-icon" onclick="openEditAdminModal('<%= admin.admin_id %>')" title="Edit">
-                                            <i class="ph ph-pencil-simple"></i>
+                                    <td class="action-menu">
+                                        <button class="action-trigger" onclick="toggleActionMenu(event)">
+                                            <i class="ph ph-dots-three-outline"></i>
                                         </button>
-                                        <button class="btn-icon" onclick="openResetAdminPasswordModal('<%= admin.admin_id %>', '<%= admin.username %>')" title="Reset Password">
-                                            <i class="ph ph-key"></i>
-                                        </button>
-                                        <% if (admins.length > 2) { %>
-                                            <button class="btn-icon btn-icon-danger" onclick="confirmDeleteAdmin('<%= admin.admin_id %>', '<%= admin.username %>')" title="Delete">
-                                                <i class="ph ph-trash"></i>
+
+                                        <div class="action-dropdown">
+                                            <button class="btn-icon" onclick="openEditAdminModal('<%= admin.admin_id %>')" title="Edit">
+                                            <i class="ph ph-pencil-line"></i>
+                                            Edit Account
                                             </button>
-                                        <% } %>
+                                            <button class="btn-icon" onclick="openResetAdminPasswordModal('<%= admin.admin_id %>', '<%= admin.username %>')" title="Reset Password">
+                                                <i class="ph ph-key"></i>
+                                                Reset Password
+                                            </button>
+                                            <% if (admins.length > 2) { %>
+                                                <button class="btn-icon btn-icon-danger" onclick="confirmDeleteAdmin('<%= admin.admin_id %>', '<%= admin.username %>')" title="Delete">
+                                                    <i class="ph ph-trash"></i>
+                                                    Delete 
+                                                </button>
+                                            <% } %>
+                                        </div>
                                     </td>
                                 </tr>
                             <% }) %>
@@ -476,6 +485,24 @@
             row.style.display = match ? '' : 'none';
         });
     }
+    
+    function toggleActionMenu(event) {
+        event.stopPropagation();
+
+        const menu = event.currentTarget.parentElement;
+
+        document.querySelectorAll(".action-menu.open").forEach(m => {
+            if (m !== menu) m.classList.remove("open");
+        });
+
+        menu.classList.toggle("open");
+    }
+
+    document.addEventListener("click", () => {
+        document.querySelectorAll(".action-menu.open")
+            .forEach(m => m.classList.remove("open"));
+    });
+
 
     function closeModal(id) {
         document.getElementById(id).classList.remove('active');

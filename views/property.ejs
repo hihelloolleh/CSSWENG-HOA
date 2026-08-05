@@ -95,34 +95,44 @@
                                         <span class="badge badge-settled">Settled</span>
                                     <% } %>
                                 </td>
-                                <td>
-                                    <button class="btn-icon"
+                                <td class="action-menu">
+                                    <button class="action-trigger" onclick="toggleActionMenu(event)"> 
+                                        <i class="ph ph-dots-three-outline"></i>
+                                    </button>
+                                    
+                                    <div class="action-dropdown">
+                                        <button class="btn-icon"
                                             data-id="<%= p.property_id %>"
                                             onclick="openViewModal(this.dataset.id)">
-                                        <i class="fa-solid fa-eye"></i> View Residents
-                                    </button>
-                                    <button class="btn-icon"
-                                            data-id="<%= p.property_id %>"
-                                            data-lot="<%= p.lot_number || '' %>"
-                                            data-street="<%= p.street_name %>"
-                                            data-type="<%= p.property_type %>"
-                                            onclick="openEditModal(this)">
-                                        <i class="fa-solid fa-pen"></i>
-                                    </button>
-                                    <button class="btn-icon btn-icon-warning"
-                                            title="Set Outstanding Balance"
-                                            data-id="<%= p.property_id %>"
-                                            data-label="Lot <%= p.lot_number || '—' %> <%= p.street_name %>"
-                                            data-outstanding="<%= p.outstandingBalance || 0 %>"
-                                            onclick="openOutstandingModal(this)">
-                                        <i class="fa-solid fa-peso-sign"></i>
-                                    </button>
-                                    <button class="btn-icon btn-icon-danger"
-                                            data-id="<%= p.property_id %>"
-                                            data-street="<%= p.street_name %>"
-                                            onclick="confirmDelete(this.dataset.id, this.dataset.street)">
-                                        <i class="fa-solid fa-trash"></i>
-                                    </button>
+                                            <i class="ph ph-address-book"></i>
+                                            View Residents
+                                        </button>
+                                        <button class="btn-icon"
+                                                data-id="<%= p.property_id %>"
+                                                data-lot="<%= p.lot_number || '' %>"
+                                                data-street="<%= p.street_name %>"
+                                                data-type="<%= p.property_type %>"
+                                                onclick="openEditModal(this)">
+                                            <i class="ph ph-pencil-line"></i>
+                                            Edit Details
+                                        </button>
+                                        <button class="btn-icon btn-icon-warning"
+                                                title="Set Outstanding Balance"
+                                                data-id="<%= p.property_id %>"
+                                                data-label="Lot <%= p.lot_number || '—' %> <%= p.street_name %>"
+                                                data-outstanding="<%= p.outstandingBalance || 0 %>"
+                                                onclick="openOutstandingModal(this)">
+                                            <i class="ph ph-coins"></i>
+                                            Set Balance 
+                                        </button>
+                                        <button class="btn-icon btn-icon-danger"
+                                                data-id="<%= p.property_id %>"
+                                                data-street="<%= p.street_name %>"
+                                                onclick="confirmDelete(this.dataset.id, this.dataset.street)">
+                                            <i class="ph ph-trash"></i>
+                                            Delete
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         <% }) %>
@@ -394,6 +404,23 @@
         addedResidents.splice(index, 1);
         renderResidentList();
     }
+
+    function toggleActionMenu(event) {
+        event.stopPropagation();
+
+        const menu = event.currentTarget.parentElement;
+
+        document.querySelectorAll(".action-menu.open").forEach(m => {
+            if (m !== menu) m.classList.remove("open");
+        });
+
+        menu.classList.toggle("open");
+    }
+
+    document.addEventListener("click", () => {
+        document.querySelectorAll(".action-menu.open")
+            .forEach(m => m.classList.remove("open"));
+    });
 
     // ── Modal: Add ──────────────────────────────────────────────────────────
     function openAddModal() {
