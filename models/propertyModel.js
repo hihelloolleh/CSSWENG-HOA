@@ -129,6 +129,30 @@ const clearResidentsDelinquentForProperty = async (propertyId, conn) => {
     `, [propertyId, propertyId]);
 };
 
+// Recomputes hasDues for every property linked to this person (via any of
+// their Resident rows) from two sources of truth: the property's own
+// outstandingBalance, OR any resident of that property having a partial/unpaid
+// payment (any purpose) in the ledger.
+const recomputeHasDuesForPersonProperties = async (personId, conn) => {
+    await conn.query(`
+        UPDATE Property p
+        JOIN Resident_Property rp ON rp.property_id = p.property_id
+        JOIN Resident r           ON rp.resident_id  = r.resident_id
+        SET p.hasDues = (
+            p.outstandingBalance > 0
+            OR EXISTS (
+                SELECT 1
+                FROM Resident_Property rp2
+                JOIN Resident r2  ON rp2.resident_id = r2.resident_id
+                JOIN Payment pay2 ON pay2.paid_by     = r2.person_id
+                WHERE rp2.property_id = p.property_id
+                  AND pay2.amount_paid < pay2.amount_expected
+            )
+        )
+        WHERE r.person_id = ?
+    `, [personId]);
+};
+
 const insertResidentProperty = async (resident_id, property_id, type, conn) => {
     const [result] = await conn.query(
         `INSERT INTO Resident_Property (resident_id, property_id, type) VALUES (?, ?, ?)`,
@@ -170,4 +194,5 @@ module.exports = {
     setOutstandingBalance,
     markResidentsDelinquentForProperty,
     clearResidentsDelinquentForProperty,
+    recomputeHasDuesForPersonProperties,
 };

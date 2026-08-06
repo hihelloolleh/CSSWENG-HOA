@@ -137,6 +137,7 @@ const addPayment = async (data) => {
         // Recompute here so it stays accurate regardless of which branch above ran.
         if (data.paid_by) {
             await residentModel.recomputeDelinquentByPersonId(data.paid_by, conn);
+            await propertyModel.recomputeHasDuesForPersonProperties(data.paid_by, conn);
         }
 
         await conn.commit();
@@ -161,6 +162,7 @@ const updatePayment = async (payment_id, data) => {
         );
         if (payment && payment.paid_by) {
             await residentModel.recomputeDelinquentByPersonId(payment.paid_by, conn);
+            await propertyModel.recomputeHasDuesForPersonProperties(payment.paid_by, conn);
         }
 
         await conn.commit();
@@ -186,6 +188,7 @@ const deletePayment = async (payment_id) => {
 
         if (payment && payment.paid_by) {
             await residentModel.recomputeDelinquentByPersonId(payment.paid_by, conn);
+            await propertyModel.recomputeHasDuesForPersonProperties(payment.paid_by, conn);
         }
 
         await conn.commit();

@@ -346,15 +346,6 @@
                                 <input type="date" id="residency-end-date-active" name="residency_end_date">
                             </div>
                         </div>
-                        <div class="form-group" id="delinquentGroup" style="display:none;">
-                            <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
-                                <input type="checkbox" id="isDelinquent" name="isDelinquent" value="1">
-                                <span>Mark as Delinquent</span>
-                            </label>
-                            <small style="color:#888; font-size:12px; margin-top:4px; display:block;">
-                                Delinquent status is normally set automatically when a property has outstanding dues.
-                            </small>
-                        </div>
                     </div>
                 </div>
 
@@ -674,7 +665,6 @@ function openAddModal() {
     document.getElementById('submitBtn').textContent  = 'Add Resident';
     document.getElementById('residentForm').action    = '/residents';
     document.getElementById('residentForm').reset();
-    document.getElementById('delinquentGroup').style.display = 'none';
     document.getElementById('dob-error').style.display = 'none';
     document.getElementById('residentModal').classList.add('active');
 }
@@ -718,8 +708,6 @@ function openEditModal(button) {
         document.getElementById('phoneNumber').value                  = button.dataset.phone;
         document.getElementById('residency-start-date').value         = button.dataset.residentstart;
         document.getElementById('residency-end-date-active').value    = button.dataset.residentend;
-        document.getElementById('delinquentGroup').style.display      = '';
-        document.getElementById('isDelinquent').checked               = button.dataset.delinquent === '1';
     } else {
         // Ended resident: only allow editing the residency end date
         document.getElementById('modalTitle').textContent = 'Edit Residency End Date';
@@ -739,7 +727,6 @@ function openEditModal(button) {
         document.getElementById('residency-end-date-edit').disabled   = false;
         document.getElementById('residency-end-date-edit').required   = true;
         document.getElementById('residency-end-date-edit').value      = button.dataset.residentend;
-        document.getElementById('delinquentGroup').style.display      = 'none';
     }
 
     document.getElementById('dob-error').style.display = 'none';
