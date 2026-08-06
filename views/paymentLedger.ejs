@@ -54,9 +54,9 @@
                     <select name="purpose" class="form-control" style="width:auto;"
                             onchange="document.getElementById('purposeFilterForm').submit()">
                         <option value="">All Purposes</option>
-                        <% const purposes = ['Vehicle Sticker','Association Dues','Outstanding Balance','General Payments']; %>
+                        <% const purposes = ['Vehicle Sticker','Association Dues','Outstanding Association Dues','General Payments']; %>
                         <% purposes.forEach(p => { %>
-                            <option value="<%= p %>" <%= filterPurpose === p ? 'selected' : '' %>><%= p %></option>
+                            <option value="<%= p === 'Outstanding Association Dues' ? 'Outstanding Balance' : p %>" <%= filterPurpose === (p === 'Outstanding Association Dues' ? 'Outstanding Balance' : p) ? 'selected' : '' %>><%= p %></option>
                         <% }) %>
                     </select>
                 </form>
@@ -91,7 +91,7 @@
             <!-- PAYMENT COUNTER -->
             <p class="payment-count" id="paymentCount">
                 Showing <strong id="visibleCount"><%= payments.length %></strong> payment<%= payments.length !== 1 ? 's' : '' %>
-                <% if (filterPurpose) { %> &mdash; filtered by <em><%= filterPurpose %></em><% } %>
+                <% if (filterPurpose) { %> &mdash; filtered by <em><%= filterPurpose === 'Outstanding Balance' ? 'Outstanding Association Dues' : filterPurpose %></em><% } %>
             </p>
 
             <!-- DATA TABLE -->
@@ -132,11 +132,13 @@
                                 const datePaid = pay.date_paid
                                     ? new Date(pay.date_paid).toLocaleDateString('en-PH', { year:'numeric', month:'short', day:'numeric' })
                                     : '—';
+                                
+                                const displayPurpose = pay.purpose === 'Outstanding Balance' ? 'Outstanding Association Dues' : pay.purpose;
                             %>
                             <tr data-status="<%= status.toLowerCase() %>">
                                 <td><%= datePaid %></td>
                                 <td><%= pay.payer_name || '—' %></td>
-                                <td><span class="purpose-badge"><%= pay.purpose %></span></td>
+                                <td><span class="purpose-badge"><%= displayPurpose %></span></td>
                                 <td>&#8369; <%= parseFloat(pay.amount_expected).toLocaleString('en-PH', {minimumFractionDigits:2}) %></td>
                                 <td>&#8369; <%= parseFloat(pay.amount_paid).toLocaleString('en-PH', {minimumFractionDigits:2}) %></td>
                                 <td><%= pay.payment_method %></td>
@@ -149,7 +151,7 @@
                                     <div class="action-dropdown">
                                         <button class="btn-icon" title="View Details" onclick="openViewModal(this)"
                                                 data-id="<%= pay.payment_id %>" data-payor="<%= pay.payer_name || '' %>"
-                                                data-purpose="<%= pay.purpose %>" data-expected="<%= pay.amount_expected %>"
+                                                data-purpose="<%= displayPurpose %>" data-expected="<%= pay.amount_expected %>"
                                                 data-paid="<%= pay.amount_paid %>" data-date="<%= pay.date_paid || '' %>"
                                                 data-method="<%= pay.payment_method %>" data-receipt="<%= pay.receipt_number || '' %>"
                                                 data-remarks="<%= pay.remarks || '' %>">
@@ -159,7 +161,7 @@
                                         <% if (status !== 'Paid') { %>
                                         <button class="btn-icon btn-icon-settle" title="Settle Payment" onclick="openSettleModal(this)"
                                                 data-id="<%= pay.payment_id %>" data-payor="<%= pay.payer_name || '' %>"
-                                                data-purpose="<%= pay.purpose %>" data-expected="<%= pay.amount_expected %>"
+                                                data-purpose="<%= displayPurpose %>" data-expected="<%= pay.amount_expected %>"
                                                 data-paid="<%= pay.amount_paid %>" data-date="<%= pay.date_paid || '' %>"
                                                 data-method="<%= pay.payment_method %>" data-receipt="<%= pay.receipt_number || '' %>"
                                                 data-remarks="<%= pay.remarks || '' %>" data-paidby="<%= pay.paid_by || '' %>"
