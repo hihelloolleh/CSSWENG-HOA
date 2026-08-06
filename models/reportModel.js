@@ -272,10 +272,15 @@ const getFinancialsReport = async (fromDate, toDate) => {
 
 const getVehicleStickerBreakdown = async () => {
     const [rows] = await pool.query(`
-        SELECT type, COUNT(*) as count 
-        FROM Vehicle 
-        WHERE status = 'Active'
-        GROUP BY type
+        SELECT 
+            v.type, 
+            COUNT(pv.vehicle_id) as count, 
+            COALESCE(SUM(p.amount_paid), 0) as total_earnings
+        FROM Payment p
+        JOIN Payment_Vehicle pv ON p.payment_id = pv.payment_id
+        JOIN Vehicle v ON pv.vehicle_id = v.vehicle_id
+        WHERE p.purpose = 'Vehicle Sticker'
+        GROUP BY v.type
     `);
     return rows;
 };

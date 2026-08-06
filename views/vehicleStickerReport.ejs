@@ -58,21 +58,34 @@
 
     <div class="rpt-summary-box" style="margin-top: 20px;">
         <div class="rpt-summary-label">BREAKDOWN</div>
+        
+        <!-- Breakdown Headers -->
+        <div class="rpt-summary-row" style="font-weight: 700; border-bottom: 1px solid #ddd; padding-bottom: 5px; margin-bottom: 5px;">
+            <span class="rpt-summary-key" style="flex: 2;">VEHICLE TYPE</span>
+            <span class="rpt-summary-val" style="flex: 1; text-align: center;">QUANTITY</span>
+            <span class="rpt-summary-val" style="flex: 1; text-align: right;">TOTAL AMOUNT</span>
+        </div>
+        
+        <!-- Breakdown Data -->
         <div class="rpt-summary-row">
-            <span class="rpt-summary-key">CARS</span>
-            <span class="rpt-summary-val"><%= summary.cars || 0 %></span>
+            <span class="rpt-summary-key" style="flex: 2;">CARS</span>
+            <span class="rpt-summary-val" style="flex: 1; text-align: center;"><%= summary.cars.count %></span>
+            <span class="rpt-summary-val" style="flex: 1; text-align: right;"><%= currency(summary.cars.earnings) %></span>
         </div>
         <div class="rpt-summary-row">
-            <span class="rpt-summary-key">MOTORCYCLES</span>
-            <span class="rpt-summary-val"><%= summary.motorcycles || 0 %></span>
+            <span class="rpt-summary-key" style="flex: 2;">MOTORCYCLES</span>
+            <span class="rpt-summary-val" style="flex: 1; text-align: center;"><%= summary.motorcycles.count %></span>
+            <span class="rpt-summary-val" style="flex: 1; text-align: right;"><%= currency(summary.motorcycles.earnings) %></span>
         </div>
         <div class="rpt-summary-row">
-            <span class="rpt-summary-key">E-BIKES</span>
-            <span class="rpt-summary-val"><%= summary.ebikes || 0 %></span>
+            <span class="rpt-summary-key" style="flex: 2;">E-BIKES</span>
+            <span class="rpt-summary-val" style="flex: 1; text-align: center;"><%= summary.ebikes.count %></span>
+            <span class="rpt-summary-val" style="flex: 1; text-align: right;"><%= currency(summary.ebikes.earnings) %></span>
         </div>
         <div class="rpt-summary-row">
-            <span class="rpt-summary-key">COMMERCIAL</span>
-            <span class="rpt-summary-val"><%= summary.commercial || 0 %></span>
+            <span class="rpt-summary-key" style="flex: 2;">COMMERCIAL</span>
+            <span class="rpt-summary-val" style="flex: 1; text-align: center;"><%= summary.commercial.count %></span>
+            <span class="rpt-summary-val" style="flex: 1; text-align: right;"><%= currency(summary.commercial.earnings) %></span>
         </div>
     </div>
 

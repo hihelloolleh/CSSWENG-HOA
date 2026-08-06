@@ -162,17 +162,30 @@ exports.getVehicleStickerReport = async (req, res) => {
         
         const breakdown = {};
         breakdownRows.forEach(row => {
-            const vehicleType = (row.type || 'Unknown').toUpperCase();
-            breakdown[vehicleType] = row.count;
+            const vehicleType = (row.type || 'Unspecified').toUpperCase();
+            breakdown[vehicleType] = {
+                count: row.count,
+                earnings: parseFloat(row.total_earnings || 0)
+            };
         });
+
+        const getStats = (typesArray) => {
+            return typesArray.reduce((acc, t) => {
+                if (breakdown[t]) {
+                    acc.count += breakdown[t].count;
+                    acc.earnings += breakdown[t].earnings;
+                }
+                return acc;
+            }, { count: 0, earnings: 0 });
+        };
 
         const summary = {
             totalCount: rows.length,
             totalEarnings: rows.reduce((sum, r) => sum + parseFloat(r.amount_paid || 0), 0),
-            cars: breakdown['CAR'] || breakdown['CARS'] || 0,
-            motorcycles: breakdown['MOTORCYCLE'] || breakdown['MOTORCYCLES'] || 0,
-            ebikes: breakdown['E-BIKE'] || breakdown['EBIKE'] || breakdown['E-BIKES'] || 0,
-            commercial: breakdown['COMMERCIAL'] || 0
+            cars: getStats(['CAR', 'CARS']),
+            motorcycles: getStats(['MOTORCYCLE', 'MOTORCYCLES']),
+            ebikes: getStats(['E-BIKE', 'EBIKE', 'E-BIKES']),
+            commercial: getStats(['COMMERCIAL'])
         };
 
         res.render('vehicleStickerReport', {
