@@ -61,7 +61,8 @@ async function seed() {
             ['Carter',   'Hall',        null,          null,  '1965-09-17', 'c.hall@museum.com',               '09171234534'],
             ['Shayera',  'Hol',         null,          null,  '1970-04-28', 's.hol@hawkworld.com',             '09181234535'],
             ['Damian',   'Wayne',       null,          null,  '2006-09-06', 'd.wayne@waynetech.com',           '09191234536'],
-            // ── Employees (indices 36–38) ─────────────────────────────────────
+            ['Courtney', 'Whitmore',    'Belinda',     null,  '1997-05-02', 'courtney.whitmore@blueValley.com', '09171234540'],  // new 2026 move-in
+            // ── Employees (indices 37–39) ─────────────────────────────────────
             ['Alfred',   'Pennyworth',  'Beagle',      null,  '1950-04-16', 'alfred@waynemanor.com',           '09171234537'],
             ['Amanda',   'Waller',      'Blake',       null,  '1965-11-22', 'a.waller@argus.gov',              '09181234538'],
             ['James',    'Gordon',      'Worthington', null,  '1960-08-05', 'j.gordon@gcpd.com',               '09191234539'],
@@ -79,15 +80,16 @@ async function seed() {
 
         // ── Residents ─────────────────────────────────────────────────────────
         // [personId, start, end, isActive, isDelinquent]
-        // Delinquent indices: 9,10 (Alabastro 103), 12 (Coral 311),
+        // Delinquent indices: 1 (unpaid Assoc Dues), 5 (partial Assoc Dues),
+        //                     9,10 (Alabastro 103), 12 (Coral 311),
         //                     13,14 (Nacar 730), 15 (Rubi 940), 16,17 (Zapiro 1152)
         const residentData = [
             [personIds[0],  '2015-01-10', null,         1, 0],  // 0  Clark Kent
-            [personIds[1],  '2016-03-22', null,         1, 0],  // 1  Lois Lane
+            [personIds[1],  '2016-03-22', null,         1, 1],  // 1  Lois Lane (unpaid Assoc Dues)
             [personIds[2],  '2018-06-15', null,         1, 0],  // 2  Bruce Wayne
             [personIds[3],  '2019-09-01', null,         1, 0],  // 3  Diana Prince
             [personIds[4],  '2010-04-30', null,         1, 0],  // 4  Barry Allen
-            [personIds[5],  '2021-11-12', null,         1, 0],  // 5  Arthur Curry
+            [personIds[5],  '2021-11-12', null,         1, 1],  // 5  Arthur Curry (partial Assoc Dues)
             [personIds[6],  '2008-07-05', null,         1, 0],  // 6  Hal Jordan
             [personIds[7],  '2017-02-18', null,         1, 0],  // 7  Victor Stone
             [personIds[8],  '2013-08-27', null,         1, 0],  // 8  Oliver Queen
@@ -118,6 +120,7 @@ async function seed() {
             [personIds[33], '2009-01-01', null,         1, 0],  // 33 Carter Hall
             [personIds[34], '2009-01-01', null,         1, 0],  // 34 Shayera Hol
             [personIds[35], '2023-09-06', null,         1, 0],  // 35 Damian Wayne
+            [personIds[36], '2026-02-01', null,         1, 0],  // 36 Courtney Whitmore (new 2026 move-in)
         ];
 
         const residentIds = [];
@@ -136,7 +139,7 @@ async function seed() {
         //          Maharlika(4) Nacar(4) Perla(3) Rubi(3) Topacio(4) Zapiro(3) = 42
         const properties = [
             // ── Alabastro (5) ─────────────────────────────────────────────────
-            ['101', 'House', 'Alabastro',  0,    0.00],   //  0 — Clark Kent, Lois Lane
+            ['101', 'House', 'Alabastro',  1,    0.00],   //  0 — Clark Kent, Lois Lane (Lois: unpaid Assoc Dues)
             ['102', 'House', 'Alabastro',  0,    0.00],   //  1 — Bruce Wayne, Damian Wayne
             ['103', 'House', 'Alabastro',  1, 4800.00],   //  2 — Zatanna, Constantine (DELINQUENT)
             ['104', 'Lot',   'Alabastro',  0,    0.00],   //  3 — Selina Kyle (ended)
@@ -147,7 +150,7 @@ async function seed() {
             ['207', 'House', 'Cameo',      0,    0.00],   //  7 — Dinah Lance
             ['208', 'Lot',   'Cameo',      0,    0.00],   //  8 — vacant
             // ── Coral (4) ─────────────────────────────────────────────────────
-            ['310', 'House', 'Coral',      0,    0.00],   //  9 — Arthur Curry, Mera
+            ['310', 'House', 'Coral',      1,    0.00],   //  9 — Arthur Curry (partial Assoc Dues), Mera
             ['311', 'House', 'Coral',      1, 2400.00],   // 10 — Kyle Rayner (DELINQUENT)
             ['312', 'House', 'Coral',      0,    0.00],   // 11 — Simon Baz
             ['313', 'Lot',   'Coral',      0,    0.00],   // 12 — vacant
@@ -183,7 +186,7 @@ async function seed() {
             ['1045', 'House', 'Topacio',   0,    0.00],   // 35 — Rachel Roth, Kori Anders
             ['1046', 'House', 'Topacio',   0,    0.00],   // 36 — Garfield Logan
             ['1047', 'Lot',   'Topacio',   0,    0.00],   // 37 — vacant
-            ['1048', 'House', 'Topacio',   0,    0.00],   // 38 — vacant
+            ['1048', 'House', 'Topacio',   0,    0.00],   // 38 — Courtney Whitmore (new 2026 move-in)
             // ── Zapiro (3) ────────────────────────────────────────────────────
             ['1150', 'House', 'Zapiro',    0,    0.00],   // 39 — vacant
             ['1151', 'Lot',   'Zapiro',    0,    0.00],   // 40 — vacant
@@ -246,6 +249,7 @@ async function seed() {
             [residentIds[23], propertyIds[35], 'Homeowner'],  // Rachel Roth → 1045
             [residentIds[24], propertyIds[35], 'Relative'],   // Kori Anders → 1045
             [residentIds[25], propertyIds[36], 'Homeowner'],  // Garfield Logan → 1046
+            [residentIds[36], propertyIds[38], 'Homeowner'],  // Courtney Whitmore → 1048 (new 2026 move-in)
             // Zapiro
             [residentIds[16], propertyIds[41], 'Homeowner'],  // Jason Todd → 1152 (delinquent)
             [residentIds[17], propertyIds[41], 'Relative'],   // Tim Drake → 1152 (delinquent)
@@ -277,9 +281,9 @@ async function seed() {
 
         // ── Employees ─────────────────────────────────────────────────────────
         const employees = [
-            [personIds[36], 18000.00, 'Security Guard', '2019-06-01', null],
-            [personIds[37], 22000.00, 'Secretary',      '2020-03-15', null],
-            [personIds[38], 20000.00, 'Maintenance',    '2018-09-01', null],
+            [personIds[37], 18000.00, 'Security Guard', '2019-06-01', null],
+            [personIds[38], 22000.00, 'Secretary',      '2020-03-15', null],
+            [personIds[39], 20000.00, 'Maintenance',    '2018-09-01', null],
         ];
 
         for (const [personId, salary, position, start, end] of employees) {
@@ -291,25 +295,27 @@ async function seed() {
         }
 
         // ── Vehicles ──────────────────────────────────────────────────────────
-        // [type, plate, color, make, model, year]
+        // [type, plate, color, make, model, sticker_year, hasSticker]
+        // hasSticker=1 matches vehicles with a paid 'Vehicle Sticker' payment below;
+        // sticker_year=2026 matches when that sticker payment was made.
         const vehicles = [
-            ['Car',        'ABC 1234', 'White',  'Toyota',      'Vios',       2023],
-            ['Car',        'XYZ 5678', 'Black',  'Honda',       'City',       2022],
-            ['Motorcycle', 'MTR 001',  'Red',    'Yamaha',      'Mio',        2021],
-            ['Car',        'DEF 9012', 'Silver', 'Mitsubishi',  'Montero',    2023],
-            ['E-Bike',     null,       'Blue',   'Generic',     'E-Bike',     2022],
-            ['Car',        'GHI 3456', 'Gray',   'BMW',         '3 Series',   2022],
-            ['Car',        'JKL 7890', 'White',  'Ford',        'Ranger',     2021],
-            ['Car',        'MNO 2345', 'Black',  'Toyota',      'Land Cruiser',2023],
-            ['Motorcycle', 'PQR 6789', 'Red',    'Suzuki',      'Raider',     2022],
-            ['Car',        'STU 0123', 'Pearl',  'Honda',       'Accord',     2023],
+            ['Car',        'ABC 1234', 'White',  'Toyota',      'Vios',       2026, 1],
+            ['Car',        'XYZ 5678', 'Black',  'Honda',       'City',       2026, 1],
+            ['Motorcycle', 'MTR 001',  'Red',    'Yamaha',      'Mio',        2026, 1],
+            ['Car',        'DEF 9012', 'Silver', 'Mitsubishi',  'Montero',    2023, 0],
+            ['E-Bike',     null,       'Blue',   'Generic',     'E-Bike',     2022, 0],
+            ['Car',        'GHI 3456', 'Gray',   'BMW',         '3 Series',   2026, 1],
+            ['Car',        'JKL 7890', 'White',  'Ford',        'Ranger',     2021, 0],
+            ['Car',        'MNO 2345', 'Black',  'Toyota',      'Land Cruiser',2026, 1],
+            ['Motorcycle', 'PQR 6789', 'Red',    'Suzuki',      'Raider',     2022, 0],
+            ['Car',        'STU 0123', 'Pearl',  'Honda',       'Accord',     2026, 1],
         ];
 
         const vehicleIds = [];
-        for (const [type, plate, color, make, model, year] of vehicles) {
+        for (const [type, plate, color, make, model, year, hasSticker] of vehicles) {
             const [r] = await conn.query(
-                `INSERT INTO Vehicle (type, plate_number, color, make, model, sticker_year) VALUES (?, ?, ?, ?, ?, ?)`,
-                [type, plate, color, make, model, year]
+                `INSERT INTO Vehicle (type, plate_number, color, make, model, sticker_year, hasSticker) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                [type, plate, color, make, model, year, hasSticker]
             );
             vehicleIds.push(r.insertId);
         }
@@ -337,34 +343,40 @@ async function seed() {
 
         // ── Payments ──────────────────────────────────────────────────────────
         // [purpose, expected, paid, date, method, receipt, remarks, personIdx]
+        // Dated across 2026 (Jan – Aug) so they fall within the app's default
+        // "Jan 1 of current year → today" report/dashboard filter window.
         const payments = [
             // Association Dues — paid in full
-            ['Association Dues',    800.00,  800.00, '2025-01-15', 'GCash',         'OR-2025-001', 'Monthly Jan — Clark Kent',          0],
-            ['Association Dues',    800.00,  800.00, '2025-02-14', 'Cash',          'OR-2025-002', 'Monthly Feb — Clark Kent',          0],
-            ['Association Dues',    800.00,  800.00, '2025-03-10', 'Bank Transfer', 'OR-2025-003', 'Monthly Mar — Bruce Wayne',         2],
-            ['Association Dues',    800.00,  800.00, '2025-04-12', 'GCash',         'OR-2025-004', 'Monthly Apr — Diana Prince',        3],
-            ['Association Dues',    800.00,  800.00, '2025-05-08', 'Maya',          'OR-2025-005', 'Monthly May — Barry Allen',         4],
-            ['Association Dues',   8800.00, 8800.00, '2025-01-05', 'Check',         'OR-2025-006', 'Annual — Oliver Queen',             8],
-            ['Association Dues',    800.00,  800.00, '2025-03-20', 'Cash',          'OR-2025-007', 'Monthly Mar — Dinah Lance',        26],
+            ['Association Dues',    800.00,  800.00, '2026-01-15', 'GCash',         'OR-2026-001', 'Monthly Jan — Clark Kent',          0],
+            ['Association Dues',    800.00,  800.00, '2026-02-14', 'Cash',          'OR-2026-002', 'Monthly Feb — Clark Kent',          0],
+            ['Association Dues',    800.00,  800.00, '2026-03-10', 'Bank Transfer', 'OR-2026-003', 'Monthly Mar — Bruce Wayne',         2],
+            ['Association Dues',    800.00,  800.00, '2026-04-12', 'GCash',         'OR-2026-004', 'Monthly Apr — Diana Prince',        3],
+            ['Association Dues',    800.00,  800.00, '2026-05-08', 'Maya',          'OR-2026-005', 'Monthly May — Barry Allen',         4],
+            ['Association Dues',   8800.00, 8800.00, '2026-01-05', 'Check',         'OR-2026-006', 'Annual — Oliver Queen',             8],
+            ['Association Dues',    800.00,  800.00, '2026-03-20', 'Cash',          'OR-2026-007', 'Monthly Mar — Dinah Lance',        26],
+            ['Association Dues',    800.00,  800.00, '2026-07-14', 'GCash',         'OR-2026-019', 'Monthly Jul — Diana Prince',        3],
+            ['Association Dues',    800.00,  800.00, '2026-08-01', 'Cash',          'OR-2026-020', 'Monthly Aug — Clark Kent',          0],
             // Association Dues — partially paid / unpaid
-            ['Association Dues',    800.00,    0.00, '2025-06-01', 'Cash',          null,          'Pending — Lois Lane',               1],
-            ['Association Dues',    800.00,  400.00, '2025-05-15', 'GCash',         'OR-2025-008', 'Partial — Arthur Curry',            5],
+            ['Association Dues',    800.00,    0.00, '2026-06-01', 'Cash',          null,          'Pending — Lois Lane',               1],
+            ['Association Dues',    800.00,  400.00, '2026-05-15', 'GCash',         'OR-2026-008', 'Partial — Arthur Curry',            5],
             // Vehicle Stickers
-            ['Vehicle Sticker',     600.00,  600.00, '2025-01-20', 'Cash',          'OR-2025-009', 'Sticker — ABC 1234 (Vios)',          0],
-            ['Vehicle Sticker',     600.00,  600.00, '2025-01-22', 'GCash',         'OR-2025-010', 'Sticker — XYZ 5678 (City)',         2],
-            ['Vehicle Sticker',     370.00,  370.00, '2025-02-05', 'Cash',          'OR-2025-011', 'Sticker — MTR 001 (Mio)',           4],
-            ['Vehicle Sticker',     600.00,  600.00, '2025-01-18', 'Bank Transfer', 'OR-2025-012', 'Sticker — GHI 3456 (BMW)',          6],
-            ['Vehicle Sticker',    1000.00, 1000.00, '2025-02-10', 'Bank Transfer', 'OR-2025-013', 'Sticker — MNO 2345 (Land Cruiser)', 2],
-            ['Vehicle Sticker',     600.00,  600.00, '2025-01-25', 'Cash',          'OR-2025-014', 'Sticker — STU 0123 (Accord)',       27],
+            ['Vehicle Sticker',     600.00,  600.00, '2026-01-20', 'Cash',          'OR-2026-009', 'Sticker — ABC 1234 (Vios)',          0],
+            ['Vehicle Sticker',     600.00,  600.00, '2026-01-22', 'GCash',         'OR-2026-010', 'Sticker — XYZ 5678 (City)',         2],
+            ['Vehicle Sticker',     370.00,  370.00, '2026-02-05', 'Cash',          'OR-2026-011', 'Sticker — MTR 001 (Mio)',           4],
+            ['Vehicle Sticker',     600.00,  600.00, '2026-01-18', 'Bank Transfer', 'OR-2026-012', 'Sticker — GHI 3456 (BMW)',          6],
+            ['Vehicle Sticker',    1000.00, 1000.00, '2026-02-10', 'Bank Transfer', 'OR-2026-013', 'Sticker — MNO 2345 (Land Cruiser)', 2],
+            ['Vehicle Sticker',     600.00,  600.00, '2026-01-25', 'Cash',          'OR-2026-014', 'Sticker — STU 0123 (Accord)',       27],
             // Outstanding Balance payments (history)
             // Lot 940 Rubi — Barbara Gordon originally owed 3200; paid 1600; still owes 1600
-            ['Outstanding Balance', 3200.00, 1600.00, '2025-03-01', 'Cash',          'OR-2025-015', 'Partial payment on 940 Rubi dues', 15],
+            ['Outstanding Balance', 3200.00, 1600.00, '2026-03-01', 'Cash',          'OR-2026-015', 'Partial payment on 940 Rubi dues', 15],
             // Lot 311 Coral — Kyle Rayner full balance still owed, first notice sent
-            ['Outstanding Balance', 2400.00,    0.00, '2025-04-10', 'Cash',          null,          'Unpaid — 311 Coral first notice',  12],
+            ['Outstanding Balance', 2400.00,    0.00, '2026-04-10', 'Cash',          null,          'Unpaid — 311 Coral first notice',  12],
             // General Payments
-            ['General Payments',    500.00,  500.00, '2025-05-20', 'Cash',          'OR-2025-016', 'Gate pass fee — Zatanna',           9],
-            ['General Payments',    200.00,  200.00, '2025-06-05', 'GCash',         'OR-2025-017', 'Basketball court rental',          26],
-            ['General Payments',   1500.00, 1500.00, '2025-04-28', 'Bank Transfer', 'OR-2025-018', 'Construction bond — Bruce Wayne',   2],
+            ['General Payments',    500.00,  500.00, '2026-05-20', 'Cash',          'OR-2026-016', 'Gate pass fee — Zatanna',           9],
+            ['General Payments',    200.00,  200.00, '2026-06-05', 'GCash',         'OR-2026-017', 'Basketball court rental',          26],
+            ['General Payments',   1500.00, 1500.00, '2026-04-28', 'Bank Transfer', 'OR-2026-018', 'Construction bond — Bruce Wayne',   2],
+            ['General Payments',    300.00,  300.00, '2026-08-03', 'GCash',         'OR-2026-021', 'Clubhouse rental — Barry Allen',    4],
+            ['Association Dues',    800.00,  800.00, '2026-02-05', 'GCash',         'OR-2026-022', 'Monthly Feb — Courtney Whitmore (move-in)', 36],
         ];
 
         const paymentIds = [];
@@ -378,28 +390,30 @@ async function seed() {
         }
 
         // ── Outstanding_Balance records (for the payments above) ──────────────
-        // partial payment on Lot 940 Rubi (payment index 15 in payments array → paymentIds[15])
+        // partial payment on Lot 940 Rubi (payment index 17 in payments array → paymentIds[17])
         await conn.query(
             `INSERT INTO Outstanding_Balance (payment_id, property_id, resident_id) VALUES (?, ?, ?)`,
-            [paymentIds[15], propertyIds[32], residentIds[15]]
+            [paymentIds[17], propertyIds[32], residentIds[15]]
         );
-        // unpaid record for Lot 311 Coral (payment index 16)
+        // unpaid record for Lot 311 Coral (payment index 18)
         await conn.query(
             `INSERT INTO Outstanding_Balance (payment_id, property_id, resident_id) VALUES (?, ?, ?)`,
-            [paymentIds[16], propertyIds[10], residentIds[12]]
+            [paymentIds[18], propertyIds[10], residentIds[12]]
         );
 
         await conn.commit();
         console.log('✓ Seed complete.');
         console.log(`  ${persons.length} persons (${residentData.length} residents + 3 employees)`);
-        console.log(`  ${propertyIds.length} properties (5 with outstanding dues)`);
+        console.log(`  ${propertyIds.length} properties (7 with outstanding dues)`);
         console.log(`  ${residentProperties.length} resident-property links`);
         console.log(`  ${boardMembers.length} board member records`);
-        console.log(`  ${vehicleIds.length} vehicles`);
+        console.log(`  ${vehicleIds.length} vehicles (6 with issued stickers)`);
         console.log(`  ${paymentIds.length} payments`);
         console.log('');
-        console.log('  Delinquent properties:');
+        console.log('  Properties with outstanding dues:');
+        console.log('    101 Alabastro — ₱800    (Lois Lane — unpaid Assoc Dues)');
         console.log('    103 Alabastro — ₱4,800  (Zatanna Zatara, John Constantine)');
+        console.log('    310 Coral     — ₱400    (Arthur Curry — partial Assoc Dues)');
         console.log('    311 Coral     — ₱2,400  (Kyle Rayner)');
         console.log('    730 Nacar     — ₱9,600  (Wally West, Dick Grayson)');
         console.log('    940 Rubi      — ₱1,600  (Barbara Gordon — partially paid)');

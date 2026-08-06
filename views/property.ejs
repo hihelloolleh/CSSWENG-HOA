@@ -90,7 +90,7 @@
                                 <td><%= p.property_type %></td>
                                 <td>
                                     <% if (p.hasDues) { %>
-                                        <span class="badge badge-dues">Outstanding Association Dues &#8369;<%= parseFloat(p.outstandingBalance).toLocaleString('en-PH', {minimumFractionDigits:2}) %></span>
+                                        <span class="badge badge-dues">Outstanding Association Dues &#8369;<%= parseFloat(p.totalDue).toLocaleString('en-PH', {minimumFractionDigits:2}) %></span>
                                     <% } else { %>
                                         <span class="badge badge-settled">Settled</span>
                                     <% } %>

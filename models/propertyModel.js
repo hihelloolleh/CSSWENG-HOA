@@ -4,9 +4,19 @@ const { pool } = require('../config/db');
 
 const selectAllProperties = async () => {
     const [rows] = await pool.query(`
-        SELECT property_id, lot_number, property_type, street_name, hasDues, outstandingBalance
-        FROM Property
-        ORDER BY street_name ASC, lot_number ASC
+        SELECT
+            p.property_id, p.lot_number, p.property_type, p.street_name, p.hasDues, p.outstandingBalance,
+            p.outstandingBalance + COALESCE((
+                SELECT SUM(pay.amount_expected - pay.amount_paid)
+                FROM Resident_Property rp
+                JOIN Resident r   ON rp.resident_id = r.resident_id
+                JOIN Payment pay  ON pay.paid_by     = r.person_id
+                WHERE rp.property_id = p.property_id
+                  AND pay.amount_paid < pay.amount_expected
+                  AND pay.purpose <> 'Outstanding Balance'
+            ), 0) AS totalDue
+        FROM Property p
+        ORDER BY p.street_name ASC, p.lot_number ASC
     `);
     return rows;
 };
