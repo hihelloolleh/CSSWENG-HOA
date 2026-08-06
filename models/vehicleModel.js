@@ -16,6 +16,7 @@ const VehicleModel = {
             LEFT JOIN Resident r ON rv.resident_id = r.resident_id
             LEFT JOIN Person p ON r.person_id = p.person_id
             GROUP BY v.vehicle_id
+            ORDER BY v.sticker_year DESC
         `;
 
         const [rows] = await pool.execute(query);
