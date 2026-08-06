@@ -138,6 +138,26 @@ body {
     color: #fff;
 }
 
+.resident-name-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: #f0f5f0;
+    border: 1px solid #b8d4b8;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 14px;
+    font-size: 13px;
+    color: #3d553b;
+}
+
+.resident-name-notice i {
+    flex-shrink: 0;
+    margin-top: 1px;
+    font-size: 15px;
+    color: #526F50;
+}
+
 .resident-filter-bar {
     display: flex;
     align-items: center;
