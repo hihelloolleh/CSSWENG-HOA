@@ -332,7 +332,8 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label>Date of Birth</label>
-                                <input type="date" id="dob" name="birth_date">
+                                <input type="date" id="dob" name="birth_date" max="<%= new Date().toISOString().split('T')[0] %>">
+                                <small id="dob-error" style="color:#dc3545; font-size:12px; margin-top:4px; display:none;">Birthdate is invalid — it cannot be in the future.</small>
                             </div>
                             <div class="form-group">
                                 <label class="required-label">Residency Start Date</label>
@@ -674,6 +675,7 @@ function openAddModal() {
     document.getElementById('residentForm').action    = '/residents';
     document.getElementById('residentForm').reset();
     document.getElementById('delinquentGroup').style.display = 'none';
+    document.getElementById('dob-error').style.display = 'none';
     document.getElementById('residentModal').classList.add('active');
 }
 
@@ -740,6 +742,7 @@ function openEditModal(button) {
         document.getElementById('delinquentGroup').style.display      = 'none';
     }
 
+    document.getElementById('dob-error').style.display = 'none';
     document.getElementById('residentModal').classList.add('active');
 }
 
@@ -924,6 +927,29 @@ function openBMEditModal(btn) {
     document.getElementById('bm_board_start_date').value = btn.dataset.start;
     document.getElementById('bmModal').classList.add('active');
 }
+
+// ── Resident form: birthdate cannot be in the future ─────────────────────────
+(function () {
+    const dobInput = document.getElementById('dob');
+    const dobError = document.getElementById('dob-error');
+    const today     = new Date().toISOString().split('T')[0];
+
+    function isDobInvalid() {
+        return dobInput.value && dobInput.value > today;
+    }
+
+    dobInput.addEventListener('input', function () {
+        dobError.style.display = isDobInvalid() ? 'block' : 'none';
+    });
+
+    document.getElementById('residentForm').addEventListener('submit', function (e) {
+        if (isDobInvalid()) {
+            e.preventDefault();
+            dobError.style.display = 'block';
+            dobInput.focus();
+        }
+    });
+})();
 
 document.getElementById('bmForm').addEventListener('submit', function(e) {
     const checked = [...document.querySelectorAll('.bm-pos-cb:checked')].map(cb => cb.value);
