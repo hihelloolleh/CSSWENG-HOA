@@ -54,6 +54,11 @@
             </button>
         </div>
 
+        <div class="property-notice">
+            <i class="fa-solid fa-circle-info"></i>
+            <span>Click "View Residents" on a property to see everyone linked to it. Residents with pending, partial, or unpaid dues are flagged in red.</span>
+        </div>
+
         <div class="prop-filter-bar">
             <button class="prop-filter-btn prop-filter-active" onclick="setDuesFilter('all', this)">All</button>
             <button class="prop-filter-btn" onclick="setDuesFilter('settled', this)">Settled</button>
@@ -72,13 +77,14 @@
                         <th>Street Name</th>
                         <th>Property Type</th>
                         <th>Status</th>
+                        <th>Residents</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     <% if (properties.length === 0) { %>
                         <tr>
-                            <td colspan="5" class="empty-state">
+                            <td colspan="6" class="empty-state">
                                 No property records found. Click "Add Property" to create one.
                             </td>
                         </tr>
@@ -95,18 +101,20 @@
                                         <span class="badge badge-settled">Settled</span>
                                     <% } %>
                                 </td>
+                                <td>
+                                    <button class="row-action-btn"
+                                        data-id="<%= p.property_id %>"
+                                        onclick="openViewModal(this.dataset.id)">
+                                        <i class="ph ph-address-book"></i>
+                                        View Residents
+                                    </button>
+                                </td>
                                 <td class="action-menu">
-                                    <button class="action-trigger" onclick="toggleActionMenu(event)"> 
+                                    <button class="action-trigger" onclick="toggleActionMenu(event)">
                                         <i class="ph ph-dots-three-outline"></i>
                                     </button>
-                                    
+
                                     <div class="action-dropdown">
-                                        <button class="btn-icon"
-                                            data-id="<%= p.property_id %>"
-                                            onclick="openViewModal(this.dataset.id)">
-                                            <i class="ph ph-address-book"></i>
-                                            View Residents
-                                        </button>
                                         <button class="btn-icon"
                                                 data-id="<%= p.property_id %>"
                                                 data-lot="<%= p.lot_number || '' %>"
@@ -475,19 +483,27 @@
 
             listEl.innerHTML = `
                 <div style="display:flex;flex-direction:column;gap:8px;">
-                    ${residents.map(r => `
+                    ${residents.map(r => {
+                        const isDelinquent = !!r.isDelinquent;
+                        const borderColor  = isDelinquent ? '#dc3545' : '#e0e0e0';
+                        const bg           = isDelinquent ? '#fdecec' : '#fafafa';
+                        const hoverBg      = isDelinquent ? '#fbd9d9' : '#f0f4f0';
+                        const nameColor    = isDelinquent ? '#dc3545' : 'inherit';
+                        return `
                         <a href="/residents?view_resident=${r.resident_id}"
                            style="display:flex;align-items:center;justify-content:space-between;
-                                  padding:10px 14px;border:1px solid #e0e0e0;border-radius:8px;
-                                  text-decoration:none;color:inherit;background:#fafafa;
+                                  padding:10px 14px;border:1px solid ${borderColor};border-radius:8px;
+                                  text-decoration:none;color:inherit;background:${bg};
                                   transition:background .15s;"
-                           onmouseover="this.style.background='#f0f4f0'"
-                           onmouseout="this.style.background='#fafafa'">
-                            <span style="font-weight:500;font-size:14px;">${r.full_name}</span>
+                           onmouseover="this.style.background='${hoverBg}'"
+                           onmouseout="this.style.background='${bg}'">
+                            <span style="font-weight:500;font-size:14px;color:${nameColor};">
+                                ${r.full_name}${isDelinquent ? ' <i class="fa-solid fa-triangle-exclamation" style="font-size:11px;"></i>' : ''}
+                            </span>
                             <span style="font-size:12px;color:#526F50;background:#e8f0e8;
                                          padding:2px 10px;border-radius:999px;">${r.type}</span>
-                        </a>
-                    `).join('')}
+                        </a>`;
+                    }).join('')}
                 </div>
             `;
         } catch (_) {

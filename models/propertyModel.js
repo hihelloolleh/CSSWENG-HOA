@@ -58,7 +58,8 @@ const selectResidentsByPropertyId = async (propertyId) => {
         SELECT
             r.resident_id,
             CONCAT(per.first_name, ' ', per.last_name) AS full_name,
-            rp.type
+            rp.type,
+            r.isDelinquent
         FROM Resident_Property rp
         JOIN Resident r   ON rp.resident_id = r.resident_id
         JOIN Person   per ON r.person_id     = per.person_id
