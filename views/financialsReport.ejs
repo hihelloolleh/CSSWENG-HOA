@@ -5,10 +5,10 @@
 <div class="rpt-actions no-print">
     <a href="/reports" class="rpt-back"><i class="fa-solid fa-arrow-left"></i> Back to Reports</a>
     <div style="display:flex; gap:10px;">
-        <button onclick="exportCSV()" class="rpt-print-btn" style="background:#4a7c59;">
+        <button id="exportCsvBtn" onclick="exportCSV()" class="rpt-print-btn" style="background:#4a7c59;">
             <i class="fa-solid fa-file-csv"></i> Export CSV
         </button>
-        <button onclick="window.print()" class="rpt-print-btn">
+        <button id="printBtn" onclick="window.print()" class="rpt-print-btn">
             <i class="fa-solid fa-print"></i> Print / Save as PDF
         </button>
     </div>
@@ -29,18 +29,40 @@
 <script>
 (function () {
     const today  = new Date().toISOString().slice(0, 10);
-    const fromEl = document.getElementById('filterFrom');
-    const toEl   = document.getElementById('filterTo');
-    const errEl  = document.getElementById('dateError');
+    const fromEl     = document.getElementById('filterFrom');
+    const toEl       = document.getElementById('filterTo');
+    const errEl      = document.getElementById('dateError');
+    const exportBtn  = document.getElementById('exportCsvBtn');
+    const printBtn   = document.getElementById('printBtn');
 
     fromEl.max = today;
     toEl.max   = today;
 
-    function showErr(msg) { errEl.textContent = msg; errEl.style.display = 'inline'; }
-    function clearErr()   { errEl.style.display = 'none'; }
+    function showErr(msg) {
+        errEl.textContent = msg;
+        errEl.style.display = 'inline';
+        exportBtn.disabled = true;
+        printBtn.disabled  = true;
+    }
+    function clearErr() {
+        errEl.style.display = 'none';
+        exportBtn.disabled = false;
+        printBtn.disabled  = false;
+    }
 
-    fromEl.addEventListener('change', function () { toEl.min = this.value; clearErr(); });
-    toEl.addEventListener('change',   function () { fromEl.max = this.value < today ? this.value : today; clearErr(); });
+    // Validates the in-progress filter values (not yet applied) and disables
+    // Export/Print while they're invalid, so the buttons can't be used against
+    // a period the admin hasn't actually applied.
+    function validate() {
+        const from = fromEl.value, to = toEl.value;
+        if (!from || !to)               { showErr('Both dates are required.');                     return; }
+        if (from > today || to > today) { showErr('Dates cannot be in the future.');                return; }
+        if (from > to)                  { showErr('"From" date must be on or before the "To" date.'); return; }
+        clearErr();
+    }
+
+    fromEl.addEventListener('change', function () { toEl.min = this.value; validate(); });
+    toEl.addEventListener('change',   function () { fromEl.max = this.value < today ? this.value : today; validate(); });
 
     document.getElementById('dateFilterForm').addEventListener('submit', function (e) {
         const from = fromEl.value, to = toEl.value;
@@ -49,6 +71,8 @@
         if (from > to)               { e.preventDefault(); showErr('"From" date must be on or before the "To" date.'); return; }
         clearErr();
     });
+
+    validate();
 })();
 </script>
 
