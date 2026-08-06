@@ -75,14 +75,14 @@
                 <div class="stat-icon orange"><i class="fa-solid fa-triangle-exclamation"></i></div>
                 <div class="stat-info">
                     <span class="stat-value"><%= fmt(stats.totalOutstanding) %></span>
-                    <span class="stat-label">Total Outstanding Dues</span>
+                    <span class="stat-label">Properties with outstanding association dues</span>
                 </div>
             </div>
             <div class="card stat-card">
                 <div class="stat-icon red"><i class="fa-solid fa-house-circle-exclamation"></i></div>
                 <div class="stat-info">
                     <span class="stat-value"><%= stats.delinquentProperties %></span>
-                    <span class="stat-label">Properties with Dues</span>
+                    <span class="stat-label">Properties with outstanding association dues</span>
                 </div>
             </div>
             <div class="card stat-card">
@@ -126,12 +126,12 @@
             <!-- DELINQUENCY REPORT -->
             <div class="card delinquency-card">
                 <div class="card-header">
-                    <h2>Pending Payments</h2>
+                    <h2>Properties with outstanding association dues</h2>
                     <a href="/payments" class="view-all">View All</a>
                 </div>
                 <% if (delinquents.length === 0) { %>
                     <p style="color:#aaa; font-size:13px; text-align:center; padding:24px 0;">
-                        No pending payments — all dues are settled.
+                        No outstanding association dues — all properties are settled.
                     </p>
                 <% } else { %>
                 <table class="data-table">

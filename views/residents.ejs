@@ -409,13 +409,13 @@
             <p><strong>Residency Start Date:</strong> <span id="view-residency-start">—</span></p>
             <p><strong>Residency End Date:</strong> <span id="view-residency-end">—</span></p>
 
-            <h3 style="margin-top:16px;">Outstanding Dues</h3>
+            <h3 style="margin-top:16px;">Outstanding Association Dues</h3>
             <hr>
             <div id="view-outstanding-section" style="margin-top:10px;">
                 <p style="color:#999;font-size:13px;">Loading...</p>
             </div>
 
-            <h3 style="margin-top:16px;">Pending Payments</h3>
+            <h3 style="margin-top:16px;">Properties with outstanding association dues</h3>
             <hr>
             <div id="view-pending-section" style="margin-top:10px;">
                 <p style="color:#999;font-size:13px;">Loading...</p>
@@ -754,7 +754,7 @@ function openViewModal(button) {
         .then(r => r.json())
         .then(props => {
             if (!props.length) {
-                outEl.innerHTML = '<p style="color:#666;font-size:13px;">No outstanding dues.</p>';
+                outEl.innerHTML = '<p style="color:#666;font-size:13px;">No outstanding association dues.</p>';
                 return;
             }
             outEl.innerHTML = props.map(p => `
@@ -771,7 +771,7 @@ function openViewModal(button) {
             `).join('');
         })
         .catch(() => {
-            outEl.innerHTML = '<p style="color:#dc3545;font-size:13px;">Failed to load outstanding dues.</p>';
+            outEl.innerHTML = '<p style="color:#dc3545;font-size:13px;">Failed to load outstanding association dues.</p>';
         });
 
     const PURPOSE_TO_DUES_TYPE = {

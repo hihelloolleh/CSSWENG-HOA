@@ -124,6 +124,31 @@
             <div class="modal-body">
                 <form id="vehicleForm" action="/vehicles/register" method="POST">
                     
+                    <!-- OWNERS - MOVED TO FIRST POSITION -->
+                    <div class="form-group" style="margin-top: 0px;">
+                        <label class="required-label">Owners</label>
+                        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                            <div style="position: relative; flex: 1;">
+                                <input type="text" id="add_resident_search" class="form-control" placeholder="Search resident name..." autocomplete="off" style="width: 100%; padding: 8px;">
+                                
+                                <ul id="add_dropdown_list" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #ccc; border-radius: 4px; z-index: 1000; max-height: 150px; overflow-y: auto; list-style: none; padding: 0; margin: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></ul>
+                                
+                                <select id="add_resident_select" style="display: none;">
+                                    <option value="">Select Resident/s</option>
+                                    <% if (locals.residents) { %>
+                                        <% residents.forEach(resident => { %>
+                                            <option value="<%= resident.resident_id %>"><%= resident.full_name %></option>
+                                        <% }); %>
+                                    <% } %>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div id="add_resident_tags" style="display: flex; flex-wrap: wrap; gap: 8px; min-height: 44px; padding: 10px; border: 1px dashed #ccc; border-radius: 4px;"></div>
+
+                        <div id="add_hidden_inputs"></div>
+                    </div>
+
                     <div class="form-group">
                         <label class="required-label">Vehicle Type</label>
                         <select id="add_type" name="type" class="form-control" style="width: 100%; padding: 8px;" required>
@@ -173,30 +198,6 @@
                         </select>
                     </div>
 
-                    <div class="form-group" style="margin-top: 15px;">
-                        <label>Owners</label>
-                        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                            <div style="position: relative; flex: 1;">
-                                <input type="text" id="add_resident_search" class="form-control" placeholder="Search resident name..." autocomplete="off" style="width: 100%; padding: 8px;">
-                                
-                                <ul id="add_dropdown_list" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #ccc; border-radius: 4px; z-index: 1000; max-height: 150px; overflow-y: auto; list-style: none; padding: 0; margin: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></ul>
-                                
-                                <select id="add_resident_select" style="display: none;">
-                                    <option value="">Select Resident/s</option>
-                                    <% if (locals.residents) { %>
-                                        <% residents.forEach(resident => { %>
-                                            <option value="<%= resident.resident_id %>"><%= resident.full_name %></option>
-                                        <% }); %>
-                                    <% } %>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div id="add_resident_tags" style="display: flex; flex-wrap: wrap; gap: 8px; min-height: 44px; padding: 10px; border: 1px dashed #ccc; border-radius: 4px;"></div>
-
-                        <div id="add_hidden_inputs"></div>
-                    </div>
-
                     <div id="addVehicleError" class="modal-form-error" style="display:none;"></div>
 
                     <div class="modal-footer">
@@ -218,25 +219,9 @@
         </div>
         <div class="modal-body">
             <form id="editVehicleForm" method="POST">
-                <div class="form-group">
-                    <label class="required-label">Plate Number</label>
-                    <input type="text" id="edit_plate_number" name="plate_number" required>
-                </div>
-
-                <div class="form-group" style="margin-top: 15px;">
-                    <label class="required-label">Vehicle Type</label>
-                    <select id="edit_type" name="type" class="form-control" style="width: 100%; padding: 8px;" required>
-                        <option value="">Select Vehicle Type</option>
-                        <option value="Car">Car</option>
-                        <option value="Motorcycle">Motorcycle</option>
-                        <option value="E-Bike">E-Bike</option>
-                        <option value="Commercial">Commercial</option>
-                        <option value="Others">Others</option>
-                    </select>
-                </div>
-
-                <div class="form-group" style="margin-top: 15px;">
-                    <label>Owners</label>
+                <!-- OWNERS - MOVED TO FIRST POSITION IN EDIT MODAL -->
+                <div class="form-group" style="margin-top: 0px;">
+                    <label class="required-label">Owners</label>
                     <div style="display: flex; gap: 10px; margin-bottom: 10px;">
                         <div style="position: relative; flex: 1;">
                             <input type="text" id="edit_resident_search" class="form-control" placeholder="Search resident name..." autocomplete="off" style="width: 100%; padding: 8px;">
@@ -257,6 +242,23 @@
                     <div id="edit_resident_tags" style="display: flex; flex-wrap: wrap; gap: 8px; min-height: 44px; padding: 10px; border: 1px dashed #ccc; border-radius: 4px;"></div>
                     
                     <div id="edit_hidden_inputs"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="required-label">Plate Number</label>
+                    <input type="text" id="edit_plate_number" name="plate_number" required>
+                </div>
+
+                <div class="form-group" style="margin-top: 15px;">
+                    <label class="required-label">Vehicle Type</label>
+                    <select id="edit_type" name="type" class="form-control" style="width: 100%; padding: 8px;" required>
+                        <option value="">Select Vehicle Type</option>
+                        <option value="Car">Car</option>
+                        <option value="Motorcycle">Motorcycle</option>
+                        <option value="E-Bike">E-Bike</option>
+                        <option value="Commercial">Commercial</option>
+                        <option value="Others">Others</option>
+                    </select>
                 </div>
 
                 <div class="form-row">
