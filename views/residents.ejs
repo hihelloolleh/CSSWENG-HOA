@@ -507,6 +507,7 @@
 
                     <input type="hidden" id="bm_resident_id" name="resident_id">
                     <p id="bmResidentNameDisplay" class="resident-name-display" style="display:none;"></p>
+                    <small id="bmResidentSearchHint" style="color:#dc3545; font-size:12px; display:none;"></small>
                 </div>
 
                 <div class="form-group">
@@ -857,14 +858,22 @@ const bmSearchInput     = document.getElementById('bmResidentSearchInput');
 const bmDropdownList    = document.getElementById('bmResidentDropdownList');
 const bmResidentIdInput = document.getElementById('bm_resident_id');
 
+const bmResidentSearchHint = document.getElementById('bmResidentSearchHint');
+
 bmSearchInput.addEventListener('input', function () {
     const q = this.value.trim().toLowerCase();
     bmResidentIdInput.value = '';
     bmDropdownList.innerHTML = '';
+    bmResidentSearchHint.style.display = 'none';
     if (!q) { bmDropdownList.style.display = 'none'; return; }
 
     const matches = allResidents.filter(r => r.full_name.toLowerCase().includes(q));
-    if (!matches.length) { bmDropdownList.style.display = 'none'; return; }
+    if (!matches.length) {
+        bmDropdownList.style.display = 'none';
+        bmResidentSearchHint.textContent = 'No matching active resident found. Only active residents can be added to the board — inactive residents must be reactivated first.';
+        bmResidentSearchHint.style.display = 'block';
+        return;
+    }
 
     matches.forEach(r => {
         const li = document.createElement('li');
@@ -874,6 +883,7 @@ bmSearchInput.addEventListener('input', function () {
             bmSearchInput.value     = r.full_name;
             bmResidentIdInput.value = r.resident_id;
             bmDropdownList.style.display = 'none';
+            bmResidentSearchHint.style.display = 'none';
         });
         bmDropdownList.appendChild(li);
     });
@@ -951,6 +961,17 @@ function openBMEditModal(btn) {
 })();
 
 document.getElementById('bmForm').addEventListener('submit', function(e) {
+    // Only require a resident pick when adding (on edit, the search input is
+    // swapped out for a read-only name display and resident_id isn't editable).
+    const pickingResident = bmSearchInput.style.display !== 'none';
+    if (pickingResident && !bmResidentIdInput.value) {
+        e.preventDefault();
+        bmResidentSearchHint.textContent = 'Please select a resident from the dropdown before continuing.';
+        bmResidentSearchHint.style.display = 'block';
+        bmSearchInput.focus();
+        return;
+    }
+
     const checked = [...document.querySelectorAll('.bm-pos-cb:checked')].map(cb => cb.value);
     if (!checked.length) {
         e.preventDefault();

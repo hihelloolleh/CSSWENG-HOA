@@ -6,6 +6,18 @@ const addBoardMember = async (data) => {
     try {
         await conn.beginTransaction();
 
+        if (!data.resident_id || isNaN(parseInt(data.resident_id, 10))) {
+            throw new Error('Please select a resident from the dropdown before adding a board member.');
+        }
+
+        const activeResidents = await boardMemberModel.selectAllResidents();
+        const isActiveResident = activeResidents.some(
+            r => String(r.resident_id) === String(data.resident_id)
+        );
+        if (!isActiveResident) {
+            throw new Error('That resident could not be found or is not currently active. Only active residents can be added to the board.');
+        }
+
         const existing = await boardMemberModel.getActiveBoardMemberByResidentId(data.resident_id, conn);
         if (existing) {
             throw new Error('This resident is already an active board member. Edit their existing entry to change positions.');
