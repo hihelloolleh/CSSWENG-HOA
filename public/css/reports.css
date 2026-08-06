@@ -225,6 +225,9 @@ body {
     border: 1px solid #333;
     padding: 10px 12px;
     vertical-align: middle;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .rpt-table th {
