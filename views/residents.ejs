@@ -70,15 +70,23 @@
         <!-- ── RESIDENTS SECTION ────────────────────────────────────────────── -->
         <div id="residentsSection">
 
-            <div class="bm-filter-bar">
-                <button class="bm-filter-btn bm-filter-active" data-filter-active="all"      onclick="filterResidentsActive('all')">All</button>
-                <button class="bm-filter-btn"                  data-filter-active="active"   onclick="filterResidentsActive('active')">Active</button>
-                <button class="bm-filter-btn"                  data-filter-active="inactive" onclick="filterResidentsActive('inactive')">Inactive</button>
-            </div>
-            <div class="bm-filter-bar">
-                <button class="bm-filter-btn bm-filter-active" data-filter-dues="all"         onclick="filterResidentsDues('all')">All</button>
-                <button class="bm-filter-btn"                  data-filter-dues="good"        onclick="filterResidentsDues('good')">Good Standing</button>
-                <button class="bm-filter-btn"                  data-filter-dues="delinquent"  onclick="filterResidentsDues('delinquent')">Delinquent</button>
+            <div class="resident-filter-bar">
+                <div class="filter-select-group">
+                    <label for="filterActiveSelect">Status</label>
+                    <select id="filterActiveSelect" class="filter-select" onchange="filterResidentsActive(this.value)">
+                        <option value="all">All</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+                <div class="filter-select-group">
+                    <label for="filterDuesSelect">Dues</label>
+                    <select id="filterDuesSelect" class="filter-select" onchange="filterResidentsDues(this.value)">
+                        <option value="all">All</option>
+                        <option value="good">Good Standing</option>
+                        <option value="delinquent">Delinquent</option>
+                    </select>
+                </div>
             </div>
 
             <p class="resident-count">
@@ -109,7 +117,21 @@
                             <% residents.forEach(resident => { %>
                                 <tr data-status="<%= resident.isDelinquent ? 'delinquent' : 'good' %>"
                                     data-active="<%= resident.isActive ? 'active' : 'inactive' %>">
-                                    <td><strong><%= resident.first_name %> <%= resident.middle_name %> <%= resident.last_name %> <%= resident.suffix %></strong></td>
+                                    <td>
+                                        <button class="resident-name-btn"
+                                            data-id="<%= resident.resident_id %>"
+                                            data-personid="<%= resident.person_id %>"
+                                            data-name="<%= resident.first_name %> <%= resident.middle_name %> <%= resident.last_name %> <%= resident.suffix %>"
+                                            data-dob="<%= resident.birth_date ? resident.birth_date.toString().substring(0, 10) : '' %>"
+                                            data-email="<%= resident.email || '' %>"
+                                            data-phone="<%= resident.contact_num || '' %>"
+                                            data-residentstart="<%= resident.residency_start_date ? resident.residency_start_date.toString().substring(0,10) : '' %>"
+                                            data-residentend="<%= resident.residency_end_date ? resident.residency_end_date.toString().substring(0,10) : '' %>"
+                                            data-delinquent="<%= resident.isDelinquent ? '1' : '0' %>"
+                                            onclick="openViewModal(this)">
+                                            <%= resident.first_name %> <%= resident.middle_name %> <%= resident.last_name %> <%= resident.suffix %>
+                                        </button>
+                                    </td>
                                     <td><%= resident.birth_date ? resident.birth_date.toString().substring(0, 10) : '—' %></td>
                                     <td><%= resident.email || '—' %></td>
                                     <td><%= resident.contact_num || '—' %></td>
@@ -127,20 +149,6 @@
                                                 <i class="ph ph-dots-three-outline"></i>
                                             </button>
                                             <div class="action-dropdown">
-                                                <button class="btn-icon"
-                                                    data-id="<%= resident.resident_id %>"
-                                                    data-personid="<%= resident.person_id %>"
-                                                    data-name="<%= resident.first_name %> <%= resident.middle_name %> <%= resident.last_name %> <%= resident.suffix %>"
-                                                    data-dob="<%= resident.birth_date ? resident.birth_date.toString().substring(0, 10) : '' %>"
-                                                    data-email="<%= resident.email || '' %>"
-                                                    data-phone="<%= resident.contact_num || '' %>"
-                                                    data-residentstart="<%= resident.residency_start_date ? resident.residency_start_date.toString().substring(0,10) : '' %>"
-                                                    data-residentend="<%= resident.residency_end_date ? resident.residency_end_date.toString().substring(0,10) : '' %>"
-                                                    data-delinquent="<%= resident.isDelinquent ? '1' : '0' %>"
-                                                    onclick="openViewModal(this)">
-                                                    <i class="ph ph-address-book"></i>
-                                                    View Details
-                                                </button>
                                                 <button class="btn-icon"
                                                         data-id="<%= resident.resident_id %>"
                                                         data-firstname="<%= resident.first_name %>"
@@ -597,17 +605,11 @@ let resDuesFilter   = 'all';
 
 function filterResidentsActive(filter) {
     resActiveFilter = filter;
-    document.querySelectorAll('.bm-filter-btn[data-filter-active]').forEach(btn => {
-        btn.classList.toggle('bm-filter-active', btn.dataset.filterActive === filter);
-    });
     applyResidentFilter();
 }
 
 function filterResidentsDues(filter) {
     resDuesFilter = filter;
-    document.querySelectorAll('.bm-filter-btn[data-filter-dues]').forEach(btn => {
-        btn.classList.toggle('bm-filter-active', btn.dataset.filterDues === filter);
-    });
     applyResidentFilter();
 }
 
