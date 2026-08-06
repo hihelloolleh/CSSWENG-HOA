@@ -113,7 +113,7 @@
                                     <td><%= resident.birth_date ? resident.birth_date.toString().substring(0, 10) : '—' %></td>
                                     <td><%= resident.email || '—' %></td>
                                     <td><%= resident.contact_num || '—' %></td>
-                                    <td><%= resident.isActive === 1 ? 'Ongoing' : 'Ended' %></td>
+                                    <td><%= resident.isActive === 1 ? 'Active' : 'Inactive' %></td>
                                     <td>
                                         <% if (resident.isDelinquent) { %>
                                             <span class="badge badge-delinquent">Delinquent</span>
@@ -420,6 +420,12 @@
             <h3 style="margin-top:16px;">Outstanding Dues</h3>
             <hr>
             <div id="view-outstanding-section" style="margin-top:10px;">
+                <p style="color:#999;font-size:13px;">Loading...</p>
+            </div>
+
+            <h3 style="margin-top:16px;">Pending Payments</h3>
+            <hr>
+            <div id="view-pending-section" style="margin-top:10px;">
                 <p style="color:#999;font-size:13px;">Loading...</p>
             </div>
         </div>
@@ -776,6 +782,49 @@ function openViewModal(button) {
         })
         .catch(() => {
             outEl.innerHTML = '<p style="color:#dc3545;font-size:13px;">Failed to load outstanding dues.</p>';
+        });
+
+    const PURPOSE_TO_DUES_TYPE = {
+        'Association Dues':  'association',
+        'Vehicle Sticker':   'vehicle',
+        'General Payments':  'general',
+    };
+
+    const pendEl = document.getElementById('view-pending-section');
+    pendEl.innerHTML = '<p style="color:#999;font-size:13px;">Loading...</p>';
+
+    fetch(`/residents/${button.dataset.id}/pending-payments`)
+        .then(r => r.json())
+        .then(payments => {
+            if (!payments.length) {
+                pendEl.innerHTML = '<p style="color:#666;font-size:13px;">No pending payments.</p>';
+                return;
+            }
+            pendEl.innerHTML = payments.map(p => {
+                const expected  = parseFloat(p.amount_expected) || 0;
+                const paid      = parseFloat(p.amount_paid)     || 0;
+                const remaining = Math.max(0, expected - paid);
+                const status    = paid > 0 ? 'Partial' : 'Unpaid';
+                const duesType  = PURPOSE_TO_DUES_TYPE[p.purpose] || 'general';
+                let href = `/dues/${duesType}?person_id=${p.paid_by}&amount=${remaining.toFixed(2)}`;
+                if (duesType === 'association' && p.property_id) {
+                    href += `&property_id=${p.property_id}`;
+                }
+                return `
+                <a href="${href}" class="outstanding-item">
+                    <div class="outstanding-item-info">
+                        <span class="outstanding-item-address">${p.purpose}</span>
+                        <span class="outstanding-item-type">${status}</span>
+                    </div>
+                    <div class="outstanding-item-amount">
+                        ₱${remaining.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </div>
+                </a>`;
+            }).join('');
+        })
+        .catch(() => {
+            pendEl.innerHTML = '<p style="color:#dc3545;font-size:13px;">Failed to load pending payments.</p>';
         });
 
     document.getElementById('viewModal').classList.add('active');

@@ -17,12 +17,17 @@ const getFinanceStats = async (fromDate, toDate) => {
         WHERE hasDues = 1
     `);
 
+    const [[delinquent]] = await pool.query(`
+        SELECT COUNT(*) AS cnt FROM Resident WHERE isDelinquent = 1 AND deleteFlag = 0
+    `);
+
     return {
-        periodCollected:   parseFloat(period.total_collected),
-        periodUncollected: parseFloat(period.total_uncollected),
-        pendingCount:      period.pending_count,
-        transactionCount:  period.transaction_count,
-        outstandingDues:   parseFloat(outstanding.total),
+        periodCollected:    parseFloat(period.total_collected),
+        periodUncollected:  parseFloat(period.total_uncollected),
+        pendingCount:       period.pending_count,
+        transactionCount:   period.transaction_count,
+        outstandingDues:    parseFloat(outstanding.total),
+        delinquentResidents: delinquent.cnt,
     };
 };
 

@@ -189,6 +189,30 @@ const setDelinquent = async (residentId, value, conn) => {
     );
 };
 
+// Recomputes isDelinquent for every Resident row of this person from two
+// sources of truth: an outstanding-balance property they're linked to, OR
+// any payment (any purpose) in the ledger that is still partial/unpaid.
+const recomputeDelinquentByPersonId = async (personId, conn) => {
+    await conn.query(`
+        UPDATE Resident r
+        SET isDelinquent = (
+            EXISTS (
+                SELECT 1
+                FROM Resident_Property rp
+                JOIN Property p ON rp.property_id = p.property_id
+                WHERE rp.resident_id = r.resident_id AND p.hasDues = 1
+            )
+            OR EXISTS (
+                SELECT 1
+                FROM Payment pay
+                WHERE pay.paid_by = r.person_id
+                  AND pay.amount_paid < pay.amount_expected
+            )
+        )
+        WHERE r.person_id = ? AND r.deleteFlag = 0
+    `, [personId]);
+};
+
 const getResidentIdByPersonId = async (personId, conn) => {
     const db = conn || pool;
     const [rows] = await db.query(
@@ -209,6 +233,33 @@ const getDelinquentPropertiesByResidentId = async (residentId) => {
     return rows;
 };
 
+const getPendingPaymentsByResidentId = async (residentId) => {
+    const [rows] = await pool.query(`
+        SELECT
+            pay.payment_id,
+            pay.purpose,
+            pay.amount_expected,
+            pay.amount_paid,
+            pay.date_paid,
+            pay.payment_method,
+            pay.paid_by,
+            (
+                SELECT rp2.property_id
+                FROM Resident_Property rp2
+                WHERE rp2.resident_id = r.resident_id
+                ORDER BY rp2.type = 'Homeowner' DESC
+                LIMIT 1
+            ) AS property_id
+        FROM Payment pay
+        JOIN Resident r ON pay.paid_by = r.person_id
+        WHERE r.resident_id = ?
+          AND pay.amount_paid < pay.amount_expected
+          AND pay.purpose <> 'Outstanding Balance'
+        ORDER BY pay.created_at DESC
+    `, [residentId]);
+    return rows;
+};
+
 module.exports = {
     selectResidentById,
     selectPersonByResidentId,
@@ -221,7 +272,9 @@ module.exports = {
     deactivateResident,
     findActiveResidentByPersonId,
     setDelinquent,
+    recomputeDelinquentByPersonId,
     getResidentIdByPersonId,
     getDelinquentPropertiesByResidentId,
+    getPendingPaymentsByResidentId,
 };
 

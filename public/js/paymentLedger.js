@@ -133,7 +133,6 @@ function openEditModal(btn) {
     const d = btn.dataset;
 
     document.querySelector('#editModal .modal-header h2').textContent = 'Edit Payment';
-    document.getElementById('settleInfo').style.display = 'none';
 
     document.getElementById('edit_payment_id').value      = d.id;
     document.getElementById('edit_purpose').value         = d.purpose;
@@ -151,43 +150,27 @@ function openEditModal(btn) {
     document.getElementById('editModal').classList.add('active');
 }
 
-// ── Settle modal ──────────────────────────────────────────────────────────────
+// ── Settle — redirect to add-payment form with remaining balance pre-filled ───
 function openSettleModal(btn) {
-    const d        = btn.dataset;
-    const expected = parseFloat(d.expected) || 0;
-    const prevPaid = parseFloat(d.paid)     || 0;
-    const remaining = expected - prevPaid;
-    const fmt = n => n.toLocaleString('en-PH', { minimumFractionDigits: 2 });
+    const d = btn.dataset;
+    const expected  = parseFloat(d.expected) || 0;
+    const prevPaid  = parseFloat(d.paid)     || 0;
+    const remaining = Math.max(0, expected - prevPaid);
 
-    document.querySelector('#editModal .modal-header h2').textContent = 'Settle Payment';
+    const purposeToType = {
+        'Association Dues':   'association',
+        'Vehicle Sticker':    'vehicle',
+        'Outstanding Balance':'outstanding',
+        'General Payments':   'general',
+    };
+    const type = purposeToType[d.purpose] || 'general';
 
-    document.getElementById('edit_payment_id').value      = d.id;
-    document.getElementById('edit_purpose').value         = d.purpose;
-    document.getElementById('edit_amount_expected').value = remaining;
-    document.getElementById('edit_amount_paid').value     = remaining;
-    document.getElementById('edit_payment_method').value  = d.method;
-    document.getElementById('edit_receipt_number').value  = d.receipt || '';
-    document.getElementById('edit_remarks').value         = d.remarks || '';
-    document.getElementById('edit_date_paid').value       = '';       // clear — admin enters settlement date
+    const params = new URLSearchParams();
+    if (d.paidby)      params.set('person_id',   d.paidby);
+    if (d.propertyid)  params.set('property_id', d.propertyid);
+    if (remaining > 0) params.set('amount',       remaining.toFixed(2));
 
-    const person = allPersons.find(p => String(p.person_id) === String(d.paidby));
-    document.getElementById('edit_payor_search').value = person ? person.full_name : (d.payor || '');
-    document.getElementById('edit_payor_id').value     = d.paidby || '';
-
-    // Show banner with remaining balance context
-    const settleInfo = document.getElementById('settleInfo');
-    if (prevPaid > 0) {
-        document.getElementById('settleInfoText').innerHTML =
-            `Previously paid: <strong>&#8369;${fmt(prevPaid)}</strong> of <strong>&#8369;${fmt(expected)}</strong> expected. ` +
-            `Remaining: <strong>&#8369;${fmt(remaining)}</strong>`;
-        settleInfo.style.display = 'block';
-    } else {
-        document.getElementById('settleInfoText').innerHTML =
-            `Amount expected: <strong>&#8369;${fmt(expected)}</strong>`;
-        settleInfo.style.display = 'block';
-    }
-
-    document.getElementById('editModal').classList.add('active');
+    window.location.href = `/dues/${type}?${params.toString()}`;
 }
 
 // ── Delete confirmation ───────────────────────────────────────────────────────

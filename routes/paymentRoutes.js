@@ -48,6 +48,7 @@ router.get('/:type', async (req, res) => {
             stickerRates,
             preselectedPropertyId: req.query.property_id ? parseInt(req.query.property_id) : null,
             preselectedPersonId:   req.query.person_id   ? parseInt(req.query.person_id)   : null,
+            preselectedAmount:     req.query.amount       ? parseFloat(req.query.amount)     : null,
         });
     } catch (err) {
         console.error('Payment form error:', err);

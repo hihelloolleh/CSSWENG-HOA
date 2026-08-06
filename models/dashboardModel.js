@@ -36,25 +36,20 @@ const getStats = async () => {
 const getPropertyStatus = async () => {
     const [[result]] = await pool.query(`
         SELECT
-            COUNT(DISTINCT p.property_id) AS total,
-            COUNT(DISTINCT occ.property_id) AS occupied
-        FROM Property p
-        LEFT JOIN (
-            SELECT DISTINCT rp.property_id
-            FROM Resident_Property rp
-            JOIN Resident r ON rp.resident_id = r.resident_id
-            WHERE r.residency_end_date IS NULL
-        ) AS occ ON p.property_id = occ.property_id
+            COUNT(*)                                            AS total,
+            COUNT(CASE WHEN property_type = 'House' THEN 1 END) AS houses,
+            COUNT(CASE WHEN property_type = 'Lot'   THEN 1 END) AS lots
+        FROM Property
     `);
-    const total    = result.total;
-    const occupied = result.occupied;
-    const vacant   = total - occupied;
+    const total  = result.total;
+    const houses = result.houses;
+    const lots   = result.lots;
     return {
         total,
-        occupied,
-        vacant,
-        occupiedPct: total ? Math.round((occupied / total) * 100) : 0,
-        vacantPct:   total ? Math.round((vacant   / total) * 100) : 0,
+        houses,
+        lots,
+        housesPct: total ? Math.round((houses / total) * 100) : 0,
+        lotsPct:   total ? Math.round((lots   / total) * 100) : 0,
     };
 };
 
@@ -65,20 +60,27 @@ const getDelinquents = async () => {
                Source of truth is Property.outstandingBalance, NOT payment rows.
                One row per property; show the homeowner. */
             SELECT
-                CONCAT(ho.first_name, ' ', ho.last_name) AS full_name,
-                ho.contact_num,
-                'Outstanding Balance'                     AS purpose,
-                prop.outstandingBalance                   AS balance
+                CONCAT(ho.first_name, ' ', ho.last_name)               AS full_name,
+                CONCAT('Lot ', prop.lot_number, ' ', prop.street_name) AS address,
+                prop_owner.resident_id,
+                'Outstanding Balance'                                  AS purpose,
+                prop.outstandingBalance                                AS balance,
+                (
+                    SELECT TIMESTAMPDIFF(MONTH, MIN(COALESCE(pay2.date_paid, DATE(pay2.created_at))), CURDATE())
+                    FROM Payment pay2
+                    WHERE pay2.paid_by = ho.person_id
+                      AND pay2.amount_paid < pay2.amount_expected
+                )                                                      AS months_delinquent
             FROM Property prop
             JOIN (
-                SELECT p.property_id, MIN(ho_p.person_id) AS person_id
+                SELECT p.property_id, MIN(r_h.resident_id) AS resident_id
                 FROM Property p
                 JOIN Resident_Property rp_h ON p.property_id    = rp_h.property_id  AND rp_h.type = 'Homeowner'
                 JOIN Resident          r_h  ON rp_h.resident_id = r_h.resident_id   AND r_h.residency_end_date IS NULL
-                JOIN Person            ho_p ON r_h.person_id    = ho_p.person_id
                 GROUP BY p.property_id
             ) prop_owner ON prop.property_id = prop_owner.property_id
-            JOIN Person ho ON prop_owner.person_id = ho.person_id
+            JOIN Resident r  ON prop_owner.resident_id = r.resident_id
+            JOIN Person   ho ON r.person_id             = ho.person_id
             WHERE prop.outstandingBalance > 0
         )
         UNION ALL
@@ -87,25 +89,28 @@ const getDelinquents = async () => {
                Group all residents of each property together; show the homeowner. */
             SELECT
                 CONCAT(ho.first_name, ' ', ho.last_name)                                          AS full_name,
-                ho.contact_num,
+                CONCAT('Lot ', prop.lot_number, ' ', prop.street_name)                             AS address,
+                prop_owner.resident_id,
                 GROUP_CONCAT(DISTINCT pay.purpose ORDER BY pay.purpose SEPARATOR ', ')             AS purpose,
-                SUM(pay.amount_expected - pay.amount_paid)                                         AS balance
+                SUM(pay.amount_expected - pay.amount_paid)                                         AS balance,
+                TIMESTAMPDIFF(MONTH, MIN(COALESCE(pay.date_paid, DATE(pay.created_at))), CURDATE()) AS months_delinquent
             FROM (
-                SELECT p.property_id, MIN(ho_p.person_id) AS person_id
+                SELECT p.property_id, MIN(r_h.resident_id) AS resident_id
                 FROM Property p
                 JOIN Resident_Property rp_h ON p.property_id    = rp_h.property_id  AND rp_h.type = 'Homeowner'
                 JOIN Resident          r_h  ON rp_h.resident_id = r_h.resident_id   AND r_h.residency_end_date IS NULL
-                JOIN Person            ho_p ON r_h.person_id    = ho_p.person_id
                 GROUP BY p.property_id
             ) prop_owner
-            JOIN Person            ho     ON prop_owner.person_id    = ho.person_id
+            JOIN Property          prop   ON prop_owner.property_id  = prop.property_id
+            JOIN Resident          r      ON prop_owner.resident_id  = r.resident_id
+            JOIN Person            ho     ON r.person_id             = ho.person_id
             JOIN Resident_Property rp_any ON prop_owner.property_id  = rp_any.property_id
             JOIN Resident          r_any  ON rp_any.resident_id      = r_any.resident_id AND r_any.residency_end_date IS NULL
             JOIN Person            p_any  ON r_any.person_id         = p_any.person_id
             JOIN Payment pay ON pay.paid_by = p_any.person_id
                              AND pay.amount_paid < pay.amount_expected
                              AND pay.purpose <> 'Outstanding Balance'
-            GROUP BY prop_owner.property_id
+            GROUP BY prop_owner.property_id, prop_owner.resident_id, prop.lot_number, prop.street_name, ho.first_name, ho.last_name
         )
         ORDER BY balance DESC
         LIMIT 8

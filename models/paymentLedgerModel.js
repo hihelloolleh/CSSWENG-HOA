@@ -12,9 +12,21 @@ const PAYMENT_SELECT = `
         p.remarks,
         p.created_at,
         p.paid_by,
-        CONCAT(per.first_name, ' ', per.last_name) AS payer_name
+        CONCAT(per.first_name, ' ', per.last_name) AS payer_name,
+        COALESCE(
+            ob.property_id,
+            (
+                SELECT rp.property_id
+                FROM Resident r
+                JOIN Resident_Property rp ON r.resident_id = rp.resident_id
+                WHERE r.person_id = p.paid_by
+                ORDER BY rp.type = 'Homeowner' DESC
+                LIMIT 1
+            )
+        ) AS property_id
     FROM Payment p
-    LEFT JOIN Person per ON p.paid_by = per.person_id
+    LEFT JOIN Person per            ON p.paid_by    = per.person_id
+    LEFT JOIN Outstanding_Balance ob ON p.payment_id = ob.payment_id
 `;
 
 const getAllPayments = async () => {
@@ -71,8 +83,8 @@ const updatePayment = async (payment_id, data, conn) => {
     return result.affectedRows;
 };
 
-const deletePayment = async (payment_id) => {
-    const [result] = await pool.query(
+const deletePayment = async (payment_id, conn = pool) => {
+    const [result] = await conn.query(
         `DELETE FROM Payment WHERE payment_id = ?`,
         [payment_id]
     );

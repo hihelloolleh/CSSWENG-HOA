@@ -105,19 +105,19 @@
                 <div class="status-list">
                     <div class="status-row">
                         <div class="status-dot occupied"></div>
-                        <span class="status-name">With Residents</span>
+                        <span class="status-name">Houses</span>
                         <div class="status-bar-wrap">
-                            <div class="status-bar" style="width: <%= propertyStatus.occupiedPct %>%;"></div>
+                            <div class="status-bar" style="width: <%= propertyStatus.housesPct %>%;"></div>
                         </div>
-                        <span class="status-count"><%= propertyStatus.occupied %></span>
+                        <span class="status-count"><%= propertyStatus.houses %></span>
                     </div>
                     <div class="status-row">
                         <div class="status-dot vacant"></div>
-                        <span class="status-name">No Residents</span>
+                        <span class="status-name">Lots</span>
                         <div class="status-bar-wrap">
-                            <div class="status-bar vacant" style="width: <%= propertyStatus.vacantPct %>%;"></div>
+                            <div class="status-bar vacant" style="width: <%= propertyStatus.lotsPct %>%;"></div>
                         </div>
-                        <span class="status-count"><%= propertyStatus.vacant %></span>
+                        <span class="status-count"><%= propertyStatus.lots %></span>
                     </div>
                 </div>
                 <p style="margin-top:20px; font-size:12px; color:#aaa;"><%= propertyStatus.total %> properties total</p>
@@ -140,7 +140,8 @@
                             <th>Name</th>
                             <th>Purpose</th>
                             <th>Balance</th>
-                            <th>Contact</th>
+                            <th>Months Delinquent</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -149,7 +150,12 @@
                             <td><%= d.full_name %></td>
                             <td><%= d.purpose %></td>
                             <td style="color:#dc3545; font-weight:600;">&#8369; <%= parseFloat(d.balance).toLocaleString('en-PH', {minimumFractionDigits:2}) %></td>
-                            <td><%= d.contact_num || '—' %></td>
+                            <td><%= (d.months_delinquent === null ? '—' : (d.months_delinquent <= 0 ? '< 1 month' : `${d.months_delinquent} month${d.months_delinquent === 1 ? '' : 's'}`)) %></td>
+                            <td>
+                                <a href="/residents?view_resident=<%= d.resident_id %>" class="row-action-btn" title="View Person">
+                                    <i class="ph ph-address-book"></i> View
+                                </a>
+                            </td>
                         </tr>
                         <% }) %>
                     </tbody>

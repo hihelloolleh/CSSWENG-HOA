@@ -102,17 +102,6 @@ const addPayment = async (data) => {
 
         if (associationResult) {
             await paymentLedgerModel.createAssociationDuesRecord(paymentId, associationResult.isAnnual, conn);
-
-            // Dues are always paid in full here (underpayment is blocked above),
-            // so clear the payer's delinquent flag. Property.outstandingBalance /
-            // hasDues (arrears) are intentionally left untouched — those are
-            // only managed by the separate Outstanding Balance payment flow.
-            if (data.paid_by) {
-                const r = await residentModel.getResidentIdByPersonId(data.paid_by, conn);
-                if (r) {
-                    await residentModel.setDelinquent(r.resident_id, false, conn);
-                }
-            }
         }
 
         if (data.purpose === 'Outstanding Balance' && data.property_id) {
@@ -143,6 +132,13 @@ const addPayment = async (data) => {
             }
         }
 
+        // Delinquency reflects two sources of truth: an outstanding-balance
+        // property, or any ledger payment (any purpose) still partial/unpaid.
+        // Recompute here so it stays accurate regardless of which branch above ran.
+        if (data.paid_by) {
+            await residentModel.recomputeDelinquentByPersonId(data.paid_by, conn);
+        }
+
         await conn.commit();
         return paymentId;
     } catch (err) {
@@ -158,6 +154,15 @@ const updatePayment = async (payment_id, data) => {
     try {
         await conn.beginTransaction();
         await paymentLedgerModel.updatePayment(payment_id, data, conn);
+
+        const [[payment]] = await conn.query(
+            `SELECT paid_by FROM Payment WHERE payment_id = ?`,
+            [payment_id]
+        );
+        if (payment && payment.paid_by) {
+            await residentModel.recomputeDelinquentByPersonId(payment.paid_by, conn);
+        }
+
         await conn.commit();
     } catch (err) {
         await conn.rollback();
@@ -168,7 +173,28 @@ const updatePayment = async (payment_id, data) => {
 };
 
 const deletePayment = async (payment_id) => {
-    return paymentLedgerModel.deletePayment(payment_id);
+    const conn = await pool.getConnection();
+    try {
+        await conn.beginTransaction();
+
+        const [[payment]] = await conn.query(
+            `SELECT paid_by FROM Payment WHERE payment_id = ?`,
+            [payment_id]
+        );
+
+        await paymentLedgerModel.deletePayment(payment_id, conn);
+
+        if (payment && payment.paid_by) {
+            await residentModel.recomputeDelinquentByPersonId(payment.paid_by, conn);
+        }
+
+        await conn.commit();
+    } catch (err) {
+        await conn.rollback();
+        throw err;
+    } finally {
+        conn.release();
+    }
 };
 
 module.exports = { addPayment, updatePayment, deletePayment };

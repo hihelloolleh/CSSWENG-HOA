@@ -4,6 +4,7 @@ const residentController  = require('../controllers/residentController');
 
 router.get('/',                    residentController.getResidents);
 router.get('/:id/outstanding',     residentController.getResidentOutstanding);
+router.get('/:id/pending-payments', residentController.getResidentPendingPayments);
 router.post('/',                   residentController.addResident);
 router.post('/:id/delete',         residentController.deleteResident);
 router.post('/:id/update',         residentController.updateResident);

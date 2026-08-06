@@ -162,7 +162,8 @@
                                                 data-purpose="<%= pay.purpose %>" data-expected="<%= pay.amount_expected %>"
                                                 data-paid="<%= pay.amount_paid %>" data-date="<%= pay.date_paid || '' %>"
                                                 data-method="<%= pay.payment_method %>" data-receipt="<%= pay.receipt_number || '' %>"
-                                                data-remarks="<%= pay.remarks || '' %>" data-paidby="<%= pay.paid_by || '' %>">
+                                                data-remarks="<%= pay.remarks || '' %>" data-paidby="<%= pay.paid_by || '' %>"
+                                                data-propertyid="<%= pay.property_id || '' %>">
                                             <i class="ph ph-coins"></i>
                                             Settle Payment
                                         </button>
@@ -323,12 +324,6 @@
             <button class="modal-close" onclick="closeModal('editModal')">&times;</button>
         </div>
         <div class="modal-body">
-            <!-- Settle context banner — shown only in settle mode -->
-            <div id="settleInfo" style="display:none; background:#fff7e6; border:1px solid #fbbf24; border-radius:6px; padding:10px 14px; margin-bottom:14px; font-size:13px; line-height:1.6;">
-                <strong>Settling payment</strong><br>
-                <span id="settleInfoText"></span>
-            </div>
-
             <form method="POST" action="/payments/update">
                 <input type="hidden" name="payment_id" id="edit_payment_id">
                 <input type="hidden" id="edit_payor_id">

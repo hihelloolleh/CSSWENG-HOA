@@ -109,6 +109,16 @@ const getResidentOutstanding = async (req, res) => {
     }
 };
 
+const getResidentPendingPayments = async (req, res) => {
+    try {
+        const rows = await residentModel.getPendingPaymentsByResidentId(req.params.id);
+        res.json(rows);
+    } catch (err) {
+        console.error('getResidentPendingPayments error:', err);
+        res.status(500).json({ error: 'Failed to load pending payments.' });
+    }
+};
+
 module.exports = {
     getResidents,
     addResident,
@@ -118,4 +128,5 @@ module.exports = {
     reactivateResident,
     endResidency,
     getResidentOutstanding,
+    getResidentPendingPayments,
 };
