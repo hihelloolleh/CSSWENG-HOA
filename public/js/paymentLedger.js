@@ -36,10 +36,8 @@ function closeModal(id) {
 // ── Client-side table search + status filter ──────────────────────────────────
 let activeStatusFilter = 'all';
 
-function setStatusFilter(status, btn) {
+function setStatusFilter(status) {
     activeStatusFilter = status;
-    document.querySelectorAll('.pay-filter-btn').forEach(b => b.classList.remove('pay-filter-active'));
-    if (btn) btn.classList.add('pay-filter-active');
     filterTable();
 }
 

@@ -59,10 +59,15 @@
             <span>Click "View Residents" on a property to see everyone linked to it. Residents with pending, partial, or unpaid dues are flagged in red.</span>
         </div>
 
-        <div class="prop-filter-bar">
-            <button class="prop-filter-btn prop-filter-active" onclick="setDuesFilter('all', this)">All</button>
-            <button class="prop-filter-btn" onclick="setDuesFilter('settled', this)">Settled</button>
-            <button class="prop-filter-btn" onclick="setDuesFilter('dues', this)">Outstanding Association Dues</button>
+        <div class="property-filter-bar">
+            <div class="filter-select-group">
+                <label for="filterDuesSelect">Dues</label>
+                <select id="filterDuesSelect" class="filter-select" onchange="setDuesFilter(this.value)">
+                    <option value="all">All</option>
+                    <option value="settled">Settled</option>
+                    <option value="dues">Outstanding Association Dues</option>
+                </select>
+            </div>
         </div>
 
         <p class="property-count" id="propertyCount">
@@ -542,10 +547,8 @@
     // ── Search + dues filter ─────────────────────────────────────────────────
     let activeDuesFilter = 'all';
 
-    function setDuesFilter(filter, btn) {
+    function setDuesFilter(filter) {
         activeDuesFilter = filter;
-        document.querySelectorAll('.prop-filter-btn').forEach(b => b.classList.remove('prop-filter-active'));
-        btn.classList.add('prop-filter-active');
         filterTable();
     }
 

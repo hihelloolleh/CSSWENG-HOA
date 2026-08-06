@@ -208,10 +208,15 @@
         <!-- ── BOARD MEMBERS SECTION (hidden by default) ────────────────────── -->
         <div id="boardMembersSection" style="display:none;">
 
-            <div class="bm-filter-bar">
-                <button class="bm-filter-btn bm-filter-active" data-filter="all" onclick="filterBoardMembers('all')">All</button>
-                <button class="bm-filter-btn" data-filter="active" onclick="filterBoardMembers('active')">Active</button>
-                <button class="bm-filter-btn" data-filter="inactive" onclick="filterBoardMembers('inactive')">Inactive</button>
+            <div class="resident-filter-bar">
+                <div class="filter-select-group">
+                    <label for="filterBMSelect">Status</label>
+                    <select id="filterBMSelect" class="filter-select" onchange="filterBoardMembers(this.value)">
+                        <option value="all">All</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
             </div>
 
             <p class="boardMember-count">
@@ -960,10 +965,6 @@ let bmCurrentFilter = 'all';
 
 function filterBoardMembers(filter) {
     bmCurrentFilter = filter;
-
-    document.querySelectorAll('.bm-filter-btn').forEach(btn => {
-        btn.classList.toggle('bm-filter-active', btn.dataset.filter === filter);
-    });
 
     const rows = document.querySelectorAll('#boardTable tbody tr[data-active]');
     let visible = 0;

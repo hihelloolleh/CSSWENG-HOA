@@ -310,7 +310,6 @@ body{
     border: 1px solid #b8d4b8;
     border-radius: 8px;
     padding: 12px 16px;
-    margin-bottom: 14px;
     font-size: 13px;
     color: #3d553b;
 }
@@ -447,8 +446,8 @@ body{
 
 .property-count {
     font-size: 13px;
-    color: #666; 
-    padding-left: 10px; 
+    color: #666;
+    padding-left: 10px;
 }
  
 .form-section-header {
@@ -566,35 +565,42 @@ body{
     color: #526F50;
 }
 
-/* ── Property filter buttons ──────────────────────────────────────── */
-.prop-filter-bar {
+/* ── Property filter dropdown ─────────────────────────────────────── */
+.property-filter-bar {
     display: flex;
-    gap: 6px;
-    margin-bottom: 12px;
+    align-items: center;
+    gap: 20px;
 }
 
-.prop-filter-btn {
-    background: none;
+.filter-select-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-select-group label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #666;
+}
+
+.filter-select {
+    background: #fff;
     border: 1px solid #d0d0d0;
     border-radius: 999px;
-    padding: 5px 16px;
+    padding: 5px 14px;
     font-size: 13px;
     font-weight: 500;
     font-family: 'Poppins', sans-serif;
-    color: #666;
+    color: #333;
     cursor: pointer;
-    transition: all 0.15s;
+    transition: border-color 0.15s;
 }
 
-.prop-filter-btn:hover {
+.filter-select:hover,
+.filter-select:focus {
     border-color: #526F50;
-    color: #526F50;
-}
-
-.prop-filter-btn.prop-filter-active {
-    background: #526F50;
-    border-color: #526F50;
-    color: #fff;
+    outline: none;
 }
 
 .actions-cell {

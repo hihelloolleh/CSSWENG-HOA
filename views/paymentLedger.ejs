@@ -82,10 +82,15 @@
         <div id="paymentsSection">
             <!-- STATUS FILTER -->
             <div class="status-filter-bar">
-                <button class="pay-filter-btn pay-filter-active" onclick="setStatusFilter('all', this)">All</button>
-                <button class="pay-filter-btn" onclick="setStatusFilter('paid', this)">Paid</button>
-                <button class="pay-filter-btn" onclick="setStatusFilter('partial', this)">Partial</button>
-                <button class="pay-filter-btn" onclick="setStatusFilter('unpaid', this)">Unpaid</button>
+                <div class="filter-select-group">
+                    <label for="filterStatusSelect">Status</label>
+                    <select id="filterStatusSelect" class="filter-select" onchange="setStatusFilter(this.value)">
+                        <option value="all">All</option>
+                        <option value="paid">Paid</option>
+                        <option value="partial">Partial</option>
+                        <option value="unpaid">Unpaid</option>
+                    </select>
+                </div>
             </div>
 
             <!-- PAYMENT COUNTER -->
