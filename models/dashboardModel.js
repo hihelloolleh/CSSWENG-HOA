@@ -41,9 +41,9 @@ const getPropertyStatus = async () => {
             COUNT(CASE WHEN property_type = 'Lot'   THEN 1 END) AS lots
         FROM Property
     `);
-    const total  = result.total;
-    const houses = result.houses;
-    const lots   = result.lots;
+    const total  = result.total || 0;
+    const houses = result.houses || 0;
+    const lots   = result.lots || 0;
     return {
         total,
         houses,
@@ -56,9 +56,6 @@ const getPropertyStatus = async () => {
 const getDelinquents = async () => {
     const [rows] = await pool.query(`
         (
-            /* ── Outstanding Balance ──────────────────────────────────────────────
-               Source of truth is Property.outstandingBalance, NOT payment rows.
-               One row per property; show the homeowner. */
             SELECT
                 CONCAT(ho.first_name, ' ', ho.last_name)               AS full_name,
                 CONCAT('Lot ', prop.lot_number, ' ', prop.street_name) AS address,
@@ -85,8 +82,6 @@ const getDelinquents = async () => {
         )
         UNION ALL
         (
-            /* ── Other payment types (Assoc Dues, Vehicle Sticker, General) ───────
-               Group all residents of each property together; show the homeowner. */
             SELECT
                 CONCAT(ho.first_name, ' ', ho.last_name)                                          AS full_name,
                 CONCAT('Lot ', prop.lot_number, ' ', prop.street_name)                             AS address,
