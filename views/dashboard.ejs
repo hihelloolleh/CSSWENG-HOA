@@ -139,8 +139,8 @@
                         <tr>
                             <th>Name</th>
                             <th>Purpose</th>
-                            <th>Balance</th>
-                            <th>Months Delinquent</th>
+                            <th style="text-align: center;">Balance</th>
+                            <th style="text-align: center;">Months Delinquent</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -149,8 +149,8 @@
                         <tr>
                             <td><%= d.full_name %></td>
                             <td><%= d.purpose %></td>
-                            <td style="color:#dc3545; font-weight:600;">&#8369; <%= parseFloat(d.balance).toLocaleString('en-PH', {minimumFractionDigits:2}) %></td>
-                            <td><%= (d.months_delinquent === null ? '—' : (d.months_delinquent <= 0 ? '< 1 month' : `${d.months_delinquent} month${d.months_delinquent === 1 ? '' : 's'}`)) %></td>
+                            <td style="color:#dc3545; font-weight:600; text-align: center;">&#8369; <%= parseFloat(d.balance).toLocaleString('en-PH', {minimumFractionDigits:0}) %></td>
+                            <td style="text-align: center;"><%= (d.months_delinquent === null ? '—' : (d.months_delinquent <= 0 ? '< 1 month' : `${d.months_delinquent} month${d.months_delinquent === 1 ? '' : 's'}`)) %></td>
                             <td>
                                 <a href="/residents?view_resident=<%= d.resident_id %>" class="row-action-btn" title="View Person">
                                     <i class="ph ph-address-book"></i> View
