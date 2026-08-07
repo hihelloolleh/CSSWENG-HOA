@@ -17,7 +17,7 @@ Fork this repository and clone it to your local machine, **OR** download a zip o
 Create a schema of the database on MySQL Workbench. 
 
 ```bash
-CREATE SCHEMA hoa_db; 
+CREATE SCHEMA hoa_db 
 ```
 
 Create an .env file with the following variables:
@@ -54,3 +54,16 @@ If you wish to populate the database before running the application, seed the da
 node seed.js
 node app.js 
 ```
+
+## Built With
+* [Node.js](https://nodejs.org/en/docs/) - Server-side runtime environment  
+* [Express](https://expressjs.com/en/api.html) - Server-side framework
+* [MySQL](https://www.mysql.com/) - Database implementation 
+
+
+## Authors
+* Product Owner:  
+* Scrum Master: 
+* Developers: 
+* Designers: Natt Abogadie  
+* QA Tester: 
