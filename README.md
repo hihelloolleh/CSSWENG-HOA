@@ -1,6 +1,6 @@
 # CSSWENG-HOA
 
-MGV-HOA is an application that aids the Marcelo Green Village Phase 1 Homeowners Association administrators and board members automate operations related to residents, properties, employees, vehicles, reports, and finances. 
+MGV-HOA is an application that aids the Marcelo Green Village Phase 5 Homeowners Association administrators and board members automate operations related to residents, properties, employees, vehicles, reports, and finances. 
 
 ## Getting Started 
 
