@@ -1059,7 +1059,6 @@ const residentTabClickSound = document.getElementById("residentTabClickSound");
 const boardMemberClickSound = document.getElementById("boardMemberClickSound");
 const boardMemberTabClickSound = document.getElementById("boardMemberTabClickSound");
 
- 
 // Tabs 
 document.getElementById("tabResidents").addEventListener("click", () => {
     residentTabClickSound.currentTime = 0; // restart if already playing
@@ -1080,5 +1079,19 @@ document.getElementById("btnAddResident").addEventListener("click", () => {
 document.getElementById("btnAddBoardMember").addEventListener("click", () => {
     boardMemberClickSound.currentTime = 0; // restart if already playing
     boardMemberClickSound.play();
+}); 
+
+// Table Menus 
+const hoverSound = new Audio("/audio/button-hover.mp3");
+    hoverSound.preload = "auto";
+    hoverSound.volume = 0.3;
+
+document.querySelectorAll(".action-trigger").forEach(item => {
+
+    item.addEventListener("mouseenter", () => {
+        hoverSound.currentTime = 0;
+        hoverSound.play().catch(() => {});
+    });
+
 });
 </script>

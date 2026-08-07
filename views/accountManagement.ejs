@@ -37,7 +37,7 @@
                         <input type="text" name="contact_num" value="<%= adminContact.contact_num || '' %>" placeholder="09123456789">
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary">
+                <button id="updateContact" type="submit" class="btn btn-primary">
                     <i class="ph ph-floppy-disk"></i> Update Contact Info
                 </button>
             </form>
@@ -45,10 +45,10 @@
 
         <div class="action-bar">
             <div class="action-buttons">
-                <button class="btn btn-primary" onclick="openCreateAdminModal()">
+                <button id="addAdmin" class="btn btn-primary" onclick="openCreateAdminModal()">
                     <i class="ph ph-user-plus"></i> Add Admin
                 </button>
-                <button class="btn btn-primary" onclick="openCreateBoardMemberModal()">
+                <button id="addBoardMember" class="btn btn-primary" onclick="openCreateBoardMemberModal()">
                     <i class="ph ph-users-three"></i> Add Board Member Account
                 </button>
             </div>
@@ -586,4 +586,30 @@
             document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
         }
     });
+
+    const hoverSound = new Audio("/audio/button-hover.mp3");
+    hoverSound.preload = "auto";
+    hoverSound.volume = 0.3;
+
+    document.querySelectorAll(".action-trigger").forEach(item => {
+
+        item.addEventListener("mouseenter", () => {
+            hoverSound.currentTime = 0;
+            hoverSound.play().catch(() => {});
+        });
+
+    });
+
+    const clickSound = new Audio("/audio/button-press2.mp3"); 
+
+    document.getElementById("addAdmin").addEventListener("click", () => {
+        clickSound.currentTime = 0; // restart if already playing
+        clickSound.play();
+    });
+
+    document.getElementById("addBoardMember").addEventListener("click", () => {
+        clickSound.currentTime = 0; // restart if already playing
+        clickSound.play();
+    });
+
 </script>

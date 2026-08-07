@@ -48,7 +48,7 @@
                                 <td><strong><%= rate.rate_category %></strong></td>
                                 <td>₱<%= parseFloat(rate.amount).toFixed(2) %></td>
                                 <td>
-                                    <button class="btn btn-primary btn-sm" onclick="openEditModal('<%= rate.rate_id %>', '<%= rate.rate_category %>', '<%= rate.amount %>')">
+                                    <button id="add-btn" class="btn btn-primary btn-sm" onclick="openEditModal('<%= rate.rate_id %>', '<%= rate.rate_category %>', '<%= rate.amount %>')">
                                         <i class="ph ph-pencil-line"></i> Edit
                                     </button>
                                 </td>
@@ -180,4 +180,14 @@
             }
         });
     }); 
+
+    const clickSound = new Audio("/audio/button-press2.mp3"); 
+    
+
+    document.getElementById("add-btn").addEventListener("click", () => {
+        clickSound.currentTime = 0; // restart if already playing
+        clickSound.play();
+    });
+
+ 
 </script>

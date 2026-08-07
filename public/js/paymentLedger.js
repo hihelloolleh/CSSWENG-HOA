@@ -190,3 +190,21 @@ function confirmDelete(id, label) {
         }
     };
 }
+
+const clickSound = new Audio("/audio/button-press2.mp3"); 
+const hoverSound = new Audio("/audio/button-hover.mp3");
+
+hoverSound.preload = "auto";
+hoverSound.volume = 0.3;
+
+document.getElementById("add-btn").addEventListener("click", () => {
+    clickSound.currentTime = 0; // restart if already playing
+    clickSound.play();
+});
+
+document.querySelectorAll(".action-trigger").forEach(item => {
+    item.addEventListener("mouseenter", () => {
+        hoverSound.currentTime = 0;
+        hoverSound.play().catch(() => {});
+    });
+});

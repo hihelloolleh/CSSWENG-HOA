@@ -75,14 +75,14 @@
                 <div class="stat-icon orange"><i class="fa-solid fa-triangle-exclamation"></i></div>
                 <div class="stat-info">
                     <span class="stat-value"><%= fmt(stats.totalOutstanding) %></span>
-                    <span class="stat-label">Properties with outstanding association dues</span>
+                    <span class="stat-label">Outstanding Association Dues</span>
                 </div>
             </div>
             <div class="card stat-card">
                 <div class="stat-icon red"><i class="fa-solid fa-house-circle-exclamation"></i></div>
                 <div class="stat-info">
                     <span class="stat-value"><%= stats.delinquentProperties %></span>
-                    <span class="stat-label">Properties with outstanding association dues</span>
+                    <span class="stat-label">Properties with Outstanding Dues</span>
                 </div>
             </div>
             <div class="card stat-card">
@@ -126,7 +126,7 @@
             <!-- DELINQUENCY REPORT -->
             <div class="card delinquency-card">
                 <div class="card-header">
-                    <h2>Properties with outstanding association dues</h2>
+                    <h2>Outstanding Association Dues</h2>
                     <a href="/residents" class="view-all">View All</a>
                 </div>
                 <% if (delinquents.length === 0) { %>
