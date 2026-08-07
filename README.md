@@ -62,8 +62,8 @@ node app.js
 
 
 ## Authors
-* Product Owner:  
-* Scrum Master: 
-* Developers: 
-* Designers: Natt Abogadie  
-* QA Tester: 
+* Product Owner: Elisa Pasigan   
+* Scrum Master: Rachel Alba 
+* Developers: Alwayne Dacanay, Marione Galman, Roy Sandoval, 
+* Designers: Natt Abogadie, John Llamas 
+* QA Tester: Samantha Cabreros 
