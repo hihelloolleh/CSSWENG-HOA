@@ -46,9 +46,19 @@
             <button id="tabResidents" class="tab-btn tab-active" onclick="switchTab('residents')">
                 <i class="fa-solid fa-users"></i> Residents
             </button>
+            
+            <audio id="residentTabClickSound">
+                <source src="/audio/click.mp3" type="audio/mpeg">
+            </audio>
+            
             <button id="tabBoardMembers" class="tab-btn" onclick="switchTab('boardMembers')">
                 <i class="fa-solid fa-star"></i> Board Members
             </button>
+
+            <audio id="boardMemberTabClickSound">
+                <source src="/audio/click.mp3" type="audio/mpeg">
+            </audio>
+ 
         </div>
 
         <div class="search-bar">
@@ -62,9 +72,19 @@
             <button id="btnAddResident" class="btn btn-primary" onclick="openAddModal()">
                 <i class="fa-solid fa-plus"></i> Add Resident
             </button>
+
+            <audio id="residentClickSound">
+                <source src="/audio/button-press2.mp3" type="audio/mpeg">
+            </audio>
+
             <button id="btnAddBoardMember" class="btn btn-primary" style="display:none;" onclick="openBMAddModal()">
                 <i class="fa-solid fa-plus"></i> Add Board Member
             </button>
+
+            <audio id="boardMemberClickSound">
+                <source src="/audio/button-press2.mp3" type="audio/mpeg">
+            </audio>
+
         </div>
 
         <!-- ── RESIDENTS SECTION ────────────────────────────────────────────── -->
@@ -1031,4 +1051,34 @@ if (_deepViewId) {
     const _viewBtn = document.querySelector(`#residentTable button[data-id="${_deepViewId}"][data-name]`);
     if (_viewBtn) openViewModal(_viewBtn);
 }
+
+// Audio --------------------------------------------------------------------------
+const residentClickSound = document.getElementById("residentClickSound");
+const residentTabClickSound = document.getElementById("residentTabClickSound");
+
+const boardMemberClickSound = document.getElementById("boardMemberClickSound");
+const boardMemberTabClickSound = document.getElementById("boardMemberTabClickSound");
+
+ 
+// Tabs 
+document.getElementById("tabResidents").addEventListener("click", () => {
+    residentTabClickSound.currentTime = 0; // restart if already playing
+    residentTabClickSound.play();
+});
+
+document.getElementById("tabBoardMembers").addEventListener("click", () => {
+    boardMemberTabClickSound.currentTime = 0; // restart if already playing
+    boardMemberTabClickSound.play();
+});
+
+// Add Buttons 
+document.getElementById("btnAddResident").addEventListener("click", () => {
+    residentClickSound.currentTime = 0; // restart if already playing
+    residentClickSound.play();
+});
+
+document.getElementById("btnAddBoardMember").addEventListener("click", () => {
+    boardMemberClickSound.currentTime = 0; // restart if already playing
+    boardMemberClickSound.play();
+});
 </script>
