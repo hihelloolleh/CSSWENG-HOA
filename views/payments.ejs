@@ -40,13 +40,23 @@
                 </a>
             </div>
 
+            <div class="modal-header">
+                <h1>
+                    <% if (paymentType === 'association') { %> <p style="color: #526F50;">Association Dues Payment</p>
+                    <% } else if (paymentType === 'vehicle') { %><p style="color: #526F50;">Vehicle Sticker Payment</p> 
+                    <% } else if (paymentType === 'outstanding') { %><p style="color: #526F50;">Outstanding Balance Payment</p>
+                    <% } else { %><p style="color: #526F50;">General Payment</p>
+                    <% } %>              
+                </h1>
+            </div>
+
             <div class="modal-body">
                 <form method="POST" action="/payments">
                     <!-- maps URL param to DB enum value -->
                     <input type="hidden" id="purpose_field" name="purpose" value="<%= purposeValue %>">
 
                     <% if (paymentType === 'association') { %>
-
+                         
                         <!-- Association Dues: Property -->
                         <div class="form-group">
                             <label class="required-label">Property</label>

@@ -509,6 +509,7 @@
         <form id="bmForm" method="POST" action="/boardMembers">
             <input type="hidden" id="bm_board_id" name="board_id">
             <div class="modal-body">
+                <h3 class="form-section-title">Board Member Information</h3>
                 <div class="form-group" id="bmResidentPickerGroup">
                     <label class="required-label">Resident</label>
                     <div class="resident-search-wrap">
@@ -526,12 +527,19 @@
                     <label class="required-label">Position(s)</label>
                     <input type="hidden" id="bm_position" name="position">
                     <div class="position-checkboxes">
-                        <label class="pos-check-label"><input type="checkbox" class="bm-pos-cb" value="President"> President</label>
-                        <label class="pos-check-label"><input type="checkbox" class="bm-pos-cb" value="Vice President"> Vice President</label>
-                        <label class="pos-check-label"><input type="checkbox" class="bm-pos-cb" value="Treasurer"> Treasurer</label>
-                        <label class="pos-check-label"><input type="checkbox" class="bm-pos-cb" value="Secretary"> Secretary</label>
-                        <label class="pos-check-label"><input type="checkbox" class="bm-pos-cb" value="Admin"> Admin</label>
-                        <label class="pos-check-label"><input type="checkbox" class="bm-pos-cb" value="Board Member"> Board Member</label>
+                        <div class="form-group">
+                            <label class="pos-check-label"><input type="checkbox" class="bm-pos-cb" value="President"> President</label>
+                            <label class="pos-check-label"><input type="checkbox" class="bm-pos-cb" value="Vice President"> Vice President</label>
+                        </div>
+                        <div class="form-group">
+                            <label class="pos-check-label"><input type="checkbox" class="bm-pos-cb" value="Treasurer"> Treasurer</label>
+                            <label class="pos-check-label"><input type="checkbox" class="bm-pos-cb" value="Secretary"> Secretary</label>
+                        </div>
+                        <div class="form-group">
+                            <label class="pos-check-label"><input type="checkbox" class="bm-pos-cb" value="Admin"> Admin</label>
+                            <label class="pos-check-label"><input type="checkbox" class="bm-pos-cb" value="Board Member"> Board Member</label>
+                        </div>
+                    
                     </div>
                     <small id="bm_position_hint" style="color:#dc3545; font-size:12px; display:none;">Select at least one position.</small>
                 </div>

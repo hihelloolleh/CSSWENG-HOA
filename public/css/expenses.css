@@ -412,6 +412,8 @@ input[type=number] {
     background: #f0f5f0;
 }
 
+
+
 /* ── Responsive ───────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
     .action-bar {

@@ -48,12 +48,12 @@
             
             <div class="modal-header">
                 <h1>
-                    <% if (expenseType === 'utilities') { %>Utilities Expense 
-                    <% } else if (expenseType === 'salaries') { %>Employee Salary Expense 
-                    <% } else if (expenseType === 'maintenance') { %>Maintenance Expense 
-                    <% } else if (expenseType === 'cash') { %>Petty Cash Expense 
-                    <% } else if (expenseType === 'food') { %>Food Expense 
-                    <% } else if (expenseType === 'project'){ %>Community Project Expense 
+                    <% if (expenseType === 'utilities') { %> <p style="color: #526F50;">Utilities Expense</p>
+                    <% } else if (expenseType === 'salaries') { %><p style="color: #526F50;">Employee Salary Expense</p> 
+                    <% } else if (expenseType === 'maintenance') { %><p style="color: #526F50;">Maintenance Expense</p>
+                    <% } else if (expenseType === 'cash') { %><p style="color: #526F50;">Petty Cash Expense</p> 
+                    <% } else if (expenseType === 'food') { %><p style="color: #526F50;">Food Expense</p> 
+                    <% } else if (expenseType === 'project'){ %><p style="color: #526F50;">Community Project Expense</p> 
                     <% } else { %>Other Expense 
                     <% } %>              
                 </h1>
@@ -81,7 +81,7 @@
 
                         <div class="form-group">
                             <label for="utility_purpose" class="required-label">Purpose</label>
-                            <input type="text" id="utility_purpose" class=search_input required> 
+                            <input type="text" id="utility_purpose" class=search_input placeholder="Enter purpose..." required> 
                         </div>
 
                     <% } else if (expenseType === 'salaries') { %>
@@ -101,28 +101,28 @@
                         
                         <div class="form-group">
                             <label for="maintenance_purpose" class="required-label">Purpose</label>
-                            <input type="text" id="maintenance_purpose" class=search_input required> 
+                            <input type="text" id="maintenance_purpose" class=search_input placeholder="Enter purpose..." required> 
                         </div>
 
                     <% } else if (expenseType === 'cash') { %>
                         
                         <div class="form-group">
                             <label class="required-label">Purpose</label>
-                            <input type="text" id="petty_cash_purpose" class="search-input" placeholder="Enter purpose... (eg. Office Supplies)">  
+                            <input type="text" id="petty_cash_purpose" class="search-input" placeholder="Enter purpose...">  
                         </div>
 
                     <% } else if (expenseType === 'food') { %>
                         
                         <div class="form-group">
                             <label class="required-label">Purpose</label>
-                            <input type="text" id="food_purpose" class="search-input" placeholder="Enter purpose... (eg. Annual HOA meeting catering)">  
+                            <input type="text" id="food_purpose" class="search-input" placeholder="Enter purpose...">  
                         </div>
 
                     <% } else if (expenseType === 'project') { %>
                         
                         <div class="form-group">
                             <label class="required-label">Purpose</label>
-                            <input type="text" id="project_purpose" class="search-input" placeholder="Enter community project name...">  
+                            <input type="text" id="project_purpose" class="search-input" placeholder="Enter purpose...">  
                         </div>
 
                     <% } else { %>

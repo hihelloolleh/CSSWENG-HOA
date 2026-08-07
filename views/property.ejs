@@ -165,18 +165,18 @@
         </div>
         <form id="propertyForm" method="POST" action="/properties">
             <div class="modal-body">
-
+                <h3 class="form-section-title">Property Information</h3>
                 <!-- Lot Number -->
                 <div class="form-group">
-                    <label for="lot_number">Lot Number</label>
-                    <input type="text" id="lot_number" name="lot_number" placeholder="e.g. 100">
+                    <label class="required-label" for="lot_number">Lot Number</label>
+                    <input type="text" id="lot_number" name="lot_number" placeholder="e.g. 100" required>
                 </div>
 
                 <!-- Street Name dropdown -->
                 <div class="form-group">
-                    <label for="street_name">Street Name *</label>
+                    <label class="required-label" for="street_name">Street Name</label>
                     <select id="street_name" name="street_name" required>
-                        <option value="">-- Select street --</option>
+                        <option value="">Select Street</option>
                         <option value="Alabastro">Alabastro</option>
                         <option value="Cameo">Cameo</option>
                         <option value="Coral">Coral</option>
@@ -193,17 +193,16 @@
 
                 <!-- Property Type -->
                 <div class="form-group">
-                    <label for="property_type">Property Type *</label>
+                    <label class="required-label" for="property_type">Property Type</label>
                     <select id="property_type" name="property_type" required>
-                        <option value="">-- Select type --</option>
+                        <option value="">Select type</option>
                         <option value="House">House</option>
                         <option value="Lot">Lot</option>
                     </select>
                 </div>
 
                 <!-- Resident Association Section -->
-                <div class="form-section-header">Add Residents</div>
-                <hr style="margin-bottom: 12px;">
+                <div class="form-section-title">Add Residents</div>
 
                 <!-- Already-added residents list -->
                 <div id="addedResidentsList" class="resident-list"></div>

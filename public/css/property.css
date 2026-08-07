@@ -417,6 +417,12 @@ body{
     gap: 12px;
 }
 
+.required-label::after {
+    content: " *";
+    color: #dc3545;
+    font-weight: bold;
+}
+
 /* ── Form controls inside modal ────────────────────────────────────────────── */
 .form-group { margin-bottom: 20px; }
 
@@ -444,6 +450,21 @@ body{
     border-color: #526F50;
 }
 
+.form-section-title {
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #526F50;
+    margin: 20px 0 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #e8f0e7;
+}
+
+.form-section-title:first-child {
+    margin-top: 0;
+}
+ 
 .property-count {
     font-size: 13px;
     color: #666;
