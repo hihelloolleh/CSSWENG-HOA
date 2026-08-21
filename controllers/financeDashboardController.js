@@ -4,7 +4,7 @@ exports.getFinanceDashboard = async (req, res) => {
     try {
         const today       = new Date();
         const defaultFrom = `${today.getFullYear()}-01-01`;
-        const defaultTo   = today.toISOString().slice(0, 10);
+        const defaultTo   = today.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
 
         let fromDate = req.query.from || defaultFrom;
         let toDate   = req.query.to   || defaultTo;

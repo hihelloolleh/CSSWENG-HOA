@@ -204,11 +204,22 @@ const getVillageGeneralReport = async (fromDate, toDate) => {
 };
 
 const COLLECTION_PURPOSES = ['Association Dues', 'Vehicle Sticker', 'Outstanding Balance', 'General Payments'];
-const EXPENSE_PURPOSES    = ['Utilities', 'Employee Salaries', 'Maintenance', 'Petty Cash', 'Food', 'Community Project', 'Other'];
+
+// The `expenses` table stores category as a lowercase enum; this maps it back
+// to the display label used throughout the reports.
+const EXPENSE_CATEGORY_TO_LABEL = {
+    'utilities':          'Utilities',
+    'employee salaries':  'Employee Salaries',
+    'maintenance':        'Maintenance',
+    'petty cash':         'Petty Cash',
+    'food':                'Food',
+    'community project':  'Community Project',
+    'other':               'Other',
+};
+const EXPENSE_PURPOSES = Object.values(EXPENSE_CATEGORY_TO_LABEL);
 
 const getFinancialsReport = async (fromDate, toDate) => {
     const collectionPlaceholders = COLLECTION_PURPOSES.map(() => '?').join(',');
-    const expensePlaceholders    = EXPENSE_PURPOSES.map(() => '?').join(',');
 
     const [collectionRows] = await pool.query(`
         SELECT purpose, COALESCE(SUM(amount_paid), 0) AS total
@@ -218,18 +229,23 @@ const getFinancialsReport = async (fromDate, toDate) => {
         GROUP BY purpose
     `, [fromDate, toDate, ...COLLECTION_PURPOSES]);
 
+    // Expenses recorded via the Expenses tab live in their own `expenses`
+    // table (not Payment) — query that instead so recorded expenses actually
+    // show up here.
     const [expenseRows] = await pool.query(`
-        SELECT purpose, COALESCE(SUM(amount_paid), 0) AS total
-        FROM Payment
+        SELECT category, COALESCE(SUM(amount_paid), 0) AS total
+        FROM expenses
         WHERE date_paid BETWEEN ? AND ?
-          AND purpose IN (${expensePlaceholders})
-        GROUP BY purpose
-    `, [fromDate, toDate, ...EXPENSE_PURPOSES]);
+        GROUP BY category
+    `, [fromDate, toDate]);
 
     const collectionMap = Object.fromEntries(COLLECTION_PURPOSES.map(p => [p, 0]));
     const expenseMap    = Object.fromEntries(EXPENSE_PURPOSES.map(p => [p, 0]));
     collectionRows.forEach(r => { collectionMap[r.purpose] = parseFloat(r.total); });
-    expenseRows.forEach(r => {    expenseMap[r.purpose]    = parseFloat(r.total); });
+    expenseRows.forEach(r => {
+        const label = EXPENSE_CATEGORY_TO_LABEL[r.category] || r.category;
+        expenseMap[label] = (expenseMap[label] || 0) + parseFloat(r.total);
+    });
 
     const collections      = COLLECTION_PURPOSES.map(p => ({ purpose: p, total: collectionMap[p] }));
     const expenses         = EXPENSE_PURPOSES.map(p => ({ purpose: p, total: expenseMap[p] }));
@@ -237,21 +253,37 @@ const getFinancialsReport = async (fromDate, toDate) => {
     const totalExpenses    = expenses.reduce((s, r) => s + r.total, 0);
     const endingBalance    = totalCollections - totalExpenses;
 
-    const [monthlyRows] = await pool.query(`
+    const [collectionMonthlyRows] = await pool.query(`
         SELECT
             YEAR(date_paid)  AS year_num,
             MONTH(date_paid) AS month_num,
-            COALESCE(SUM(CASE WHEN purpose IN (${collectionPlaceholders}) THEN amount_paid ELSE 0 END), 0) AS collections,
-            COALESCE(SUM(CASE WHEN purpose IN (${expensePlaceholders})    THEN amount_paid ELSE 0 END), 0) AS expenses
+            COALESCE(SUM(amount_paid), 0) AS collections
         FROM Payment
         WHERE date_paid BETWEEN ? AND ?
+          AND purpose IN (${collectionPlaceholders})
         GROUP BY YEAR(date_paid), MONTH(date_paid)
-        ORDER BY YEAR(date_paid), MONTH(date_paid)
-    `, [...COLLECTION_PURPOSES, ...EXPENSE_PURPOSES, fromDate, toDate]);
+    `, [fromDate, toDate, ...COLLECTION_PURPOSES]);
+
+    const [expenseMonthlyRows] = await pool.query(`
+        SELECT
+            YEAR(date_paid)  AS year_num,
+            MONTH(date_paid) AS month_num,
+            COALESCE(SUM(amount_paid), 0) AS expenses
+        FROM expenses
+        WHERE date_paid BETWEEN ? AND ?
+        GROUP BY YEAR(date_paid), MONTH(date_paid)
+    `, [fromDate, toDate]);
 
     const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
     const dataMap = {};
-    monthlyRows.forEach(r => { dataMap[`${r.year_num}-${r.month_num}`] = r; });
+    collectionMonthlyRows.forEach(r => {
+        dataMap[`${r.year_num}-${r.month_num}`] = { collections: parseFloat(r.collections), expenses: 0 };
+    });
+    expenseMonthlyRows.forEach(r => {
+        const key = `${r.year_num}-${r.month_num}`;
+        if (!dataMap[key]) dataMap[key] = { collections: 0, expenses: 0 };
+        dataMap[key].expenses = parseFloat(r.expenses);
+    });
 
     // Generate every month slot in the range (including empty ones)
     const monthly = [];
@@ -261,8 +293,8 @@ const getFinancialsReport = async (fromDate, toDate) => {
         const row = dataMap[`${y}-${m}`] || { collections: 0, expenses: 0 };
         monthly.push({
             label:       `${MONTH_NAMES[m - 1]} ${y}`,
-            collections: parseFloat(row.collections),
-            expenses:    parseFloat(row.expenses),
+            collections: row.collections,
+            expenses:    row.expenses,
         });
         if (++m > 12) { m = 1; y++; }
     }

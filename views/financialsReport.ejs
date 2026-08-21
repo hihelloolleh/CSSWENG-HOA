@@ -28,7 +28,7 @@
 </div>
 <script>
 (function () {
-    const today  = new Date().toISOString().slice(0, 10);
+    const today  = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
     const fromEl     = document.getElementById('filterFrom');
     const toEl       = document.getElementById('filterTo');
     const errEl      = document.getElementById('dateError');

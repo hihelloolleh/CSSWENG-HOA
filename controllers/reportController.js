@@ -12,7 +12,7 @@ exports.getFinancialsReport = async (req, res) => {
     try {
         const today = new Date();
         const defaultFrom = `${today.getFullYear()}-01-01`;
-        const defaultTo   = today.toISOString().slice(0, 10);
+        const defaultTo   = today.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
 
         let fromDate = req.query.from || defaultFrom;
         let toDate   = req.query.to   || defaultTo;
@@ -68,7 +68,7 @@ exports.getVillageGeneralReport = async (req, res) => {
     try {
         const today = new Date();
         const defaultFrom = `${today.getFullYear()}-01-01`;
-        const defaultTo   = today.toISOString().slice(0, 10);
+        const defaultTo   = today.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
 
         let fromDate = req.query.from || defaultFrom;
         let toDate   = req.query.to   || defaultTo;
@@ -156,7 +156,7 @@ exports.getVehicleStickerReport = async (req, res) => {
         const today = new Date();
         
         const [rows, breakdownRows] = await Promise.all([
-            reportModel.getVehicleStickerReport('2000-01-01', today.toISOString().slice(0, 10)),
+            reportModel.getVehicleStickerReport('2000-01-01', today.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' })),
             reportModel.getVehicleStickerBreakdown()
         ]);
         

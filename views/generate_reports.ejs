@@ -177,9 +177,9 @@
                 </div>
             </div>
             <div class="report-card-actions">
-                <button class="btn btn-primary btn-sm" onclick="viewReport('finances')">
+                <a href="/reports/financials" class="btn btn-primary btn-sm" target="_blank">
                     <i class="ph ph-eye"></i> View
-                </button>
+                </a>
                 <button class="btn btn-secondary btn-sm" onclick="exportReport('finances')">
                     <i class="ph ph-download-simple"></i> CSV
                 </button>
@@ -231,7 +231,7 @@
         const end = document.getElementById('endDate');
         
         const formatDate = (date) => {
-            return date.toISOString().split('T')[0];
+            return date.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
         };
         
         switch(range) {
@@ -438,9 +438,15 @@
             'finances': [
                 'Vehicle Stickers,42400.00,Earnings,2024-07-15,Sticker fees collected,',
                 'Association Dues,8800.00,Earnings,2024-07-14,Monthly dues,',
+                'Outstanding Balance,3200.00,Earnings,2024-07-13,Arrears settled,',
+                'General Payments,500.00,Earnings,2024-07-11,Donation,',
                 'Utilities,2500.00,Expense,2024-07-13,Electricity bill,',
+                'Employee Salaries,18000.00,Expense,2024-07-10,Staff payroll,',
                 'Maintenance,1500.00,Expense,2024-07-12,Repairs,',
-                'General Payments,500.00,Earnings,2024-07-11,Donation,'
+                'Petty Cash,800.00,Expense,2024-07-09,Miscellaneous,',
+                'Food,600.00,Expense,2024-07-08,Event refreshments,',
+                'Community Project,3000.00,Expense,2024-07-07,Clean-up drive,',
+                'Other,400.00,Expense,2024-07-06,Miscellaneous,'
             ]
         };
 

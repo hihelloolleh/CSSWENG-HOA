@@ -368,7 +368,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>Date of Birth</label>
-                            <input type="date" id="dob" name="birth_date" max="<%= new Date().toISOString().split('T')[0] %>">
+                            <input type="date" id="dob" name="birth_date" max="<%= new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' }) %>">
                             <small id="dob-error" style="color:#dc3545; font-size:12px; margin-top:4px; display:none;">Birthdate is invalid — it cannot be in the future.</small>
                         </div>
                         <div class="form-group">
@@ -961,7 +961,7 @@ function openBMEditModal(btn) {
 (function () {
     const dobInput = document.getElementById('dob');
     const dobError = document.getElementById('dob-error');
-    const today     = new Date().toISOString().split('T')[0];
+    const today     = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
 
     function isDobInvalid() {
         return dobInput.value && dobInput.value > today;

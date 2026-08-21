@@ -178,7 +178,7 @@ document.getElementById('transactionSearch').addEventListener('input', function 
 
 // ── Date filter validation ────────────────────────────────────────────────────
 (function () {
-    const today  = new Date().toISOString().slice(0, 10);
+    const today  = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
     const fromEl = document.getElementById('fdFrom');
     const toEl   = document.getElementById('fdTo');
     const errEl  = document.getElementById('fdErr');
