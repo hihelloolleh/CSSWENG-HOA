@@ -154,6 +154,7 @@ const createTables = async() => {
                 receipt_number  VARCHAR(50),
                 remarks         TEXT,
                 created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at      TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
 
                 paid_by         INT,
                 FOREIGN KEY (paid_by) REFERENCES Person(person_id) ON DELETE SET NULL
@@ -364,6 +365,10 @@ const createTables = async() => {
             { table: 'BoardMemberAccount', column: 'isActive',   definition: 'BOOLEAN DEFAULT 1',                  after: 'board_member_id' },
             { table: 'BoardMemberAccount', column: 'last_login', definition: 'TIMESTAMP NULL',                     after: 'isActive'     },
             { table: 'Admin',   column: 'last_login',            definition: 'TIMESTAMP NULL',                     after: 'contact_num'  },
+            // Lets the ledger float a just-settled payment above other rows
+            // sharing the same date_paid. NULL on existing/untouched rows so
+            // they fall back to created_at. (expenses already has this column.)
+            { table: 'Payment', column: 'updated_at',            definition: 'TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP', after: 'created_at' },
         ];
 
         for (const { table, column, definition, after } of missingColumns) {

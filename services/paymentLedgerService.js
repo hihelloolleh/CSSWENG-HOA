@@ -65,6 +65,10 @@ const addPayment = async (data) => {
                 throw new Error('Please provide a vehicle or enter a plate number and vehicle type.');
             }
 
+            // Stickers can't be partially issued — the full amount must be paid.
+            if (parseFloat(data.amount_paid) < data.amount_expected) {
+                throw new Error('Vehicle sticker payments must be paid in full.');
+            }
         }
 
         if (data.purpose === 'Association Dues') {
@@ -135,9 +139,12 @@ const addPayment = async (data) => {
         // Delinquency reflects two sources of truth: an outstanding-balance
         // property, or any ledger payment (any purpose) still partial/unpaid.
         // Recompute here so it stays accurate regardless of which branch above ran.
+        // ORDER MATTERS: resident delinquency reads Property.hasDues, so the
+        // property flag must be refreshed FIRST — otherwise the resident is
+        // judged against a stale hasDues and stays delinquent forever.
         if (data.paid_by) {
-            await residentModel.recomputeDelinquentByPersonId(data.paid_by, conn);
             await propertyModel.recomputeHasDuesForPersonProperties(data.paid_by, conn);
+            await residentModel.recomputeDelinquentByPersonId(data.paid_by, conn);
         }
 
         await conn.commit();
@@ -154,15 +161,54 @@ const updatePayment = async (payment_id, data) => {
     const conn = await pool.getConnection();
     try {
         await conn.beginTransaction();
+
+        // Snapshot before the update so an Outstanding Balance settle can sync
+        // Property.outstandingBalance by the DELTA in amount_paid, not the full
+        // amount — the original payment (or an earlier settle) may have already
+        // decremented the property's balance once.
+        const [[before]] = await conn.query(
+            `SELECT paid_by, purpose, amount_paid FROM Payment WHERE payment_id = ?`,
+            [payment_id]
+        );
+
         await paymentLedgerModel.updatePayment(payment_id, data, conn);
+
+        if (before && before.purpose === 'Outstanding Balance') {
+            const [[ob]] = await conn.query(
+                `SELECT property_id FROM Outstanding_Balance WHERE payment_id = ?`,
+                [payment_id]
+            );
+            if (ob && ob.property_id) {
+                const oldPaid = parseFloat(before.amount_paid) || 0;
+                const newPaid = parseFloat(data.amount_paid)   || 0;
+                const delta   = newPaid - oldPaid;
+                if (delta !== 0) {
+                    const [[prop]] = await conn.query(
+                        `SELECT outstandingBalance FROM Property WHERE property_id = ?`,
+                        [ob.property_id]
+                    );
+                    if (prop) {
+                        const newBalance = Math.max(0, parseFloat(prop.outstandingBalance) - delta);
+                        await conn.query(
+                            `UPDATE Property SET outstandingBalance = ?, hasDues = ? WHERE property_id = ?`,
+                            [newBalance, newBalance > 0 ? 1 : 0, ob.property_id]
+                        );
+                        if (newBalance === 0) {
+                            await propertyModel.clearResidentsDelinquentForProperty(ob.property_id, conn);
+                        }
+                    }
+                }
+            }
+        }
 
         const [[payment]] = await conn.query(
             `SELECT paid_by FROM Payment WHERE payment_id = ?`,
             [payment_id]
         );
         if (payment && payment.paid_by) {
-            await residentModel.recomputeDelinquentByPersonId(payment.paid_by, conn);
+            // Property first — resident delinquency reads Property.hasDues.
             await propertyModel.recomputeHasDuesForPersonProperties(payment.paid_by, conn);
+            await residentModel.recomputeDelinquentByPersonId(payment.paid_by, conn);
         }
 
         await conn.commit();
@@ -187,8 +233,9 @@ const deletePayment = async (payment_id) => {
         await paymentLedgerModel.deletePayment(payment_id, conn);
 
         if (payment && payment.paid_by) {
-            await residentModel.recomputeDelinquentByPersonId(payment.paid_by, conn);
+            // Property first — resident delinquency reads Property.hasDues.
             await propertyModel.recomputeHasDuesForPersonProperties(payment.paid_by, conn);
+            await residentModel.recomputeDelinquentByPersonId(payment.paid_by, conn);
         }
 
         await conn.commit();

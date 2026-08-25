@@ -222,17 +222,9 @@ const getResidentIdByPersonId = async (personId, conn) => {
     return rows[0] || null;
 };
 
-const getDelinquentPropertiesByResidentId = async (residentId) => {
-    const [rows] = await pool.query(`
-        SELECT p.property_id, p.lot_number, p.street_name, p.property_type, p.outstandingBalance
-        FROM Resident_Property rp
-        JOIN Property p ON rp.property_id = p.property_id
-        WHERE rp.resident_id = ? AND p.hasDues = 1 AND p.outstandingBalance > 0
-        ORDER BY p.street_name, p.lot_number
-    `, [residentId]);
-    return rows;
-};
-
+// All of a resident's open (partial/unpaid) debts, any purpose, in one list —
+// including Outstanding Balance, since that purpose is now backed by a real,
+// trackable Payment row too (see propertyService.setOutstandingBalance).
 const getPendingPaymentsByResidentId = async (residentId) => {
     const [rows] = await pool.query(`
         SELECT
@@ -243,18 +235,21 @@ const getPendingPaymentsByResidentId = async (residentId) => {
             pay.date_paid,
             pay.payment_method,
             pay.paid_by,
-            (
-                SELECT rp2.property_id
-                FROM Resident_Property rp2
-                WHERE rp2.resident_id = r.resident_id
-                ORDER BY rp2.type = 'Homeowner' DESC
-                LIMIT 1
+            COALESCE(
+                ob.property_id,
+                (
+                    SELECT rp2.property_id
+                    FROM Resident_Property rp2
+                    WHERE rp2.resident_id = r.resident_id
+                    ORDER BY rp2.type = 'Homeowner' DESC
+                    LIMIT 1
+                )
             ) AS property_id
         FROM Payment pay
         JOIN Resident r ON pay.paid_by = r.person_id
+        LEFT JOIN Outstanding_Balance ob ON ob.payment_id = pay.payment_id
         WHERE r.resident_id = ?
           AND pay.amount_paid < pay.amount_expected
-          AND pay.purpose <> 'Outstanding Balance'
         ORDER BY pay.created_at DESC
     `, [residentId]);
     return rows;
@@ -274,7 +269,6 @@ module.exports = {
     setDelinquent,
     recomputeDelinquentByPersonId,
     getResidentIdByPersonId,
-    getDelinquentPropertiesByResidentId,
     getPendingPaymentsByResidentId,
 };
 

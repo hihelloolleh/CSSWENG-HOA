@@ -14,7 +14,23 @@ const selectAllProperties = async () => {
                 WHERE rp.property_id = p.property_id
                   AND pay.amount_paid < pay.amount_expected
                   AND pay.purpose <> 'Outstanding Balance'
-            ), 0) AS totalDue
+            ), 0) AS totalDue,
+            (
+                SELECT p2.payment_id
+                FROM Outstanding_Balance ob2
+                JOIN Payment p2 ON ob2.payment_id = p2.payment_id
+                WHERE ob2.property_id = p.property_id AND p2.amount_paid < p2.amount_expected
+                ORDER BY p2.created_at DESC
+                LIMIT 1
+            ) AS obPaymentId,
+            (
+                SELECT p2.amount_expected - p2.amount_paid
+                FROM Outstanding_Balance ob2
+                JOIN Payment p2 ON ob2.payment_id = p2.payment_id
+                WHERE ob2.property_id = p.property_id AND p2.amount_paid < p2.amount_expected
+                ORDER BY p2.created_at DESC
+                LIMIT 1
+            ) AS obRemaining
         FROM Property p
         ORDER BY p.street_name ASC, p.lot_number ASC
     `);

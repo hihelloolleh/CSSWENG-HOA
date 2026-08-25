@@ -29,16 +29,21 @@ const PAYMENT_SELECT = `
     LEFT JOIN Outstanding_Balance ob ON p.payment_id = ob.payment_id
 `;
 
+// Ordered by date_paid (not created_at) so a settled payment surfaces to the
+// top on its new settlement date — matches how the Expenses tab already sorts.
+// Same-day ties break on last-touched (updated_at, falling back to created_at
+// for rows never edited), so a just-settled payment leads its date group.
+// NULL date_paid sorts last under MySQL DESC.
+const PAYMENT_ORDER = 'ORDER BY p.date_paid DESC, COALESCE(p.updated_at, p.created_at) DESC';
+
 const getAllPayments = async () => {
-    const [rows] = await pool.query(
-        `${PAYMENT_SELECT} ORDER BY p.created_at DESC`
-    );
+    const [rows] = await pool.query(`${PAYMENT_SELECT} ${PAYMENT_ORDER}`);
     return rows;
 };
 
 const getPaymentsByPurpose = async (purpose) => {
     const [rows] = await pool.query(
-        `${PAYMENT_SELECT} WHERE p.purpose = ? ORDER BY p.created_at DESC`,
+        `${PAYMENT_SELECT} WHERE p.purpose = ? ${PAYMENT_ORDER}`,
         [purpose]
     );
     return rows;

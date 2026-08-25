@@ -143,16 +143,19 @@
                             <small id="payor_hint" style="color:#888; font-size:12px; margin-top:4px; display:block;">Select a property first</small>
                         </div>
 
+                        <div class="form-group">
+                            <label class="required-label">Outstanding Balance</label>
+                            <select id="outstanding_debt_select" class="form-control" disabled>
+                                <option value="">Select a property first</option>
+                            </select>
+                            <input type="hidden" id="amount_expected" name="amount_expected">
+                            <input type="hidden" id="settle_payment_id" name="payment_id">
+                        </div>
+
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Outstanding Balance (Expected)</label>
-                                <input type="number" step="0.01" id="amount_expected" name="amount_expected"
-                                       class="form-control" readonly placeholder="Auto-filled from property"
-                                       style="background:#f5f5f5;">
-                            </div>
-                            <div class="form-group">
                                 <label class="required-label">Amount Paid</label>
-                                <input type="number" step="0.01" name="amount_paid" class="form-control" required>
+                                <input type="number" step="0.01" name="amount_paid" id="outstanding_amount_paid" class="form-control" required>
                             </div>
                         </div>
 
@@ -315,18 +318,68 @@
         selectedPropertyId         = String(prop.property_id);
         propDropdown.style.display = 'none';
 
-        // Auto-fill outstanding balance — only on the Outstanding Balance page
-        // (outstanding_hint only exists there; must NOT fire on Association Dues,
-        // which shares the same #amount_expected field id but computes it from the rate).
+        // Populate the Outstanding Balance dropdown — only on the Outstanding
+        // Balance page (outstanding_hint only exists there; must NOT fire on
+        // Association Dues, which shares the same #amount_expected field id).
         const outstandingHintEl = document.getElementById('outstanding_hint');
         if (outstandingHintEl) {
+            const debtSelect  = document.getElementById('outstanding_debt_select');
             const amountExpected = document.getElementById('amount_expected');
-            const bal = Math.round(parseFloat(prop.outstandingBalance || 0) * 100) / 100;
-            if (amountExpected) amountExpected.value = bal.toFixed(2);
-            outstandingHintEl.textContent = prop.hasDues
-                ? `Current outstanding balance: ₱${bal.toLocaleString('en-PH', {minimumFractionDigits:2})}`
-                : 'This property has no recorded outstanding dues.';
-            outstandingHintEl.style.color = prop.hasDues ? '#c77b00' : '#888';
+            const amountPaidField = document.getElementById('outstanding_amount_paid');
+            const settleIdField   = document.getElementById('settle_payment_id');
+
+            debtSelect.innerHTML = '';
+            debtSelect.disabled  = false;
+
+            if (prop.obPaymentId) {
+                // A real, trackable debt — paying this settles (updates) that
+                // exact row instead of creating a new, disconnected one.
+                const remaining = Math.round(parseFloat(prop.obRemaining || 0) * 100) / 100;
+                const opt = document.createElement('option');
+                opt.value = prop.obPaymentId;
+                opt.textContent = `Outstanding balance — ₱${remaining.toLocaleString('en-PH', {minimumFractionDigits:2})} remaining`;
+                debtSelect.appendChild(opt);
+                debtSelect.value = prop.obPaymentId;
+
+                amountExpected.value = remaining.toFixed(2);
+                settleIdField.value  = prop.obPaymentId;
+                amountPaidField.value = remaining.toFixed(2);
+                amountPaidField.max   = remaining;
+
+                outstandingHintEl.textContent = `Current outstanding balance: ₱${remaining.toLocaleString('en-PH', {minimumFractionDigits:2})}`;
+                outstandingHintEl.style.color = '#c77b00';
+            } else if (parseFloat(prop.outstandingBalance || 0) > 0) {
+                // Legacy balance with no backing row yet (set before this
+                // property had a trackable debt row) — allow a one-off manual
+                // payment; it becomes a tracked, settleable row from here on.
+                const bal = Math.round(parseFloat(prop.outstandingBalance) * 100) / 100;
+                const opt = document.createElement('option');
+                opt.value = '';
+                opt.textContent = `Untracked balance — ₱${bal.toLocaleString('en-PH', {minimumFractionDigits:2})}`;
+                debtSelect.appendChild(opt);
+
+                amountExpected.value = bal.toFixed(2);
+                settleIdField.value  = '';
+                amountPaidField.value = '';
+                amountPaidField.max   = bal;
+
+                outstandingHintEl.textContent = `Current outstanding balance: ₱${bal.toLocaleString('en-PH', {minimumFractionDigits:2})}`;
+                outstandingHintEl.style.color = '#c77b00';
+            } else {
+                const opt = document.createElement('option');
+                opt.value = '';
+                opt.textContent = 'No outstanding balance';
+                debtSelect.appendChild(opt);
+                debtSelect.disabled = true;
+
+                amountExpected.value = '0.00';
+                settleIdField.value  = '';
+                amountPaidField.value = '';
+                amountPaidField.removeAttribute('max');
+
+                outstandingHintEl.textContent = 'This property has no recorded outstanding dues.';
+                outstandingHintEl.style.color = '#888';
+            }
         }
 
         const residents = residentsByProperty[selectedPropertyId] || [];
@@ -857,4 +910,15 @@
         if (amountPaid)     amountPaid.value     = '<%= preselectedAmount.toFixed(2) %>';
     })();
     <% } %>
+
+    // ── Outstanding Balance: route submission through the settle-update path ──
+    // when a tracked debt row is selected, instead of always creating a new,
+    // disconnected payment.
+    if (document.getElementById('outstanding_debt_select')) {
+        const outstandingForm = document.getElementById('outstanding_debt_select').closest('form');
+        outstandingForm.addEventListener('submit', function () {
+            const settleId = document.getElementById('settle_payment_id').value;
+            this.action = settleId ? '/payments/update' : '/payments';
+        });
+    }
 </script>

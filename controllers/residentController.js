@@ -99,16 +99,6 @@ const updateResidentEndDate = async (req, res) => {
     }
 };
 
-const getResidentOutstanding = async (req, res) => {
-    try {
-        const rows = await residentModel.getDelinquentPropertiesByResidentId(req.params.id);
-        res.json(rows);
-    } catch (err) {
-        console.error('getResidentOutstanding error:', err);
-        res.status(500).json({ error: 'Failed to load outstanding balance.' });
-    }
-};
-
 const getResidentPendingPayments = async (req, res) => {
     try {
         const rows = await residentModel.getPendingPaymentsByResidentId(req.params.id);
@@ -127,6 +117,5 @@ module.exports = {
     updateResidentEndDate,
     reactivateResident,
     endResidency,
-    getResidentOutstanding,
     getResidentPendingPayments,
 };

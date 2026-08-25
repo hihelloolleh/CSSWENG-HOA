@@ -585,6 +585,19 @@ body {
     font-size: 18px; 
 }
 
+/* ── Settle modal: "already paid" helper under Amount Paid ───────────────────── */
+.settle-paid-hint {
+    display: block;
+    margin-top: 6px;
+    padding: 8px 12px;
+    background: #fff7e6;
+    border: 1px solid #fbbf24;
+    border-radius: 6px;
+    font-size: 12px;
+    line-height: 1.6;
+    color: #7a5200;
+}
+
 /* ── Transparency notice ─────────────────────────────────────────────────────── */
 .transparency-notice {
     display: flex;

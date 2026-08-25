@@ -87,6 +87,59 @@ const setOutstandingBalance = async (propertyId, amount) => {
     try {
         await conn.beginTransaction();
         await propertyModel.setOutstandingBalance(propertyId, amount, conn);
+
+        // Keep a backing Payment row in sync with the column so this debt is a
+        // real, trackable/settleable row like every other purpose — instead of
+        // an untracked figure that a later "settle" can drift out of sync with.
+        const [[openRow]] = await conn.query(
+            `SELECT p.payment_id
+             FROM Outstanding_Balance ob
+             JOIN Payment p ON ob.payment_id = p.payment_id
+             WHERE ob.property_id = ? AND p.amount_paid < p.amount_expected
+             ORDER BY p.created_at DESC
+             LIMIT 1`,
+            [propertyId]
+        );
+
+        if (amount > 0) {
+            if (openRow) {
+                await conn.query(
+                    `UPDATE Payment SET amount_expected = ? WHERE payment_id = ?`,
+                    [amount, openRow.payment_id]
+                );
+            } else {
+                const [[homeowner]] = await conn.query(
+                    `SELECT per.person_id, r.resident_id
+                     FROM Resident_Property rp
+                     JOIN Resident r   ON rp.resident_id = r.resident_id
+                     JOIN Person   per ON r.person_id    = per.person_id
+                     WHERE rp.property_id = ? AND rp.type = 'Homeowner'
+                     ORDER BY r.resident_id
+                     LIMIT 1`,
+                    [propertyId]
+                );
+                if (homeowner) {
+                    const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
+                    const [result] = await conn.query(
+                        `INSERT INTO Payment (purpose, amount_expected, amount_paid, date_paid, payment_method, remarks, paid_by)
+                         VALUES ('Outstanding Balance', ?, 0, ?, 'Cash', 'Balance set by admin', ?)`,
+                        [amount, today, homeowner.person_id]
+                    );
+                    await conn.query(
+                        `INSERT INTO Outstanding_Balance (payment_id, property_id, resident_id) VALUES (?, ?, ?)`,
+                        [result.insertId, propertyId, homeowner.resident_id]
+                    );
+                }
+            }
+        } else if (openRow) {
+            // Clearing the balance resolves the open row rather than deleting
+            // it, preserving the payment history / audit trail.
+            await conn.query(
+                `UPDATE Payment SET amount_paid = amount_expected WHERE payment_id = ?`,
+                [openRow.payment_id]
+            );
+        }
+
         if (amount > 0) {
             await propertyModel.markResidentsDelinquentForProperty(propertyId, conn);
         } else {

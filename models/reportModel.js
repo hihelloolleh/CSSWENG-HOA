@@ -303,14 +303,19 @@ const getFinancialsReport = async (fromDate, toDate) => {
 };
 
 const getVehicleStickerBreakdown = async () => {
+    // Sum the actual per-vehicle rate (via Payment_Vehicle.rate_applied -> Rates),
+    // not Payment.amount_paid — a single payment can cover several vehicles of
+    // different types, so attributing the whole payment total to each type
+    // group massively overcounts revenue.
     const [rows] = await pool.query(`
-        SELECT 
-            v.type, 
-            COUNT(pv.vehicle_id) as count, 
-            COALESCE(SUM(p.amount_paid), 0) as total_earnings
+        SELECT
+            v.type,
+            COUNT(*) AS count,
+            COALESCE(SUM(r.amount), 0) AS total_earnings
         FROM Payment p
         JOIN Payment_Vehicle pv ON p.payment_id = pv.payment_id
-        JOIN Vehicle v ON pv.vehicle_id = v.vehicle_id
+        JOIN Vehicle v          ON pv.vehicle_id = v.vehicle_id
+        JOIN Rates r            ON r.rate_category = pv.rate_applied
         WHERE p.purpose = 'Vehicle Sticker'
         GROUP BY v.type
     `);

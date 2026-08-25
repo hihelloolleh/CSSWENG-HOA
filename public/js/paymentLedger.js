@@ -133,9 +133,15 @@ function openEditModal(btn) {
     document.querySelector('#editModal .modal-header h2').textContent = 'Edit Payment';
 
     document.getElementById('edit_payment_id').value      = d.id;
-    document.getElementById('edit_purpose').value         = d.purpose;
+    document.getElementById('edit_purpose').value         = d.purposedisplay || d.purpose;
+    document.getElementById('edit_purpose_value').value   = d.purpose;
     document.getElementById('edit_amount_expected').value = d.expected;
-    document.getElementById('edit_amount_paid').value     = d.paid;
+    const paidField = document.getElementById('edit_amount_paid');
+    paidField.value = d.paid;
+    paidField.removeAttribute('max');
+    paidField.removeAttribute('min');
+    paidField.placeholder = '';
+    document.getElementById('edit_paid_hint').style.display = 'none';
     document.getElementById('edit_payment_method').value  = d.method;
     document.getElementById('edit_receipt_number').value  = d.receipt || '';
     document.getElementById('edit_remarks').value         = d.remarks || '';
@@ -148,28 +154,76 @@ function openEditModal(btn) {
     document.getElementById('editModal').classList.add('active');
 }
 
-// ── Settle — redirect to add-payment form with remaining balance pre-filled ───
+// ── Settle — reopens the Edit modal, pre-filled to fully pay off the ──────────
+// remaining balance. Submitting UPDATES this same row (via /payments/update)
+// instead of creating a new one, so amount_expected and any linked property
+// balance never drift out of sync.
 function openSettleModal(btn) {
     const d = btn.dataset;
-    const expected  = parseFloat(d.expected) || 0;
-    const prevPaid  = parseFloat(d.paid)     || 0;
+    const expected = parseFloat(d.expected) || 0;
+    const prevPaid = parseFloat(d.paid)     || 0;
+
+    document.querySelector('#editModal .modal-header h2').textContent = 'Settle Payment';
+
+    document.getElementById('edit_payment_id').value      = d.id;
+    document.getElementById('edit_purpose').value         = d.purposedisplay || d.purpose;
+    document.getElementById('edit_purpose_value').value   = d.purpose;
+    document.getElementById('edit_amount_expected').value = expected;
+
+    const paidField = document.getElementById('edit_amount_paid');
+    paidField.value = expected; // default: fully settle; admin can lower for another partial
+    paidField.max   = expected;
+    paidField.min   = prevPaid;
+
+    // This field is the RUNNING TOTAL on the row, not the new increment — spell
+    // that out so the admin doesn't type just the new cash and under-record it.
+    const peso      = n => '₱' + n.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     const remaining = Math.max(0, expected - prevPaid);
+    const payorName = d.payor || 'Payor';
 
-    const purposeToType = {
-        'Association Dues':   'association',
-        'Vehicle Sticker':    'vehicle',
-        'Outstanding Balance':'outstanding',
-        'General Payments':   'general',
-    };
-    const type = purposeToType[d.purpose] || 'general';
+    const paidHint = document.getElementById('edit_paid_hint');
 
-    const params = new URLSearchParams();
-    if (d.paidby)      params.set('person_id',   d.paidby);
-    if (d.propertyid)  params.set('property_id', d.propertyid);
-    if (remaining > 0) params.set('amount',       remaining.toFixed(2));
+    if (prevPaid > 0) {
+        paidField.placeholder = `${payorName} already paid ${peso(prevPaid)}`;
+        paidHint.innerHTML =
+            `<strong>${payorName}</strong> already paid <strong>${peso(prevPaid)}</strong> of ${peso(expected)} ` +
+            `&mdash; <strong>${peso(remaining)}</strong> still due.<br>` +
+            `Enter the <strong>total</strong> (already paid + what they're paying now). ` +
+            `Leave it at <strong>${peso(expected)}</strong> to settle in full.`;
+    } else {
+        paidField.placeholder = `Nothing paid yet — full amount is ${peso(expected)}`;
+        paidHint.innerHTML =
+            `<strong>${payorName}</strong> has not paid anything yet &mdash; the full ` +
+            `<strong>${peso(expected)}</strong> is due.<br>` +
+            `Leave it at <strong>${peso(expected)}</strong> to settle in full, or lower it to record a partial payment.`;
+    }
+    paidHint.style.display = 'block';
 
-    window.location.href = `/dues/${type}?${params.toString()}`;
+    document.getElementById('edit_payment_method').value  = d.method;
+    document.getElementById('edit_receipt_number').value  = d.receipt || '';
+    document.getElementById('edit_remarks').value         = d.remarks || '';
+    // Default to today — settling is normally recorded the day it happens, and
+    // this becomes the row's new date_paid, floating it to the top of the
+    // ledger. Still editable for back-dated settlements. Never left blank:
+    // a NULL date_paid would sink the row to the bottom instead.
+    document.getElementById('edit_date_paid').value =
+        new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
+
+    const person = allPersons.find(p => String(p.person_id) === String(d.paidby));
+    document.getElementById('edit_payor_search').value = person ? person.full_name : (d.payor || '');
+    document.getElementById('edit_payor_id').value     = d.paidby || '';
+
+    document.getElementById('editModal').classList.add('active');
 }
+
+// ── Deep-link auto-open: /payments?settle=<payment_id> (e.g. from the ─────────
+// Residents page's debt list) opens the Settle modal for that row directly.
+(function () {
+    const settleId = new URLSearchParams(window.location.search).get('settle');
+    if (!settleId) return;
+    const btn = document.querySelector(`.btn-icon-settle[data-id="${settleId}"]`);
+    if (btn) openSettleModal(btn);
+})();
 
 // ── Delete confirmation ───────────────────────────────────────────────────────
 function confirmDelete(id, label) {
